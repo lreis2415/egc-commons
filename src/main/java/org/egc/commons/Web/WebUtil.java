@@ -1,4 +1,4 @@
-package org.egc.commons;
+package org.egc.commons.Web;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;

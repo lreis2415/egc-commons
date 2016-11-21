@@ -8,5 +8,5 @@ package org.egc.commons;
  */
 public class BaseController
 {
-    public static String MSG = "message";
+    public static String msg = "msg";
 }

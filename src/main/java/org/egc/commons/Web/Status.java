@@ -1,12 +1,13 @@
-package org.egc.commons.Web;
+package org.egc.commons.web;
 
 /**
  * TODO
- * http://baike.baidu.com/link?url=mSF49R9JHE_KssAMdFb5Fdu2Rvmcc-qo7Y1KspZ0jz8Sh0U3yc5FimTI_1aG14Qn3xnajrcu0OtQvyZDy6OO4uXYUFcOCfpgF0pkXDXy1GGGosSlX1gfCnz2D1rV486c
+ * 直接使用Spring的HttpStatus就可以了
  *
  * @author houzhiwei
  * @date 2016/11/21 22:23
  */
+@Deprecated
 public class Status
 {
     //成功:这一类型的状态码，代表请求已成功被服务器接收、理解、并接受。

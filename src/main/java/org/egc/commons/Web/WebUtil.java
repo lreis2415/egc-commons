@@ -1,12 +1,15 @@
-package org.egc.commons.Web;
+package org.egc.commons.web;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
+import org.egc.commons.exception.BusinessException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * TODO
@@ -30,14 +33,20 @@ public class WebUtil
             flag = true;
         return flag;
     }
-    public static void writeJson(HttpServletResponse response, Object jsonObj) throws Exception
+
+    public static void writeJson(HttpServletResponse response, Object jsonObj)
     {
         response.setContentType("application/json;charset=utf-8");
-        PrintWriter writer = response.getWriter();
-        writer.write(JSON.toJSONString(jsonObj));
-        writer.flush();
-        writer.close();
+        try {
+            PrintWriter writer = response.getWriter();
+            writer.write(JSON.toJSONString(jsonObj));
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            throw new BusinessException(new Throwable(), "Can not get a PrintWriter to write JSON!");
+        }
     }
+
     /**
      * 获取客户端访问ip<br/>
      * 在一般情况下使用Request.getRemoteAddr()即可，但是经过nginx等反向代理软件后，这个方法会失效
@@ -45,10 +54,10 @@ public class WebUtil
      * @param request
      * @return ip
      */
-    public static String getClientIP(HttpServletRequest request) throws  Exception
+    public static String getClientIP(HttpServletRequest request)
     {
         String ip = request.getHeader("X-Real-IP");
-        if (Strings.isNullOrEmpty(ip)|| "unknown".equalsIgnoreCase(ip)) {
+        if (Strings.isNullOrEmpty(ip) || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("X-Forwarded-For");
             if (!Strings.isNullOrEmpty(ip) && !"unknown".equalsIgnoreCase(ip)) {
                 // 多次反向代理后会有多个IP值，第一个为真实IP。
@@ -59,9 +68,12 @@ public class WebUtil
                 ip = request.getRemoteAddr();
         }
         //本地localhost访问
-        if("127.0.0.1".equalsIgnoreCase(ip)||"0:0:0:0:0:0:0:1".equalsIgnoreCase(ip))
-        {
-            ip= InetAddress.getLocalHost().getHostAddress();
+        if ("127.0.0.1".equalsIgnoreCase(ip) || "0:0:0:0:0:0:0:1".equalsIgnoreCase(ip)) {
+            try {
+                ip = InetAddress.getLocalHost().getHostAddress();
+            } catch (UnknownHostException e) {
+                throw new BusinessException(new Throwable(), "Can not get host address!");
+            }
         }
         return ip;
     }

@@ -1,6 +1,6 @@
-package org.egc.commons;
+package org.egc.commons.web;
 
-import org.egc.commons.Web.Status;
+import org.springframework.http.HttpStatus;
 
 import java.io.Serializable;
 
@@ -16,21 +16,27 @@ public class JsonResult implements Serializable
 
     private Object data;
     private String msg;
+    /**
+     * redirect URL
+     */
     private String url;
-    private int status;
+    /**
+     * status code
+     */
+    private HttpStatus status;
 
     public JsonResult()
     {
         super();
     }
 
-    public JsonResult(String msg, int status)
+    public JsonResult(String msg, HttpStatus status)
     {
         this.msg = msg;
         this.status = status;
     }
 
-    public JsonResult(int status)
+    public JsonResult(HttpStatus status)
     {
         this.status = status;
     }
@@ -38,21 +44,21 @@ public class JsonResult implements Serializable
     public JsonResult(String msg)
     {
         this.msg = msg;
-        this.status = Status.OK;
+        this.status = HttpStatus.OK;
     }
 
     public JsonResult(Object data)
     {
         this.data = data;
-        this.status = Status.OK;
+        this.status = HttpStatus.OK;
     }
 
-    public int getStatus()
+    public HttpStatus getStatus()
     {
         return status;
     }
 
-    public void setStatus(int status)
+    public void setStatus(HttpStatus status)
     {
         this.status = status;
     }

@@ -1,6 +1,9 @@
 package org.egc.commons.utils;
 
 import com.google.common.base.Preconditions;
+import org.egc.commons.exception.BusinessException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Properties;
@@ -14,6 +17,8 @@ import java.util.Properties;
  */
 public class PropertiesUtil
 {
+    private static final Logger logger = LoggerFactory.getLogger(PropertiesUtil.class);
+
     public static String getProperty(Properties properties, String key)
     {
         String property = properties.getProperty(key);
@@ -29,29 +34,40 @@ public class PropertiesUtil
      * @throws IOException
      * @throws FileNotFoundException
      */
-    public static String getPropertyFromConfig(String key, String filename) throws IOException, FileNotFoundException
+    public static String getPropertyFromConfig(String key, String filename)
     {
+        String msg = "";
         String path = PathUtil.getClassPath(PropertiesUtil.class) + "/config/";
         String fullFilename = path + filename + ".properties";
         Properties properties = new Properties();
+        String p = "";
         File propertiesFile = new File(fullFilename);
-        FileInputStream fis = new FileInputStream(propertiesFile);
-        BufferedInputStream bis = new BufferedInputStream(fis);
-        properties.load(bis);
-        String p = properties.getProperty(key);
-        fis.close();
-        bis.close();
+        try {
+            FileInputStream fis = new FileInputStream(propertiesFile);
+            BufferedInputStream bis = new BufferedInputStream(fis);
+            properties.load(bis);
+            p = properties.getProperty(key);
+            fis.close();
+            bis.close();
+        } catch (FileNotFoundException fe) {
+            msg = "Error! " + filename + ".properties not found!";
+            logger.info(msg);
+            throw new BusinessException(msg);
+        } catch (IOException e) {
+            throw new BusinessException("Read file " + filename + ".properties failed!");
+        }
         return p;
     }
 
     /**
-     * <pre/>读取src/main/resources/config下面的properties文件
+     * <pre/>
+     * 读取src/main/resources/config下面的properties文件
      *
      * @param filename 文件名(不用后缀)/ filename without ".properties"
      * @return Properties
      * @throws IOException
      */
-    public static Properties readPropertiesFromConfig(String filename) throws IOException
+    public static Properties readPropertiesFromConfig(String filename)
     {
         Preconditions.checkNotNull(filename, "Error, filename can not be null!");
         Properties properties = new Properties();
@@ -70,11 +86,15 @@ public class PropertiesUtil
      * @return Properties 实例
      * @throws IOException
      */
-    public static Properties readProperties(String filepath) throws IOException
+    public static Properties readProperties(String filepath)
     {
         Preconditions.checkNotNull(filepath, "Error, filename can not be null!");
         Properties properties = new Properties();
-        properties.load(Class.class.getResourceAsStream(filepath));
+        try {
+            properties.load(Class.class.getResourceAsStream(filepath));
+        } catch (IOException e) {
+            throw new BusinessException("Error! Properties file " + filepath + " not found!");
+        }
         return properties;
     }
 }

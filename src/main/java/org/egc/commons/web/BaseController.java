@@ -11,13 +11,15 @@ import javax.servlet.http.HttpServletResponse;
  * @Author houzhiwei
  * @Date 2016/11/3 22:39.
  */
-public class BaseController
+public abstract class BaseController
 {
-    public static String msg = "msg";
+    public static String msg;
 
     protected HttpServletRequest request;
 
     protected HttpServletResponse response;
+
+    protected JsonResult json;
 
     //@ModelAttribute
     // 1)放置在方法的形参上：表示引用Model中的数据
@@ -28,6 +30,8 @@ public class BaseController
     {
         this.request = req;
         this.response = res;
+        json = new JsonResult();
+        msg = "message";
     }
 
 }

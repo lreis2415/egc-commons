@@ -1,5 +1,7 @@
 package org.egc.commons.exception;
 
+import org.slf4j.Logger;
+
 import javax.servlet.http.HttpServletRequest;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -69,5 +71,13 @@ public class ExceptionUtil
             ex = (Throwable) request.getAttribute("javax.servlet.error.exception");
         }
         return ex;
+    }
+
+    //TODO 测试
+    public static void throwAndLoggingException(Throwable e, Logger logger, String friendlyErrMsg)
+    {
+        e.printStackTrace();
+        logger.info(getStackTraceAsString(e));
+        throw new BusinessException(e, friendlyErrMsg);
     }
 }

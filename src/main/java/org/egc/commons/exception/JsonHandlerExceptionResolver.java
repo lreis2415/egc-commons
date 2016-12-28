@@ -23,7 +23,6 @@ import java.util.Map;
  */
 public class JsonHandlerExceptionResolver implements HandlerExceptionResolver
 {
-
     private static final Logger logger = LoggerFactory.getLogger(JsonHandlerExceptionResolver.class);
 
     @Override

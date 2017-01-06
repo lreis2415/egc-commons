@@ -5,11 +5,10 @@ import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.*;
 
 /**
- * TODO
- * 密码加密
+ * 基于Shiro的密码加密
  *
- * @Author houzhiwei
- * @Date 2016/11/3 23:16.
+ * @author houzhiwei
+ * @date 2016/11/3 23:16.
  */
 public class EncryptionUtil
 {
@@ -119,7 +118,6 @@ public class EncryptionUtil
         return getEncrypted(salt, hashedBase64);
     }
 
-
     /**
      * 源加密处理
      * toHex()
@@ -146,5 +144,4 @@ public class EncryptionUtil
         String hashed = hashService.computeHash(hashRequest).toHex().toString();
         return getEncrypted(salt, hashed);
     }
-
 }

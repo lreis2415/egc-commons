@@ -1,7 +1,6 @@
 package org.egc.commons.web;
 
 /**
- * TODO
  * 直接使用Spring的HttpStatus就可以了
  *
  * @author houzhiwei

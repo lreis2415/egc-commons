@@ -37,6 +37,19 @@ public class EncryptionUtil
     }
 
     /**
+     * Generate salt with seed string.
+     *
+     * @param seed the seed
+     * @return the string
+     */
+    public static String generateSaltWithSeed(String seed)
+    {
+        SecureRandomNumberGenerator generator = new SecureRandomNumberGenerator();
+        generator.setSeed(seed.getBytes());
+        return generator.nextBytes().toHex();
+    }
+
+    /**
      * <pre/>
      * 对源进行MD5加密处理：
      * 源与可信随机数为盐，5次迭代加密并转为16进制
@@ -46,7 +59,7 @@ public class EncryptionUtil
      */
     public static Encrypted md5Encrypt(String src)
     {
-        String salt = src + generateSalt();
+        String salt = generateSaltWithSeed(src);
         String result = new Md5Hash(src, salt, 5).toHex();//新的加密之后的密码
         return getEncrypted(salt, result);
     }
@@ -62,7 +75,7 @@ public class EncryptionUtil
      */
     public static Encrypted md5Encrypt(String src, String saltSrc)
     {
-        String salt = generateSalt() + saltSrc;
+        String salt = generateSaltWithSeed(saltSrc);
         String result = new Md5Hash(src, salt, 5).toHex();//新的加密之后的密码
 
         return getEncrypted(salt, result);
@@ -78,7 +91,7 @@ public class EncryptionUtil
      */
     public static String getMD5VerifyCode(String email)
     {
-        String salt = email + generateSalt();
+        String salt = generateSaltWithSeed(email);
         String code = new Md5Hash(email, salt, 5).toHex();
         return code;
     }
@@ -94,7 +107,7 @@ public class EncryptionUtil
      */
     public static Encrypted sha256Encrypt(String src)
     {
-        String salt = src + generateSalt();
+        String salt = generateSaltWithSeed(src);
         //Note: credentialsMatcher.storedCredentialsHexEncoded = false  //base64 encoding, not hex
         String hashedBase64 = new Sha256Hash(src, salt, 1024).toBase64();
         return getEncrypted(salt, hashedBase64);
@@ -112,11 +125,12 @@ public class EncryptionUtil
      */
     public static Encrypted sha256Encrypt(String src, String saltSrc)
     {
-        String salt = generateSalt() + saltSrc;
+        String salt = generateSaltWithSeed(saltSrc);
         //Note: credentialsMatcher.storedCredentialsHexEncoded = false  //base64 encoding, not hex
         String hashedBase64 = new Sha256Hash(src, salt, 1024).toBase64();
         return getEncrypted(salt, hashedBase64);
     }
+
 
     /**
      * 源加密处理
@@ -130,11 +144,11 @@ public class EncryptionUtil
      */
     public static Encrypted encrypt(String src, String saltSrc, String algorithm, int iterations)
     {
-        String salt = generateSalt();
+        String salt = "";
         if (Strings.isNullOrEmpty(saltSrc))
-            salt = salt + src;
+            salt = generateSaltWithSeed(src);
         else
-            salt = salt + saltSrc;
+            salt = generateSaltWithSeed(saltSrc);
         HashService hashService = new DefaultHashService();
 //        SimpleHash hash = new SimpleHash(algorithm, password, username + salt, iterations);
 //        hash.toHex().toString();

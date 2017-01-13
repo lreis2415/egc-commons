@@ -1,31 +1,37 @@
 package org.egc.commons.security;
 
 /**
- * 加密后的结果: 密码 & 盐值
+ * 加密后的结果: 密码 & 盐值 / AES加密中的key值
+ *
  * @author houzhiwei
  * @date 2016/12/24 15:35
  */
 public class Encrypted
 {
-    public Encrypted(String salt, String hashed)
+    public Encrypted(String salt, String encrypted)
     {
         this.salt = salt;
-        this.hashed = hashed;
+        this.encrypted = encrypted;
     }
 
     private String salt;
 
-    public String getHashed()
+    private String key;
+
+    public String getEncrypted()
     {
-        return hashed;
+        return encrypted;
     }
 
-    private String hashed;
+    private String encrypted;
 
+    /**
+     * Gets salt/key (in AES).
+     *
+     * @return the salt/key(in AES).
+     */
     public String getSalt()
     {
         return salt;
     }
-
-
 }

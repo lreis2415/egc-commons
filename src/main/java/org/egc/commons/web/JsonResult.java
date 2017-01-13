@@ -22,8 +22,9 @@ public class JsonResult implements Serializable
     private String url;
     /**
      * status code
+     * default to 200(OK)
      */
-    private HttpStatus status;
+    private HttpStatus status = HttpStatus.OK;
 
     public JsonResult()
     {

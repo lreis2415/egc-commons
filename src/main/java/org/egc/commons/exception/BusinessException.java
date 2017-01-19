@@ -1,5 +1,7 @@
 package org.egc.commons.exception;
 
+import org.springframework.http.HttpStatus;
+
 /**
  * TODO
  * 业务异常处理类
@@ -12,9 +14,20 @@ public class BusinessException extends RuntimeException
 {
     private static final long serialVersionUID = 1L;
 
+    private int errorCode;
+
+    private HttpStatus httpStatus;
+
     public BusinessException(String friendlyErrMsg)
     {
         super(createFriendlyErrMsg(friendlyErrMsg));
+    }
+
+    public BusinessException(String friendlyErrMsg, HttpStatus status)
+    {
+        super(createFriendlyErrMsg(friendlyErrMsg));
+        this.errorCode = status.value();
+        this.httpStatus = status;
     }
 
     public BusinessException(Throwable throwable)
@@ -22,9 +35,23 @@ public class BusinessException extends RuntimeException
         super(throwable);
     }
 
+    public BusinessException(Throwable throwable, HttpStatus status)
+    {
+        super(throwable);
+        this.errorCode = status.value();
+        this.httpStatus = status;
+    }
+
     public BusinessException(Throwable throwable, String friendlyErrMsg)
     {
         super(friendlyErrMsg, throwable);
+    }
+
+    public BusinessException(Throwable throwable, String friendlyErrMsg, HttpStatus status)
+    {
+        super(friendlyErrMsg, throwable);
+        this.errorCode = status.value();
+        this.httpStatus = status;
     }
 
     /**
@@ -36,7 +63,7 @@ public class BusinessException extends RuntimeException
     private static String createFriendlyErrMsg(String msgBody)
     {
         String prefixStr = ":( Sorry, ";
-        String suffixStr = " Try again later or report the error to us! :)";
+        String suffixStr = ". Try again later or report the error to us! :)";
 
         StringBuffer friendlyErrMsg = new StringBuffer("");
 
@@ -47,5 +74,25 @@ public class BusinessException extends RuntimeException
         friendlyErrMsg.append(suffixStr);
 
         return friendlyErrMsg.toString();
+    }
+
+    public int getErrorCode()
+    {
+        return errorCode;
+    }
+
+    public void setErrorCode(int errorCode)
+    {
+        this.errorCode = errorCode;
+    }
+
+    public HttpStatus getHttpStatus()
+    {
+        return httpStatus;
+    }
+
+    public void setHttpStatus(HttpStatus httpStatus)
+    {
+        this.httpStatus = httpStatus;
     }
 }

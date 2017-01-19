@@ -4,6 +4,7 @@ import com.alibaba.fastjson.support.spring.FastJsonJsonView;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -33,12 +34,17 @@ public class JsonHandlerExceptionResolver implements HandlerExceptionResolver
         FastJsonJsonView jsonView = new FastJsonJsonView();
         Map<String, Object> attrs = Maps.newHashMap();
         attrs.put("msg", ex.getMessage());
-        attrs.put("success", false);
+        attrs.put("cause", ex.getCause());
+//        attrs.put("localMsg", ex.getLocalizedMessage());
         jsonView.setAttributesMap(attrs);
         mv.setView(jsonView);
-
-        ex.printStackTrace();
-        logger.debug("Exception " + ex.getLocalizedMessage(), ex);
+        if (ex instanceof BusinessException) {
+            HttpStatus status = ((BusinessException) ex).getHttpStatus();
+            if (status != null)
+                mv.setStatus(status);
+        }
+//        ex.printStackTrace();
+        logger.debug("Exception Log: ", ex);
 
         return mv;
     }

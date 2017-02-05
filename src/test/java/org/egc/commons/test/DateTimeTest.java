@@ -1,7 +1,7 @@
 package org.egc.commons.test;
 
-import org.egc.commons.utils.DateUtil;
-import org.egc.commons.utils.TimeUtil;
+import org.egc.commons.util.DateUtil;
+import org.egc.commons.util.TimeUtil;
 import org.junit.Test;
 
 import java.sql.Timestamp;

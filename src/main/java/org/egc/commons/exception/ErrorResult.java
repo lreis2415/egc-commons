@@ -65,4 +65,15 @@ public class ErrorResult
     {
         this.cause = cause;
     }
+
+    @Override
+    public String toString()
+    {
+        return "ErrorResult{" +
+                "msg='" + msg + '\'' +
+                ", errorCode=" + errorCode +
+                ", cause='" + cause + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }

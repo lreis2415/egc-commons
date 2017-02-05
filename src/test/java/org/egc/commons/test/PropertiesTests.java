@@ -1,7 +1,7 @@
 package org.egc.commons.test;
 
-import org.egc.commons.utils.PathUtil;
-import org.egc.commons.utils.PropertiesUtil;
+import org.egc.commons.util.PathUtil;
+import org.egc.commons.util.PropertiesUtil;
 import org.junit.Test;
 
 import java.io.IOException;

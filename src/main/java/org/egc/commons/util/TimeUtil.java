@@ -1,4 +1,4 @@
-package org.egc.commons.utils;
+package org.egc.commons.util;
 
 import org.joda.time.Days;
 import org.joda.time.Interval;

@@ -1,4 +1,4 @@
-package org.egc.commons.utils;
+package org.egc.commons.util;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;

@@ -19,9 +19,9 @@ public class EncryptionUtil
      * @param hashed the hashed
      * @return the encrypted
      */
-    public static Encrypted getEncrypted(String salt, String hashed)
+    public static EncryptedDTO getEncrypted(String salt, String hashed)
     {
-        return new Encrypted(salt, hashed);
+        return new EncryptedDTO(salt, hashed);
     }
 
     /**
@@ -57,7 +57,7 @@ public class EncryptionUtil
      * @param src 需要加密的源
      * @return 加密处理之后结果
      */
-    public static Encrypted md5Encrypt(String src)
+    public static EncryptedDTO md5Encrypt(String src)
     {
         String salt = generateSaltWithSeed(src);
         String result = new Md5Hash(src, salt, 5).toHex();//新的加密之后的密码
@@ -73,7 +73,7 @@ public class EncryptionUtil
      * @param saltSrc 和随机数一起组成加密盐值
      * @return 结果
      */
-    public static Encrypted md5Encrypt(String src, String saltSrc)
+    public static EncryptedDTO md5Encrypt(String src, String saltSrc)
     {
         String salt = generateSaltWithSeed(saltSrc);
         String result = new Md5Hash(src, salt, 5).toHex();//新的加密之后的密码
@@ -105,7 +105,7 @@ public class EncryptionUtil
      * @param src 需要加密的源
      * @return 加密处理之后的结果
      */
-    public static Encrypted sha256Encrypt(String src)
+    public static EncryptedDTO sha256Encrypt(String src)
     {
         String salt = generateSaltWithSeed(src);
         //Note: credentialsMatcher.storedCredentialsHexEncoded = false  //base64 encoding, not hex
@@ -123,7 +123,7 @@ public class EncryptionUtil
      * @param saltSrc 和随机数一起组成加密盐值
      * @return the encrypted
      */
-    public static Encrypted sha256Encrypt(String src, String saltSrc)
+    public static EncryptedDTO sha256Encrypt(String src, String saltSrc)
     {
         String salt = generateSaltWithSeed(saltSrc);
         //Note: credentialsMatcher.storedCredentialsHexEncoded = false  //base64 encoding, not hex
@@ -142,7 +142,7 @@ public class EncryptionUtil
      * @param iterations 迭代次数
      * @return 加密后结果
      */
-    public static Encrypted encrypt(String src, String saltSrc, String algorithm, int iterations)
+    public static EncryptedDTO encrypt(String src, String saltSrc, String algorithm, int iterations)
     {
         String salt = "";
         if (Strings.isNullOrEmpty(saltSrc))

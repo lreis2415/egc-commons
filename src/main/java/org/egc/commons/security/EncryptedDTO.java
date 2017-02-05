@@ -6,9 +6,9 @@ package org.egc.commons.security;
  * @author houzhiwei
  * @date 2016/12/24 15:35
  */
-public class Encrypted
+public class EncryptedDTO
 {
-    public Encrypted(String salt, String encrypted)
+    public EncryptedDTO(String salt, String encrypted)
     {
         this.salt = salt;
         this.encrypted = encrypted;

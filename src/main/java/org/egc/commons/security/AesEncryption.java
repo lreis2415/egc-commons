@@ -79,10 +79,10 @@ public class AesEncryption extends BaseAesEncryption
      * @param keyStr the key String
      * @return the encrypted Base64 encoded password and key(salt)
      */
-    public static Encrypted aesEncrypt(String pwd, String keyStr)
+    public static EncryptedDTO aesEncrypt(String pwd, String keyStr)
     {
         String encryptedPWD = aesEncrypt(pwd, string2Key(keyStr), 128);
-        Encrypted encrypted = new Encrypted(keyStr, encryptedPWD);
+        EncryptedDTO encrypted = new EncryptedDTO(keyStr, encryptedPWD);
         return encrypted;
     }
 
@@ -92,11 +92,11 @@ public class AesEncryption extends BaseAesEncryption
      * @param pwd the password
      * @return the encrypted Base64 encoded password and key(salt)
      */
-    public static Encrypted aesEncrypt(String pwd)
+    public static EncryptedDTO aesEncrypt(String pwd)
     {
         Key key = getAesKey(128);
         String encryptedPW = aesEncrypt(pwd, key, 128);
-        Encrypted encrypted = new Encrypted(key2String(key), encryptedPW);
+        EncryptedDTO encrypted = new EncryptedDTO(key2String(key), encryptedPW);
         return encrypted;
     }
 

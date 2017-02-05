@@ -1,7 +1,7 @@
 /**
  * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
-package org.egc.commons.utils;
+package org.egc.commons.util;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

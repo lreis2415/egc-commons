@@ -1,4 +1,4 @@
-package org.egc.commons.utils;
+package org.egc.commons.util;
 
 import com.google.common.base.Preconditions;
 import org.egc.commons.exception.BusinessException;

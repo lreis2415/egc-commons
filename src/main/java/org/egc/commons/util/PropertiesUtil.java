@@ -91,8 +91,10 @@ public class PropertiesUtil
         Preconditions.checkNotNull(filepath, "Error, filename can not be null!");
         Properties properties = new Properties();
         try {
+            System.out.println(Class.class.getResourceAsStream(filepath).toString());
             properties.load(Class.class.getResourceAsStream(filepath));
         } catch (IOException e) {
+            logger.debug("properties file " + filepath + " not found!");
             throw new BusinessException("Error! Properties file " + filepath + " not found!");
         }
         return properties;

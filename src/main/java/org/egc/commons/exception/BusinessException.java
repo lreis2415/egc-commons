@@ -63,7 +63,7 @@ public class BusinessException extends RuntimeException
     private static String createFriendlyErrMsg(String msgBody)
     {
         String prefixStr = "Sorry, ";
-        String suffixStr = ". Try again later or report the error to us!";
+        String suffixStr = ". <br/>Try again later or report the error to us!";
 
         StringBuffer friendlyErrMsg = new StringBuffer("");
 

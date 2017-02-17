@@ -1,13 +1,14 @@
 package org.egc.commons.web;
 
 import com.alibaba.fastjson.JSON;
-import com.google.common.base.Strings;
 import org.egc.commons.exception.BusinessException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -47,34 +48,86 @@ public class WebUtil
         }
     }
 
+    private static final String[] HEADERS_TO_TRY = {
+            "X-Real-IP",
+            "X-Forwarded-For",
+            "Proxy-Client-IP",
+            "WL-Proxy-Client-IP",
+            "HTTP_X_FORWARDED_FOR",
+            "HTTP_X_FORWARDED",
+            "HTTP_X_CLUSTER_CLIENT_IP",
+            "HTTP_CLIENT_IP",
+            "HTTP_FORWARDED_FOR",
+            "HTTP_FORWARDED",
+            "HTTP_VIA",
+            "REMOTE_ADDR"};
+
     /**
      * 获取客户端访问ip<br/>
      * 在一般情况下使用Request.getRemoteAddr()即可，但是经过nginx等反向代理软件后，这个方法会失效
+     * http://stackoverflow.com/questions/16558869/getting-ip-address-of-client
      *
      * @param request
      * @return ip
      */
-    public static String getClientIP(HttpServletRequest request)
+    public static String getClientIP(HttpServletRequest request) throws UnknownHostException
     {
-        String ip = request.getHeader("X-Real-IP");
-        if (Strings.isNullOrEmpty(ip) || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("X-Forwarded-For");
-            if (!Strings.isNullOrEmpty(ip) && !"unknown".equalsIgnoreCase(ip)) {
+        for (String header : HEADERS_TO_TRY) {
+            String ip = request.getHeader(header);
+            //本地localhost访问
+            if ("127.0.0.1".equalsIgnoreCase(ip) || "0:0:0:0:0:0:0:1".equalsIgnoreCase(ip)) {
+                if(InetAddress.getLocalHost() instanceof Inet4Address)
+                    return Inet4Address.getLocalHost().getHostAddress();
+                else if(InetAddress.getLocalHost() instanceof Inet6Address)
+                    return Inet6Address.getLocalHost().getHostAddress();
+                System.out.println("getLocalHost: " + ip);
+                return InetAddress.getLocalHost().getHostAddress();
+            }
+            if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
                 // 多次反向代理后会有多个IP值，第一个为真实IP。
                 int index = ip.indexOf(',');
                 if (index != -1)
                     ip = ip.substring(0, index);
-            } else
-                ip = request.getRemoteAddr();
-        }
-        //本地localhost访问
-        if ("127.0.0.1".equalsIgnoreCase(ip) || "0:0:0:0:0:0:0:1".equalsIgnoreCase(ip)) {
-            try {
-                ip = InetAddress.getLocalHost().getHostAddress();
-            } catch (UnknownHostException e) {
-                throw new BusinessException(new Throwable(), "Can not get host address!");
+                System.out.println("ip: " + ip);
+                return ip;
             }
         }
-        return ip;
+        return request.getRemoteAddr();
+    }
+
+    /**
+     * get Client InetAddress
+     *
+     * @param request
+     * @return InetAddress
+     * @throws BusinessException(UnknownHostException)
+     */
+    public static InetAddress getClientIPAddress(HttpServletRequest request)
+    {
+        try {
+            InetAddress address = InetAddress.getByName(getClientIP(request));
+
+            if (address instanceof Inet4Address) {
+                System.out.println("ip4 getByName: " + address);
+                System.out.println("ip4 getByName getAddress: " + address.getAddress());
+                System.out.println("ip4 getByName getHostAddress: " + address.getHostAddress());
+                System.out.println("ip4 getByName getHostName: " + address.getHostName());
+                return Inet4Address.getByName(getClientIP(request));
+            } else if (address instanceof Inet6Address) {
+                System.out.println("ip6 getByName: " + address);
+                System.out.println("ip6 getByName getAddress: " + address.getAddress());
+                System.out.println("ip6 getByName getHostAddress: " + address.getHostAddress());
+                System.out.println("ip6 getByName getHostName: " + address.getHostName());
+                return Inet6Address.getByName(getClientIP(request));
+            }
+            return InetAddress.getByName(getClientIP(request));
+        } catch (UnknownHostException ex) {
+            throw new BusinessException(ex, "Can not get host address!");
+        }
+    }
+
+    public static String getIPFromInetAddress(InetAddress inetAddress)
+    {
+        return inetAddress.getHostAddress();
     }
 }

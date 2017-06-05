@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * TODO
+ * 用于组织数据为一个JSON对象
  *
  * @Author houzhiwei
  * @Date 2016/11/4 21:52.

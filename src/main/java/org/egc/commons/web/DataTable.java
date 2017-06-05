@@ -35,11 +35,6 @@ public class DataTable
     private static final String SORT_ORDER = "order";
     private Map<String, Object> data = null;
 
-    /**
-     * 请先set如pageSize等数据，然后获取，否则相关属性为空
-     *
-     * @return
-     */
     public Map<String, Object> getDataMap()
     {
         return data;
@@ -51,11 +46,14 @@ public class DataTable
      * @param dataList 数据
      * @param total    数据量
      */
-    public DataTable(List<?> dataList, long total)
+    public DataTable(List<?> dataList, long total, int pageSize, int pageNumber, String order)
     {
         data = new HashMap<>();
         data.put(ROWS, dataList);
+        data.put(SORT_ORDER, order);
         data.put(TOTAL, total);
+        data.put(PAGE_NUMBER, pageNumber);
+        data.put(PAGE_SIZE, pageSize);
     }
 
     public void setSortOrder(String sortOrder)

@@ -80,7 +80,7 @@ public class WebUtil
                     return Inet4Address.getLocalHost().getHostAddress();
                 else if(InetAddress.getLocalHost() instanceof Inet6Address)
                     return Inet6Address.getLocalHost().getHostAddress();
-//                System.out.println("getLocalHost: " + ip);
+                System.out.println("getLocalHost: " + ip);
                 return InetAddress.getLocalHost().getHostAddress();
             }
             if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
@@ -88,7 +88,7 @@ public class WebUtil
                 int index = ip.indexOf(',');
                 if (index != -1)
                     ip = ip.substring(0, index);
-//                System.out.println("ip: " + ip);
+                System.out.println("ip: " + ip);
                 return ip;
             }
         }
@@ -108,16 +108,16 @@ public class WebUtil
             InetAddress address = InetAddress.getByName(getClientIP(request));
 
             if (address instanceof Inet4Address) {
-                /*System.out.println("ip4 getByName: " + address);
+                System.out.println("ip4 getByName: " + address);
                 System.out.println("ip4 getByName getAddress: " + address.getAddress());
                 System.out.println("ip4 getByName getHostAddress: " + address.getHostAddress());
-                System.out.println("ip4 getByName getHostName: " + address.getHostName());*/
+                System.out.println("ip4 getByName getHostName: " + address.getHostName());
                 return Inet4Address.getByName(getClientIP(request));
             } else if (address instanceof Inet6Address) {
-                /*System.out.println("ip6 getByName: " + address);
+                System.out.println("ip6 getByName: " + address);
                 System.out.println("ip6 getByName getAddress: " + address.getAddress());
                 System.out.println("ip6 getByName getHostAddress: " + address.getHostAddress());
-                System.out.println("ip6 getByName getHostName: " + address.getHostName());*/
+                System.out.println("ip6 getByName getHostName: " + address.getHostName());
                 return Inet6Address.getByName(getClientIP(request));
             }
             return InetAddress.getByName(getClientIP(request));

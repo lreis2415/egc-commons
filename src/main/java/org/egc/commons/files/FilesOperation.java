@@ -13,7 +13,7 @@ public class FilesOperation {
 
     private static final Logger logger = LoggerFactory.getLogger(FilesOperation.class);
 
-    public  long copyFile(String srcFilePath, String destDirPath, String destFileName){
+    public static long copyFile(String srcFilePath, String destDirPath, String destFileName){
         long copySizes = 0;
         File srcFile = new File(srcFilePath);
         File destDir = new File(destDirPath);
@@ -40,4 +40,33 @@ public class FilesOperation {
         }
         return copySizes;
     }
+
+    public static void deleteDiskFile(String path) {
+        File deleteFile = new File(path);
+        if(deleteFile.isFile() && deleteFile.exists())
+        {
+            deleteFile.delete();
+        }
+    }
+
+    public static void deleteDiskFolder(File file)
+    {
+        if (file.exists())
+        {
+            if (file.isFile())
+            {
+                file.delete();
+            }
+            else if (file.isDirectory())
+            {
+                File[] files = file.listFiles();
+                for (int i = 0; i < files.length; i++)
+                {
+                    deleteDiskFolder(files[i]);
+                }
+            }
+            file.delete();
+        }
+    }
+
 }

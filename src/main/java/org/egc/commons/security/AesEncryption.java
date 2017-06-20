@@ -19,8 +19,7 @@ import java.security.Key;
  * @author houzhiwei
  * @date 2017/1/10 23:47
  */
-public class AesEncryption extends BaseAesEncryption
-{
+public class AesEncryption extends BaseAesEncryption {
     /**
      * Gets aes key.
      *
@@ -45,6 +44,18 @@ public class AesEncryption extends BaseAesEncryption
     public static String getBase64KeyStr()
     {
         Key key = getAesKey(128);
+        return key2String(key);
+    }
+
+    /**
+     * Gets base 64 key string.
+     *
+     * @param size the key size: 128/192/256
+     * @return the base 64 key string
+     */
+    public static String getBase64KeyStr(int size)
+    {
+        Key key = getAesKey(size);
         return key2String(key);
     }
 
@@ -122,18 +133,18 @@ public class AesEncryption extends BaseAesEncryption
      * OperationMode: ECB
      * PaddingScheme: PKCS5 (Pkcs7 in CryptoJS)
      * Do not Generate Initialization Vectors
-     In JavaScript：
-     -------------------------------------------------------
-     var cryptoAesEncryptEcb = function (keyStr, pwd){
-            var key = CryptoJS.enc.Base64.parse(keyStr);
-            var encrypted = CryptoJS.AES.encrypt(pwd, key, {
-                    mode: CryptoJS.mode.ECB,
-                    padding: CryptoJS.pad.Pkcs7
-                });
-            var encryptedPwd = encrypted.toString();
-            return encryptedPwd;
-        };
-     -------------------------------------------------------
+     * In JavaScript：
+     * -------------------------------------------------------
+     * var cryptoAesEncryptEcb = function (keyStr, pwd){
+     * var key = CryptoJS.enc.Base64.parse(keyStr);
+     * var encrypted = CryptoJS.AES.encrypt(pwd, key, {
+     * mode: CryptoJS.mode.ECB,
+     * padding: CryptoJS.pad.Pkcs7
+     * });
+     * var encryptedPwd = encrypted.toString();
+     * return encryptedPwd;
+     * };
+     * -------------------------------------------------------
      * </pre>
      *
      * @param encryptedPW the encrypted password

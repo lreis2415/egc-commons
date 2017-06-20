@@ -69,7 +69,4 @@ public class RasterInfo {
         return pixelSize;
     }
 
-
-
-
 }

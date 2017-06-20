@@ -10,8 +10,7 @@ import org.apache.shiro.crypto.hash.*;
  * @author houzhiwei
  * @date 2016/11/3 23:16.
  */
-public class EncryptionUtil
-{
+public class EncryptionUtil {
     /**
      * Gets encrypted.
      *
@@ -129,6 +128,10 @@ public class EncryptionUtil
         //Note: credentialsMatcher.storedCredentialsHexEncoded = false  //base64 encoding, not hex
         String hashedBase64 = new Sha256Hash(src, salt, 1024).toBase64();
         return getEncrypted(salt, hashedBase64);
+    }
+
+    public static String sha256Key(String src, String salt) {
+        return new Sha256Hash(src, salt, 1024).toBase64();
     }
 
 

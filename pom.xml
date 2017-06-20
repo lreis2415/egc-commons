@@ -15,7 +15,7 @@
 
     <developers>
         <developer>
-            <name>侯志伟</name>
+            <name>侯志伟-houzhiwei</name>
             <email>houzw@lreis.ac.cn</email>
             <organization>LREIS,IGSNRR,CAS</organization>
         </developer>
@@ -40,7 +40,21 @@
         <!-- spring -->
         <dependency>
             <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>compile</scope>
         </dependency>
         <!-- commons-lang3 -->
         <dependency>
@@ -56,14 +70,14 @@
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+        </dependency>
         <!--joda-time-->
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-support</artifactId>
         </dependency>
         <dependency>
             <groupId>org.freemarker</groupId>
@@ -73,7 +87,10 @@
             <groupId>dom4j</groupId>
             <artifactId>dom4j</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.gdal</groupId>
+            <artifactId>gdal</artifactId>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -86,14 +103,6 @@
             <version>${mockito.version}</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.gdal</groupId>
-            <artifactId>gdal</artifactId>
-        </dependency>
+
     </dependencies>
 </project>

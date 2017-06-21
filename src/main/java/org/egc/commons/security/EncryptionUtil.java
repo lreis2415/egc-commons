@@ -5,10 +5,13 @@ import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.*;
 
 /**
+ * <pre/>
  * 基于Shiro的密码加密
+ * 存在两种编码方式：Hex与Base64，注意查看说明
  *
  * @author houzhiwei
  * @date 2016/11/3 23:16.
+ * @date 2017/6/21
  */
 public class EncryptionUtil {
     /**
@@ -25,7 +28,7 @@ public class EncryptionUtil {
 
     /**
      * <pre/>
-     * 采用可信随机数为盐
+     * 采用可信随机数为盐（Hex）
      * 16进制
      *
      * @return 盐/salt
@@ -36,7 +39,7 @@ public class EncryptionUtil {
     }
 
     /**
-     * Generate salt with seed string.
+     * Generate salt with seed string（Hex）.
      *
      * @param seed the seed
      * @return the string
@@ -50,7 +53,7 @@ public class EncryptionUtil {
 
     /**
      * <pre/>
-     * 对源进行MD5加密处理：
+     * 对源进行MD5加密处理（Hex）：
      * 源与可信随机数为盐，5次迭代加密并转为16进制
      *
      * @param src 需要加密的源
@@ -65,7 +68,7 @@ public class EncryptionUtil {
 
     /**
      * <pre/>
-     * Md5 encrypt string.
+     * Md5 encrypt string（Hex）.
      * 5次迭代
      *
      * @param src     加密源
@@ -82,7 +85,7 @@ public class EncryptionUtil {
 
     /**
      * <pre/>
-     * 获得使用email和随机盐并经md5加密之后的验证码
+     * 获得使用email和随机盐并经md5加密之后的验证码（Hex）
      * 5次迭代
      *
      * @param email
@@ -130,20 +133,25 @@ public class EncryptionUtil {
         return getEncrypted(salt, hashedBase64);
     }
 
+    /**
+     * SHA256 加密密钥（Base64）
+     *
+     * @param src
+     * @param salt
+     * @return
+     */
     public static String sha256Key(String src, String salt) {
         return new Sha256Hash(src, salt, 1024).toBase64();
     }
 
-
     /**
-     * 源加密处理
-     * toHex()
+     * 源加密处理（Hex）
      *
      * @param src        需要加密的源
      * @param saltSrc    和随机数一起组成加密盐值,若为空，则使用src的值
      * @param algorithm  加密算法："MD2"、"SHA-512"、"MD5"、"SHA-1"、"SHA-256"、"SHA-384"
      * @param iterations 迭代次数
-     * @return 加密后结果
+     * @return 加密后结果（Hex）
      */
     public static EncryptedDTO encrypt(String src, String saltSrc, String algorithm, int iterations)
     {
@@ -160,5 +168,28 @@ public class EncryptionUtil {
                 .setSalt(salt).setIterations(iterations).build();
         String hashed = hashService.computeHash(hashRequest).toHex().toString();
         return getEncrypted(salt, hashed);
+    }
+
+    /**
+     * 密码比对（Hex）
+     *
+     * @param src        加密源，如密码
+     * @param salt       盐，如Email，用户名等
+     * @param algorithm  算法
+     * @param iterations 迭代次数
+     * @param pwd2check  用于比对的密码
+     * @return
+     */
+    public static boolean checkEncryption(String src, String salt, String algorithm, int iterations, String pwd2check)
+    {
+        boolean flag = false;
+        HashService hashService = new DefaultHashService();
+        HashRequest hashRequest = new HashRequest.Builder()
+                .setSource(src).setAlgorithmName(algorithm)
+                .setSalt(salt).setIterations(iterations).build();
+        String hashed = hashService.computeHash(hashRequest).toHex().toString();
+        if (hashed.equals(pwd2check))
+            flag = true;
+        return flag;
     }
 }

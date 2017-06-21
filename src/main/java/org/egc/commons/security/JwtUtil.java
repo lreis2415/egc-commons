@@ -1,12 +1,10 @@
 package org.egc.commons.security;
 
-import com.google.common.base.Strings;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.impl.crypto.MacProvider;
 import org.egc.commons.exception.BusinessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
@@ -17,9 +15,6 @@ import java.util.List;
 /**
  * <pre>
  * JsonWebToken (JWT) 生成与解析工具类
- * 可以在properties文件中配置 jwt.secret 作为密钥
- * （通过配置 context:property-placeholder），
- * 也可不配置而由系统生成一个随机的密钥
  *
  * @author houzhiwei
  * @link https://stormpath.com/blog/jwt-java-create-verify
@@ -28,20 +23,6 @@ import java.util.List;
 public class JwtUtil {
 
     private static final Logger log = LoggerFactory.getLogger(JwtUtil.class);
-
-    public static Key SIGNING_KEY;//jwt 签名密钥
-    public static SignatureAlgorithm SIGNING_ALGORITHM;//jwt 签名算法
-
-    @Value("${jwt.secret}")
-    public static String SIGNING_KEY_STRING;//jwt 签名密钥字符串
-
-    static {
-        SIGNING_ALGORITHM = SignatureAlgorithm.HS256;
-        if (Strings.isNullOrEmpty(SIGNING_KEY_STRING)) {
-            SIGNING_KEY_STRING = generateKeyStr();
-        }
-        SIGNING_KEY = getFromKeyString(SIGNING_ALGORITHM, SIGNING_KEY_STRING);
-    }
 
     /**
      * generate secret key string using Shiro AesCipherService
@@ -63,7 +44,7 @@ public class JwtUtil {
         return key;
     }
 
-    public static Key getFromKeyString(SignatureAlgorithm algorithm, String keyStr) {
+    public static Key getKeyFromString(SignatureAlgorithm algorithm, String keyStr) {
         byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(keyStr);
         return new SecretKeySpec(apiKeySecretBytes, algorithm.getJcaName());
     }
@@ -73,24 +54,27 @@ public class JwtUtil {
      * jwt的签发
      *
      * @param id        token id / user id
-     * @param iss       issuer，发行者
      * @param sub       subject：主题、用户(email 或 用户名)
      * @param roles     用户角色列表
      * @param ttlMillis 过期时间（毫秒）
+     * @param alg       Signature Algorithm 签名算法
+     * @param iss       issuer 签发者
+     * @param secret    签名密钥
      * @return jwt
      */
-    public static String createJWT(String id, String iss, String sub, List<String> roles, long ttlMillis) {
+    public static String createJwt(String id, String sub, List<String> roles, String iss, Key secret, SignatureAlgorithm alg, long ttlMillis) {
         //sign JWT with ApiKey secret
         long nowMillis = System.currentTimeMillis();
         Date now = new Date(nowMillis);
         //set the JWT Claims
         JwtBuilder jwtBuilder = Jwts.builder().setHeaderParam("type", "JWT")
                 .setId(id)
+                .compressWith(CompressionCodecs.DEFLATE) //压缩
                 .setIssuedAt(now) //iat，发行时间
                 .setSubject(sub)
                 .claim("roles", roles)
                 .setIssuer(iss)
-                .signWith(SIGNING_ALGORITHM, SIGNING_KEY);
+                .signWith(alg, secret);
         //if it has been specified, add the expiration
         if (ttlMillis >= 0) {
             long expMillis = nowMillis + ttlMillis;
@@ -100,17 +84,21 @@ public class JwtUtil {
         return jwtBuilder.compact(); //生成JWT
     }
 
+
     /**
      * validate and read JWT(JsonWebToken)
      *
-     * @param jwt Json Web Token String
+     * @param token  Json Web Token String
+     * @param secret 密钥（必须与签发时使用的密钥一致才能正确解析）
+     * @param iss    issuer 签发者
      * @return {@link AuthTokenInfo}
      */
-    public static AuthTokenInfo parseJWT(String jwt) {
+    public static AuthTokenInfo parseJwt(String token, Key secret, String iss) {
         try {
             // make sure that we can trust jwt
-            Claims claims = Jwts.parser().setSigningKey(SIGNING_KEY)//(DatatypeConverter.parseBase64Binary(keyStr))
-                    .parseClaimsJws(jwt).getBody();
+            Claims claims = Jwts.parser().setSigningKey(secret)//(DatatypeConverter.parseBase64Binary(keyStr))
+                    .requireIssuer(iss)
+                    .parseClaimsJws(token).getBody();
 
             AuthTokenInfo tokenInfo = new AuthTokenInfo();
             tokenInfo.setId(claims.getId());
@@ -126,27 +114,6 @@ public class JwtUtil {
             throw new BusinessException(e, "Json Web Token Signature Exception");
         } catch (ExpiredJwtException e) {
             log.error("Json Web Token Expired", e);
-            throw new BusinessException(e, "Json Web Token Expired!");
-        }
-    }
-
-    /**
-     * parse jwt and get username(subject)
-     *
-     * @param jwt
-     * @return username(subject)
-     */
-    public static String parseJWT4Username(String jwt) {
-        try {
-            // make sure that we can trust jwt
-            return Jwts.parser().setSigningKey(SIGNING_KEY)//(DatatypeConverter.parseBase64Binary(key))
-                    .parseClaimsJws(jwt).getBody().getSubject();
-        } catch (SignatureException | MalformedJwtException e) {
-            // don't trust the JWT!
-            log.error("Json Web Token Signature Exception");
-            throw new BusinessException(e, e.getLocalizedMessage());
-        } catch (ExpiredJwtException e) {
-            log.error("Json Web Token Expired");
             throw new BusinessException(e, "Json Web Token Expired!");
         }
     }

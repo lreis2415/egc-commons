@@ -77,7 +77,7 @@ public class EncryptionTest {
 
 	@Test
 	public void jwt() {
-		System.out.println(JwtUtil.createJWT("1", "me", "yes", 40000));
+		System.out.println(JwtUtil.createJwt("1", "me", "yes", 40000));
 		//eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.
 		//eyJqdGkiOiIxIiwiaWF0IjoxNDk3NzcyMzA3LCJzdWIiOiJ5ZXMiLCJpc3MiOiJtZSIsImV4cCI6MTQ5Nzc3MjM0N30.
 		//EpmWHXB4ybldDyFFD8dKjtjhyJ052iWoxkMnyENmAHw

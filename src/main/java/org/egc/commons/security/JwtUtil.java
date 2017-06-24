@@ -19,6 +19,7 @@ import java.util.List;
  * @author houzhiwei
  * @link https://stormpath.com/blog/jwt-java-create-verify
  * @date 2017/6/16 9:35
+ * @date 2017/6/21
  */
 public class JwtUtil {
 

@@ -5,7 +5,6 @@ import org.apache.shiro.crypto.AesCipherService;
 import org.apache.shiro.util.ByteSource;
 import org.egc.commons.security.AesEncryption;
 import org.egc.commons.security.EncryptionUtil;
-import org.egc.commons.security.JwtUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -71,17 +70,17 @@ public class EncryptionTest {
 	@Test
 	public void key() {
 //        System.out.println(new String(JwtUtil.generateKey().getEncoded(), Charset.forName("UTF-8")));
-		System.out.println(JwtUtil.SIGNING_KEY_STRING);
-		System.out.println(new String(JwtUtil.SIGNING_KEY.getEncoded()));
+//		System.out.println(JwtUtil.SIGNING_KEY_STRING);
+//		System.out.println(new String(JwtUtil.SIGNING_KEY.getEncoded()));
 	}
 
 	@Test
 	public void jwt() {
-		System.out.println(JwtUtil.createJwt("1", "me", "yes", 40000));
+//		System.out.println(JwtUtil.createJwt("1", "me", "yes", 40000));
 		//eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.
 		//eyJqdGkiOiIxIiwiaWF0IjoxNDk3NzcyMzA3LCJzdWIiOiJ5ZXMiLCJpc3MiOiJtZSIsImV4cCI6MTQ5Nzc3MjM0N30.
 		//EpmWHXB4ybldDyFFD8dKjtjhyJ052iWoxkMnyENmAHw
 //		System.out.println(DatatypeConverter.printHexBinary(JwtUtil.generateKey().getEncoded()));
-		System.out.println(JwtUtil.parseJWT4Username("eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiIxIiwiaWF0IjoxNDk3NzcyMzA3LCJzdWIiOiJ5ZXMiLCJpc3MiOiJtZSIsImV4cCI6MTQ5Nzc3MjM0N30.EpmWHXB4ybldDyFFD8dKjtjhyJ052iWoxkMnyENmAHw"));
+//		System.out.println(JwtUtil.parseJWT4Username("eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiIxIiwiaWF0IjoxNDk3NzcyMzA3LCJzdWIiOiJ5ZXMiLCJpc3MiOiJtZSIsImV4cCI6MTQ5Nzc3MjM0N30.EpmWHXB4ybldDyFFD8dKjtjhyJ052iWoxkMnyENmAHw"));
 	}
 }

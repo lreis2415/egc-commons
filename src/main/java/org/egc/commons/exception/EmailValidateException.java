@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * 邮箱验证异常
  * 邮箱已存在时抛出异常，并自定义原因
- *
+ * 用于使用 bootstrap-validator 时
  * @author houzhiwei
  * @date 2017/1/20 0:12
  */

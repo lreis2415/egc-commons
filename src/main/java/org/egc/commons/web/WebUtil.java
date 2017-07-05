@@ -18,8 +18,7 @@ import java.net.UnknownHostException;
  * @Author houzhiwei
  * @Date 2016/6/22 17:51.
  */
-public class WebUtil
-{
+public class WebUtil {
     /**
      * 访问是否为Ajax
      *
@@ -76,9 +75,9 @@ public class WebUtil
             String ip = request.getHeader(header);
             //本地localhost访问
             if ("127.0.0.1".equalsIgnoreCase(ip) || "0:0:0:0:0:0:0:1".equalsIgnoreCase(ip)) {
-                if(InetAddress.getLocalHost() instanceof Inet4Address)
+                if (InetAddress.getLocalHost() instanceof Inet4Address)
                     return Inet4Address.getLocalHost().getHostAddress();
-                else if(InetAddress.getLocalHost() instanceof Inet6Address)
+                else if (InetAddress.getLocalHost() instanceof Inet6Address)
                     return Inet6Address.getLocalHost().getHostAddress();
                 System.out.println("getLocalHost: " + ip);
                 return InetAddress.getLocalHost().getHostAddress();
@@ -106,21 +105,27 @@ public class WebUtil
     {
         try {
             InetAddress address = InetAddress.getByName(getClientIP(request));
-
+            // for 这部分没有用？
+            for (String header : HEADERS_TO_TRY) {
+                String ip = request.getHeader(header);
+                //本地localhost访问
+                if ("127.0.0.1".equalsIgnoreCase(ip) || "0:0:0:0:0:0:0:1".equalsIgnoreCase(ip)) {
+                    System.out.println("localhost  " + ip);
+                    if (InetAddress.getLocalHost() instanceof Inet4Address)
+                        return Inet4Address.getLocalHost();
+                    else if (InetAddress.getLocalHost() instanceof Inet6Address)
+                        return Inet6Address.getLocalHost();
+                    return InetAddress.getLocalHost();
+                }
+            }
             if (address instanceof Inet4Address) {
-                System.out.println("ip4 getByName: " + address);
-                System.out.println("ip4 getByName getAddress: " + address.getAddress());
-                System.out.println("ip4 getByName getHostAddress: " + address.getHostAddress());
-                System.out.println("ip4 getByName getHostName: " + address.getHostName());
+                System.out.println("ipv4 getByName getHostAddress: " + address.getHostAddress());
                 return Inet4Address.getByName(getClientIP(request));
             } else if (address instanceof Inet6Address) {
-                System.out.println("ip6 getByName: " + address);
-                System.out.println("ip6 getByName getAddress: " + address.getAddress());
-                System.out.println("ip6 getByName getHostAddress: " + address.getHostAddress());
-                System.out.println("ip6 getByName getHostName: " + address.getHostName());
+                System.out.println("ipv6 getByName getHostAddress: " + address.getHostAddress());
                 return Inet6Address.getByName(getClientIP(request));
             }
-            return InetAddress.getByName(getClientIP(request));
+            return address;
         } catch (UnknownHostException ex) {
             throw new BusinessException(ex, "Can not get host address!");
         }

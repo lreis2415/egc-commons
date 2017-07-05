@@ -7,7 +7,7 @@ import java.util.List;
  * Json Web Token detail info
  *
  * @author houzhiwei
- * @date 2017/6/16 14:14
+ * @date 2017 /6/16 14:14
  */
 public class AuthTokenInfo {
 
@@ -56,66 +56,146 @@ public class AuthTokenInfo {
 	 */
 	private List<String> roles;
 
+	/**
+	 * Gets issuer.
+	 *
+	 * @return the issuer
+	 */
 	public String getIssuer() {
 		return issuer;
 	}
 
+	/**
+	 * Sets issuer.
+	 *
+	 * @param issuer the issuer
+	 */
 	public void setIssuer(String issuer) {
 		this.issuer = issuer;
 	}
 
+	/**
+	 * Gets subject(in some scenarios, it's user's email or username).
+	 *
+	 * @return the subject
+	 */
 	public String getSubject() {
 		return subject;
 	}
 
+	/**
+	 * Sets subject.
+	 *
+	 * @param subject the subject
+	 */
 	public void setSubject(String subject) {
 		this.subject = subject;
 	}
 
+	/**
+	 * Gets audience.
+	 *
+	 * @return the audience
+	 */
 	public String getAudience() {
 		return audience;
 	}
 
+	/**
+	 * Sets audience.
+	 *
+	 * @param audience the audience
+	 */
 	public void setAudience(String audience) {
 		this.audience = audience;
 	}
 
+	/**
+	 * Gets expiration.
+	 *
+	 * @return the expiration
+	 */
 	public Date getExpiration() {
 		return expiration;
 	}
 
+	/**
+	 * Sets expiration.
+	 *
+	 * @param expiration the expiration
+	 */
 	public void setExpiration(Date expiration) {
 		this.expiration = expiration;
 	}
 
+	/**
+	 * Gets not before.
+	 *
+	 * @return the not before
+	 */
 	public String getNot_before() {
 		return not_before;
 	}
 
+	/**
+	 * Sets not before.
+	 *
+	 * @param not_before the not before
+	 */
 	public void setNot_before(String not_before) {
 		this.not_before = not_before;
 	}
 
+	/**
+	 * Gets issued at.
+	 *
+	 * @return the issued at
+	 */
 	public Date getIssued_at() {
 		return issued_at;
 	}
 
+	/**
+	 * Sets issued at.
+	 *
+	 * @param issued_at the issued at
+	 */
 	public void setIssued_at(Date issued_at) {
 		this.issued_at = issued_at;
 	}
 
+	/**
+	 * Gets id (in some scenarios, it's user id).
+	 *
+	 * @return the id
+	 */
 	public String getId() {
 		return id;
 	}
 
+	/**
+	 * Sets id.
+	 *
+	 * @param id the id
+	 */
 	public void setId(String id) {
 		this.id = id;
 	}
 
+	/**
+	 * Gets roles.
+	 *
+	 * @return the roles
+	 */
 	public List<String> getRoles() {
 		return roles;
 	}
 
+	/**
+	 * Sets roles.
+	 *
+	 * @param roles the roles
+	 */
 	public void setRoles(List<String> roles) {
 		this.roles = roles;
 	}

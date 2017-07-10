@@ -10,8 +10,7 @@ import org.springframework.http.HttpStatus;
  * @date 2016/12/8 14:43
  * @link http://blog.csdn.net/king87130/article/details/8011843
  */
-public class BusinessException extends RuntimeException
-{
+public class BusinessException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private int errorCode;
@@ -62,16 +61,15 @@ public class BusinessException extends RuntimeException
      */
     private static String createFriendlyErrMsg(String msgBody)
     {
-        String prefixStr = "Sorry, ";
-        String suffixStr = ". <br/>Try again later or report the error to us!";
+//        String prefixStr = "Sorry, ";
+//        String suffixStr = ". <br/>Try again later or report the error to us!";
+        StringBuffer friendlyErrMsg = new StringBuffer();
 
-        StringBuffer friendlyErrMsg = new StringBuffer("");
-
-        friendlyErrMsg.append(prefixStr);
+//        friendlyErrMsg.append(prefixStr);
 
         friendlyErrMsg.append(msgBody);
 
-        friendlyErrMsg.append(suffixStr);
+//        friendlyErrMsg.append(suffixStr);
 
         return friendlyErrMsg.toString();
     }

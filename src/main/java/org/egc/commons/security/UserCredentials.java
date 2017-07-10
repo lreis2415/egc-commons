@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @author houzhiwei
  * @date 2017/7/5 15:12
  */
-public class UserAuthInfo implements Serializable {
+public class UserCredentials implements Serializable {
     private String username;
 
     /**

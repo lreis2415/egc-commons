@@ -3,6 +3,7 @@ package org.egc.commons.test;
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
 import org.egc.commons.web.JsonResult;
+import org.egc.commons.web.SidebarTreeNode;
 import org.junit.Test;
 
 /**
@@ -20,10 +21,18 @@ public class JsonTest
         System.out.println(JSON.toJSON(jsonResult));
     }
 
-
     @Test
     public void strTest(){
         String indentSpace = Strings.repeat("   ", 1);
         System.out.println("a"+indentSpace+"b");
+    }
+
+    @Test
+    public void treeTest(){
+        SidebarTreeNode tree = new SidebarTreeNode(0);
+        tree.setId(1);
+        tree.setName("ff");
+        tree.setTitle("title");
+        System.out.println(JSON.toJSONString(tree));
     }
 }

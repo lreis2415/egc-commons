@@ -1,5 +1,6 @@
 package org.egc.commons.web;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +11,10 @@ import java.util.Map;
  * @author houzhiwei
  * @date 2016/7/9 17:35.
  */
-public class DataTable
-{
+public class DataTable implements Serializable {
+
+    private static final long serialVersionUID = 2052103483654583307L;
+
     /**
      * 升序
      */
@@ -33,6 +36,7 @@ public class DataTable
     private static final String SEARCH_TEXT = "search";//"searchText";
     private static final String SORT_NAME = "sort";
     private static final String SORT_ORDER = "order";
+
     private Map<String, Object> data = null;
 
     public Map<String, Object> getDataMap()

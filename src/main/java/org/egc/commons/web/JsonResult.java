@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class JsonResult implements Serializable
 {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -6559362101721248596L;
 
     private Object data;
     private String msg;

@@ -1,5 +1,7 @@
 package org.egc.commons.util;
 
+import java.util.regex.Pattern;
+
 /**
  * <pre/>字符串操作工具类
  * 一般的判空等字符串操作使用
@@ -21,5 +23,16 @@ public class StringUtil {
         if (src.indexOf('_') == 0)
             src = src.substring(1);
         return src;
+    }
+
+    /**
+     * 是否为有效的 URI（统一资源标识符）
+     *
+     * @param uri
+     * @return
+     */
+    public static boolean isUriValid(String uri) {
+        Pattern pattern = RegexPatterns.WEB_URL;
+        return pattern.matcher(uri).matches();
     }
 }

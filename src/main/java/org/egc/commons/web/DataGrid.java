@@ -10,9 +10,8 @@ import java.util.List;
  * @author houzhiwei
  * @date 2017/2/28 0:14
  */
-public class DataGrid implements Serializable
-{
-    private static final long serialVersionUID = 1L;
+public class DataGrid implements Serializable {
+    private static final long serialVersionUID = 418288642877122071L;
     /**
      * 升序
      */

@@ -4,7 +4,11 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
+ * <pre>
  * 侧边栏树形组件数据结构
+ * 适用于自定义的 Vue Tree 组件
+ * TODO  不适宜放到commons模块中？
+ * </pre>
  *
  * @author houzhiwei
  * @date 2017/7/21 15:09
@@ -13,8 +17,8 @@ public class SidebarTreeNode implements Serializable {
 
     private static final long serialVersionUID = -92087004981430101L;
 
-    private String name; // 用于树节点显示
-    private String title; // 用于显示提示
+    private String name; // 用于树节点提示
+    private String title; // 用于显示
     private Integer id;
     private Integer parentId; // 父节点id
     private boolean showDetail = false; // 是否添加 “show detail” 按钮
@@ -152,5 +156,15 @@ public class SidebarTreeNode implements Serializable {
         this.children = children;
     }
 
+    /**
+     * Getter for property 'buttons'.
+     *
+     * @return Value for property 'buttons'.
+     */
+    public List getButtons() {
+        return buttons;
+    }
+
+    // 按钮
     private List buttons;
 }

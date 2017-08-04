@@ -15,17 +15,14 @@ import java.util.List;
 public class SidebarTree implements Serializable {
 
     private List<SidebarTreeNode> children;
+
     private SidebarTreeNode root;
 
     public SidebarTree(String rootTitle) {
-        root = new SidebarTreeNode(null);
+        root = new SidebarTreeNode(-1);
         root.setName("root");
         root.setId(0);
         root.setTitle(rootTitle);
-    }
-
-    public List<SidebarTreeNode> getChildren() {
-        return children;
     }
 
     public void setChildren(List<SidebarTreeNode> children) {
@@ -33,4 +30,12 @@ public class SidebarTree implements Serializable {
         root.setChildren(this.children);
     }
 
+    /**
+     * Getter for property 'root'.
+     *
+     * @return Value for property 'root'.
+     */
+    public SidebarTreeNode getRoot() {
+        return root;
+    }
 }

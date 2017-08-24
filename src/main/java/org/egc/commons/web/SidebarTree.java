@@ -14,6 +14,7 @@ import java.util.List;
  */
 public class SidebarTree implements Serializable {
 
+    private boolean showLoading = false;
     private List<SidebarTreeNode> children;
 
     private SidebarTreeNode root;
@@ -37,5 +38,23 @@ public class SidebarTree implements Serializable {
      */
     public SidebarTreeNode getRoot() {
         return root;
+    }
+
+    /**
+     * Getter for property 'showLoading'.
+     *
+     * @return Value for property 'showLoading'.
+     */
+    public boolean isShowLoading() {
+        return showLoading;
+    }
+
+    /**
+     * Setter for property 'showLoading'.
+     *
+     * @param showLoading Value to set for property 'showLoading'.
+     */
+    public void setShowLoading(boolean showLoading) {
+        this.showLoading = showLoading;
     }
 }

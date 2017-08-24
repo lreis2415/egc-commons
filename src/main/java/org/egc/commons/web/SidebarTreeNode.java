@@ -156,6 +156,9 @@ public class SidebarTreeNode implements Serializable {
         this.children = children;
     }
 
+    // 按钮
+    private List buttons;
+
     /**
      * Getter for property 'buttons'.
      *
@@ -164,7 +167,4 @@ public class SidebarTreeNode implements Serializable {
     public List getButtons() {
         return buttons;
     }
-
-    // 按钮
-    private List buttons;
 }

@@ -21,9 +21,8 @@ public class SidebarTreeNode implements Serializable {
     private String title; // 用于显示
     private Integer id;
     private Integer parentId; // 父节点id
-    private boolean showDetail = false; // 是否添加 “show detail” 按钮
-    private boolean showOnMap = false; // 是否添加 “show on map” 按钮
     private List<SidebarTreeNode> children;
+    private String[] buttons;// 按钮数组，如 {”map“,"detail"}
 
     // Integer 可以为null
     public SidebarTreeNode(Integer parentId) {
@@ -103,42 +102,6 @@ public class SidebarTreeNode implements Serializable {
     }
 
     /**
-     * Getter for property 'showDetail'.
-     *
-     * @return Value for property 'showDetail'.
-     */
-    public boolean isShowDetail() {
-        return showDetail;
-    }
-
-    /**
-     * Setter for property 'showDetail'.
-     *
-     * @param showDetail Value to set for property 'showDetail'.
-     */
-    public void setShowDetail(boolean showDetail) {
-        this.showDetail = showDetail;
-    }
-
-    /**
-     * Getter for property 'showOnMap'.
-     *
-     * @return Value for property 'showOnMap'.
-     */
-    public boolean isShowOnMap() {
-        return showOnMap;
-    }
-
-    /**
-     * Setter for property 'showOnMap'.
-     *
-     * @param showOnMap Value to set for property 'showOnMap'.
-     */
-    public void setShowOnMap(boolean showOnMap) {
-        this.showOnMap = showOnMap;
-    }
-
-    /**
      * Getter for property 'children'.
      *
      * @return Value for property 'children'.
@@ -156,15 +119,23 @@ public class SidebarTreeNode implements Serializable {
         this.children = children;
     }
 
-    // 按钮
-    private List buttons;
-
     /**
      * Getter for property 'buttons'.
      *
      * @return Value for property 'buttons'.
      */
-    public List getButtons() {
+    public String[] getButtons() {
         return buttons;
     }
+
+    /**
+     * Setter for property 'buttons'.
+     *
+     * @param buttons Value to set for property 'buttons'.
+     */
+    public void setButtons(String[] buttons) {
+        this.buttons = buttons;
+    }
+
+
 }

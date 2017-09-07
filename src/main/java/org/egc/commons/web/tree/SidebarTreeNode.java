@@ -1,4 +1,4 @@
-package org.egc.commons.web;
+package org.egc.commons.web.tree;
 
 import java.io.Serializable;
 import java.util.List;

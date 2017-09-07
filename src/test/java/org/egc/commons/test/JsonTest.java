@@ -3,7 +3,7 @@ package org.egc.commons.test;
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
 import org.egc.commons.web.JsonResult;
-import org.egc.commons.web.SidebarTreeNode;
+import org.egc.commons.web.tree.SidebarTreeNode;
 import org.junit.Test;
 
 /**

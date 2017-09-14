@@ -16,7 +16,45 @@ import java.util.List;
 public class SidebarTreeNode implements Serializable {
 
     private static final long serialVersionUID = -92087004981430101L;
+    private boolean checked=false;
 
+    /**
+     * Getter for property 'checked'.
+     *
+     * @return Value for property 'checked'.
+     */
+    public boolean isChecked() {
+        return checked;
+    }
+
+    /**
+     * Setter for property 'checked'.
+     *
+     * @param checked Value to set for property 'checked'.
+     */
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
+
+    /**
+     * Getter for property 'checkable'.
+     *
+     * @return Value for property 'checkable'.
+     */
+    public boolean isCheckable() {
+        return checkable;
+    }
+
+    /**
+     * Setter for property 'checkable'.
+     *
+     * @param checkable Value to set for property 'checkable'.
+     */
+    public void setCheckable(boolean checkable) {
+        this.checkable = checkable;
+    }
+
+    private boolean checkable=false;
     private String name; // 用于树节点提示
     private String title; // 用于显示
     private Integer id;

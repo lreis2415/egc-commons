@@ -176,6 +176,14 @@ public class JwtUtil {
                 .parseClaimsJws(token).getBody();
     }
 
+    public static boolean isTokenExpired(String token, Key secret, String iss) {
+        try {
+            parseJwt(token, secret, iss);
+        } catch (ExpiredJwtException e) {
+            return true;
+        }
+        return false;
+    }
     //--------------------------------------------- private functions ------------------------------------------------------//
 
     /**

@@ -1,6 +1,7 @@
 package org.egc.commons.test;
 
 import org.egc.commons.raster.GeoInfoExtraction;
+import org.egc.commons.raster.RasterFile2PostGIS;
 import org.egc.commons.raster.RasterInfo;
 import org.junit.Test;
 
@@ -14,20 +15,14 @@ import java.util.Date;
 public class RasterTest {
     String path = "D:\\SampleBase\\dem.tif";
     RasterInfo rasterInfo = new RasterInfo();
+    RasterFile2PostGIS rasterFile2PostGIS = new RasterFile2PostGIS();
     @Test
     public void rasterInfoTest(){
         GeoInfoExtraction geoInfoExtraction = new GeoInfoExtraction();
         rasterInfo = geoInfoExtraction.readMetaData(path);
-
-
-
-
     }
     @Test
     public void tt(){
-        Date date = new Date();
-        Timestamp ts = new Timestamp(System.currentTimeMillis());
-        date = ts;
-        System.out.println(date);
+        rasterFile2PostGIS.file2PostGIS(32650, "39\\2\\fff.tif");
     }
 }

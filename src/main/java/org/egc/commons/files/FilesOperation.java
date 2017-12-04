@@ -41,12 +41,19 @@ public class FilesOperation {
         return copySizes;
     }
 
-    public static void deleteDiskFile(String path) {
+    public static Boolean deleteDiskFile(String path) {
+        Boolean delete = true;
         File deleteFile = new File(path);
         if(deleteFile.isFile() && deleteFile.exists())
         {
-            deleteFile.delete();
+            if (deleteFile.delete()){
+                delete = true;
+                logger.info("delete file of " + path + " in the server folder successfully");
+            }else {
+                logger.info("delete file of " + path + " in the server folder failure");
+            }
         }
+        return delete;
     }
 
     public static void deleteDiskFolder(File file)

@@ -1,5 +1,7 @@
 package org.egc.commons.util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import org.joda.time.Days;
 import org.joda.time.Interval;
 import org.joda.time.Minutes;
@@ -9,7 +11,7 @@ import java.util.Date;
 /**
  * 时间工具类
  *
- * @author houzhiwei
+ * @author houzhiwei & lp
  * @date 2016/12/27 22:34
  */
 public class TimeUtil
@@ -55,4 +57,28 @@ public class TimeUtil
         return new Interval(start.getTime(), end.getTime());
     }
 
+    /**
+     * @author lp
+     */
+
+    public static String DateToString(Date date) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String str = format.format(date);
+        return str;
+    }
+
+    /**
+     * @author lp
+     */
+    public static Date StrToDate(String str) {
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = null;
+        try {
+            date = format.parse(str);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
 }

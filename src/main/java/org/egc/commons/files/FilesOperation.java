@@ -58,6 +58,7 @@ public class FilesOperation {
 
     public static void deleteDiskFolder(File file)
     {
+        Boolean delete = true;
         if (file.exists())
         {
             if (file.isFile())

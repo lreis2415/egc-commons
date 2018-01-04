@@ -1,5 +1,8 @@
 package org.egc.commons.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * <pre/>字符串操作工具类
  * 一般的判空等字符串操作使用
@@ -21,5 +24,24 @@ public class StringUtil {
         if (src.indexOf('_') == 0)
             src = src.substring(1);
         return src;
+    }
+
+    public static String[] stringSplit(String targetString, String splitString){
+        String[] sourceStrArray = targetString.split(splitString);
+        return sourceStrArray;
+    }
+
+    public static List findCharIndex(String src, String key){
+        List indexList = new ArrayList();
+        int index = src.indexOf(key);
+        indexList.add(index);
+        while(index != -1){
+            index = src.indexOf(key, index + 1);
+            if (index != -1){
+                indexList.add(index);
+            }
+
+        }
+        return indexList;
     }
 }

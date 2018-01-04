@@ -41,6 +41,7 @@ public class CsvReader {
             while((line = bufferedReader.readLine()) != null){
                 samples.add(line);
             }
+            bufferedReader.close();
         }catch (IOException e){
             e.printStackTrace();
         }

@@ -2,6 +2,7 @@ package org.egc.commons.files;
 
 import java.io.File;
 import java.io.IOException;
+import org.egc.commons.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,14 +39,11 @@ public class FileUpload {
 
   public String getFilePath(Integer userId, Integer datasetId,String fileName, MultipartFile file){
     String originalFilename = file.getOriginalFilename();
-    String[] splitArray = stringSplit(originalFilename, "\\.");
+    String[] splitArray = StringUtil.stringSplit(originalFilename, "\\.");
     String filePostfix = splitArray[splitArray.length - 1];
     String storeName = fileName + "." + filePostfix;
     return storeName;
   }
 
-  public String[] stringSplit(String targetString, String splitString){
-    String[] sourceStrArray = targetString.split(splitString);
-    return sourceStrArray;
-  }
+
 }

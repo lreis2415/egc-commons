@@ -51,6 +51,7 @@ public class FilesOperation {
                 logger.info("delete file of " + path + " in the server folder successfully");
             }else {
                 logger.info("delete file of " + path + " in the server folder failure");
+                delete = false;
             }
         }
         return delete;

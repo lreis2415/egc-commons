@@ -41,9 +41,13 @@ public class GeoInfoExtraction {
         rasterInfo.setTop(top);
         rasterInfo.setLeft(left);
         rasterInfo.setRight(right);
-        rasterInfo.setNoData(noDataval[0]);
+        if (noDataval[0] != null){
+            rasterInfo.setNoData(noDataval[0]);
+        }
         rasterInfo.setSrid(srid);
         rasterInfo.setPixelSize(pixelSize);
+        driver.delete();
+        gdal.GDALDestroyDriverManager();
         return rasterInfo;
     }
 }

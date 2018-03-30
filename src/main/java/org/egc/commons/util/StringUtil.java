@@ -1,5 +1,7 @@
 package org.egc.commons.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -25,6 +27,25 @@ public class StringUtil {
         return src;
     }
 
+    public static String[] stringSplit(String targetString, String splitString){
+        String[] sourceStrArray = targetString.split(splitString);
+        return sourceStrArray;
+    }
+
+    public static List findCharIndex(String src, String key){
+        List indexList = new ArrayList();
+        int index = src.indexOf(key);
+        indexList.add(index);
+        while(index != -1){
+            index = src.indexOf(key, index + 1);
+            if (index != -1){
+                indexList.add(index);
+            }
+
+        }
+        return indexList;
+    }
+
     /**
      * 是否为有效的 URI（统一资源标识符）
      *
@@ -34,5 +55,4 @@ public class StringUtil {
     public static boolean isUriValid(String uri) {
         Pattern pattern = RegexPatterns.WEB_URL;
         return pattern.matcher(uri).matches();
-    }
-}
+    }}

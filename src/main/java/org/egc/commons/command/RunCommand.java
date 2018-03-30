@@ -14,10 +14,10 @@ import java.io.InputStreamReader;
 
 /**
  * <pre>
- * æ‰§è¡Œå‘½ä»¤è¡Œç¨‹åº
+ * Ö´ĞĞÃüÁîĞĞ³ÌĞò
  * </pre>
- * TODO æµ‹è¯•
- * å‚è€ƒï¼šhttp://wuhongyu.iteye.com/blog/461477
+ * TODO ²âÊÔ
+ * ²Î¿¼£ºhttp://wuhongyu.iteye.com/blog/461477
  *
  * @author houzhiwei
  * @date 2017 /9/16 10:46
@@ -36,20 +36,20 @@ public abstract class RunCommand {
      */
     protected int run(StringBuilder sb) throws IOException, InterruptedException {
         String cmd = sb.toString();
-        Runtime runtime = Runtime.getRuntime();//è¿”å›ä¸å½“å‰ Java åº”ç”¨ç¨‹åºç›¸å…³çš„è¿è¡Œæ—¶å¯¹è±¡
-        Process process = runtime.exec(cmd);// å¯åŠ¨å¦ä¸€ä¸ªè¿›ç¨‹æ¥æ‰§è¡Œå‘½ä»¤
-        BufferedInputStream in = new BufferedInputStream(process.getInputStream()); //è·å¾—æ‰§è¡Œå‘½ä»¤çš„æ ‡å‡†è¾“å‡º
+        Runtime runtime = Runtime.getRuntime();//·µ»ØÓëµ±Ç° Java Ó¦ÓÃ³ÌĞòÏà¹ØµÄÔËĞĞÊ±¶ÔÏó
+        Process process = runtime.exec(cmd);// Æô¶¯ÁíÒ»¸ö½ø³ÌÀ´Ö´ĞĞÃüÁî
+        BufferedInputStream in = new BufferedInputStream(process.getInputStream()); //»ñµÃÖ´ĞĞÃüÁîµÄ±ê×¼Êä³ö
         BufferedReader inBr = new BufferedReader(new InputStreamReader(in));
         String lineStr;
         while ((lineStr = inBr.readLine()) != null) {
-            //è·å¾—å‘½ä»¤æ‰§è¡Œååœ¨æ§åˆ¶å°çš„è¾“å‡ºä¿¡æ¯
-            log.debug(lineStr);// æ‰“å°è¾“å‡ºä¿¡æ¯
+            //»ñµÃÃüÁîÖ´ĞĞºóÔÚ¿ØÖÆÌ¨µÄÊä³öĞÅÏ¢
+            log.debug(lineStr);// ´òÓ¡Êä³öĞÅÏ¢
         }
-        //æ£€æŸ¥å‘½ä»¤æ˜¯å¦æ‰§è¡Œå¤±è´¥ã€‚
+        //¼ì²éÃüÁîÊÇ·ñÖ´ĞĞÊ§°Ü¡£
         if (process.waitFor() != 0) {
-            if (process.exitValue() == 1)//exitValue()==0 è¡¨ç¤ºæ­£å¸¸ç»“æŸï¼Œ1ï¼šéæ­£å¸¸ç»“æŸ
+            if (process.exitValue() == 1)//exitValue()==0 ±íÊ¾Õı³£½áÊø£¬1£º·ÇÕı³£½áÊø
             {
-                log.error("å‘½ä»¤æ‰§è¡Œå¤±è´¥!");//ä¾¿äºæŸ¥æ‰¾
+                log.error("ÃüÁîÖ´ĞĞÊ§°Ü!");//±ãÓÚ²éÕÒ
                 log.error("Run command [ {} ] failed.", cmd);
             }
             return 1;
@@ -83,12 +83,12 @@ public abstract class RunCommand {
      */
     protected int exec(CommandLine cmd) throws IOException {
         Executor executor = new DefaultExecutor();
-        ExecuteWatchdog watchdog = new ExecuteWatchdog(60000); // è¶…æ—¶æ—¶é—´ä¸º1åˆ†é’Ÿ
+        ExecuteWatchdog watchdog = new ExecuteWatchdog(60000); // ³¬Ê±Ê±¼äÎª1·ÖÖÓ
         executor.setWatchdog(watchdog);
-        int exitValue = executor.execute(cmd);// é€€å‡ºå€¼
+        int exitValue = executor.execute(cmd);// ÍË³öÖµ
 
         return exitValue;
     }
-    // TODO å¼‚æ­¥éé˜»å¡æ‰§è¡Œ
+    // TODO Òì²½·Ç×èÈûÖ´ĞĞ
     //DefaultExecuteResultHandler resultHandler = new DefaultExecuteResultHandler();
 }

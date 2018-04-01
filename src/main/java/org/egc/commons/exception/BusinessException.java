@@ -7,13 +7,19 @@ import org.springframework.http.HttpStatus;
  * 业务异常处理类
  *
  * @author houzhiwei
- * @date 2016/12/8 14:43
- * @link http://blog.csdn.net/king87130/article/details/8011843
+ * @date 2016 /12/8 14:43
+ * @link http ://blog.csdn.net/king87130/article/details/8011843
  */
 public class BusinessException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private int errorCode;
+
+    /**
+     * 是否打印异常信息
+     * print exception or not
+     */
+    private boolean print = true;
 
     private HttpStatus httpStatus;
 
@@ -27,6 +33,22 @@ public class BusinessException extends RuntimeException {
         super(createFriendlyErrMsg(friendlyErrMsg));
         this.errorCode = status.value();
         this.httpStatus = status;
+    }
+
+
+    /**
+     * Instantiates a new Business exception.
+     *
+     * @param friendlyErrMsg the friendly exception message
+     * @param status         http status
+     * @param print          print exception or not
+     */
+    public BusinessException(String friendlyErrMsg, HttpStatus status, boolean print )
+    {
+        super(createFriendlyErrMsg(friendlyErrMsg));
+        this.errorCode = status.value();
+        this.httpStatus = status;
+        this.print = print;
     }
 
     public BusinessException(Throwable throwable)
@@ -74,23 +96,61 @@ public class BusinessException extends RuntimeException {
         return friendlyErrMsg.toString();
     }
 
+    /**
+     * Getter for property 'errorCode'.
+     *
+     * @return Value for property 'errorCode'.
+     */
     public int getErrorCode()
     {
         return errorCode;
     }
 
+    /**
+     * Setter for property 'errorCode'.
+     *
+     * @param errorCode Value to set for property 'errorCode'.
+     */
     public void setErrorCode(int errorCode)
     {
         this.errorCode = errorCode;
     }
 
+    /**
+     * Getter for property 'httpStatus'.
+     *
+     * @return Value for property 'httpStatus'.
+     */
     public HttpStatus getHttpStatus()
     {
         return httpStatus;
     }
 
+    /**
+     * Setter for property 'httpStatus'.
+     *
+     * @param httpStatus Value to set for property 'httpStatus'.
+     */
     public void setHttpStatus(HttpStatus httpStatus)
     {
         this.httpStatus = httpStatus;
+    }
+
+    /**
+     * Getter for property 'print'.
+     *
+     * @return Value for property 'print'.
+     */
+    public boolean isPrint() {
+        return print;
+    }
+
+    /**
+     * Setter for property 'print'.
+     *
+     * @param print Value to set for property 'print'.
+     */
+    public void setPrint(boolean print) {
+        this.print = print;
     }
 }

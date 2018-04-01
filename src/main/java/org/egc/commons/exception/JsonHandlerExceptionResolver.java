@@ -42,10 +42,9 @@ public class JsonHandlerExceptionResolver implements HandlerExceptionResolver
             HttpStatus status = ((BusinessException) ex).getHttpStatus();
             if (status != null)
                 mv.setStatus(status);
+            if(((BusinessException) ex).isPrint())
+                logger.error("Exception Log: ", ex);
         }
-//        ex.printStackTrace();
-        logger.debug("Exception Log: ", ex);
-
         return mv;
     }
 }

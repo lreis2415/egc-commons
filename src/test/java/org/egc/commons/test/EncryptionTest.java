@@ -1,5 +1,6 @@
 package org.egc.commons.test;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.crypto.AesCipherService;
 import org.apache.shiro.util.ByteSource;
@@ -25,6 +26,11 @@ public class EncryptionTest {
 		System.out.println(EncryptionUtil.sha256Encrypt("yesqincheng@sina.com").getEncrypted());
 	}
 
+	@Test
+	public void testRandomStr(){
+		System.out.println(RandomStringUtils.randomAlphanumeric(6));
+		System.out.println(RandomStringUtils.randomAscii(6));
+	}
 	@Test
 	public void aesTest()
 	{

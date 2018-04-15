@@ -151,7 +151,7 @@ public class JwtUtil {
         tokenInfo.setSubject(claims.getSubject());
         tokenInfo.setIssuer(claims.getIssuer());
         tokenInfo.setIssued_at(claims.getIssuedAt());
-        tokenInfo.setRoles((List) claims.get("roles"));
+//        tokenInfo.setRoles((List) claims.get("roles"));
         tokenInfo.setExpiration(claims.getExpiration());
         return tokenInfo;
     }
@@ -200,7 +200,8 @@ public class JwtUtil {
     private static String generateUserToken(UUID uuid, int userId, String sub, List<String> roles, JwtConfig config, long ttl) {
         JwtBuilder jwtBuilder = basicJwtBuilder(uuid.toString(), sub, config, ttl);
         jwtBuilder.claim("roles", roles).claim("userId", userId);
-        return jwtBuilder.compact(); //生成JWT
+        //生成JWT
+        return jwtBuilder.compact();
     }
 
     /**

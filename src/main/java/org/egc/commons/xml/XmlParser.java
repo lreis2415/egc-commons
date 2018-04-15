@@ -6,6 +6,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.egc.commons.exception.BusinessException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
@@ -16,8 +18,9 @@ import java.net.URL;
  * @author houzhiwei
  * @date 2017/1/4 11:46
  */
-public class XmlParser
-{
+public class XmlParser {
+    private static final Logger logger = LoggerFactory.getLogger(XmlParser.class);
+
     /**
      * Read a xml document.
      *

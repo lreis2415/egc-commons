@@ -87,7 +87,7 @@ public class WebUtil {
                 int index = ip.indexOf(',');
                 if (index != -1)
                     ip = ip.substring(0, index);
-                System.out.println("ip: " + ip);
+//                System.out.println("ip: " + ip);
                 return ip;
             }
         }
@@ -119,10 +119,10 @@ public class WebUtil {
                 }
             }
             if (address instanceof Inet4Address) {
-                System.out.println("ipv4 getByName getHostAddress: " + address.getHostAddress());
+//                System.out.println("ipv4 getByName getHostAddress: " + address.getHostAddress());
                 return Inet4Address.getByName(getClientIP(request));
             } else if (address instanceof Inet6Address) {
-                System.out.println("ipv6 getByName getHostAddress: " + address.getHostAddress());
+//                System.out.println("ipv6 getByName getHostAddress: " + address.getHostAddress());
                 return Inet6Address.getByName(getClientIP(request));
             }
             return address;

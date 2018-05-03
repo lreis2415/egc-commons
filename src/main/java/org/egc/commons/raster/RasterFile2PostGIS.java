@@ -18,7 +18,10 @@ public class RasterFile2PostGIS {
 		try {
 			String cmdString =  " -s " + srid + " -I -M " +
 					filePath + " -a " + tableName ;
-			Process process = Runtime.getRuntime().exec("cmd /C set PGPASSWORD=" + passWord + "&" + postGISPath+ cmdString +" | " + " psql "+ dateBaseInfo);
+			String temp = "cmd /C set PGPASSWORD=" + passWord + "&" + postGISPath+
+					cmdString +" | " + " psql "+ dateBaseInfo;
+			Process process = Runtime.getRuntime().exec("cmd /C set PGPASSWORD=" + passWord + "&" + postGISPath+
+					cmdString +" | " + " psql "+ dateBaseInfo);
 			String str;
 			InputStreamReader isr = new InputStreamReader(process.getInputStream());
 			BufferedReader bufferedReader = new BufferedReader(isr);

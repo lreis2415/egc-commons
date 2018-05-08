@@ -15,4 +15,10 @@ public class StringsTest {
         String u = "htpaontbase/uni/UniProps#你好---";
         System.out.println(StringUtil.isUriValid(u));
     }
+
+    @Test
+    public void testAuth(){
+        String header ="Bearer jwt";
+        System.out.println(header.substring(header.indexOf(" ")+1));
+    }
 }

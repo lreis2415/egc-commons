@@ -4,6 +4,9 @@ import com.google.common.base.Strings;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.*;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * <pre/>
  * 基于Shiro的密码加密
@@ -191,5 +194,11 @@ public class EncryptionUtil {
         if (hashed.equals(pwd2check))
             flag = true;
         return flag;
+    }
+
+    public static String md5Digest(String src) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update((src).getBytes());
+        return new String(md.digest());
     }
 }

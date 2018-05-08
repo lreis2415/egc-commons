@@ -1,6 +1,6 @@
 package org.egc.commons.web;
 
-import org.egc.commons.security.JwtUtil;
+import org.egc.commons.security.JwtConsts;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,8 +55,8 @@ public abstract class BaseController {
      * @return
      */
     private String getToken() {
-        String jwt = this.request.getHeader(JwtUtil.HEADER_STRING);
-        if (jwt == null || !jwt.startsWith(JwtUtil.TOKEN_PREFIX)) {
+        String jwt = this.request.getHeader(JwtConsts.HEADER_STRING);
+        if (jwt == null || !jwt.startsWith(JwtConsts.TOKEN_PREFIX)) {
             return null;
         }
         return jwt.substring(jwt.indexOf(" ")); // "Bearer "之后的部分，即token

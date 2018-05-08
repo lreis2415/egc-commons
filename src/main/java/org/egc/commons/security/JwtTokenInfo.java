@@ -10,7 +10,7 @@ import java.util.List;
  * @author houzhiwei
  * @date 2017 /6/16 14:14
  */
-public class AuthTokenInfo implements Serializable {
+public class JwtTokenInfo implements Serializable {
 
     private static final long serialVersionUID = -6494580347610919968L;
 

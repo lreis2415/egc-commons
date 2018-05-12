@@ -10,9 +10,7 @@ import org.slf4j.LoggerFactory;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * <pre>
@@ -63,15 +61,15 @@ public class JwtUtil {
     }
 
     /**
-     * Generates salted key from string.
+     * Generates salted key.
      *
-     * @param algorithm the algorithm
-     * @param keyStr    the key str
+     * @param algorithm {@link SignatureAlgorithm}
+     * @param keyStr    the secret key string from properties
      * @param salt      e.g. user_id + e-mail
-     * @return the salted key
+     * @return the salted key {@link Key}
      */
     public static Key generateSaltedKey(SignatureAlgorithm algorithm, String keyStr, String salt) {
-        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(new Md5Hash(keyStr, salt, 2).toBase64());
+        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(new Md5Hash(keyStr, salt, 3).toBase64());
         return new SecretKeySpec(apiKeySecretBytes, algorithm.getJcaName());
     }
 
@@ -244,7 +242,7 @@ public class JwtUtil {
     }
 
     public static int getUserIdFromToken(String token) {
-        int id = Integer.parseInt((String) getClaimsWithoutKey(token).get("userId"));
+        int id = (Integer) getClaimsWithoutKey(token).get("userId");
         return id;
     }
 
@@ -252,13 +250,17 @@ public class JwtUtil {
      * 获得user id 与 subject（e-mail）
      *
      * @param token
-     * @return [id, sub]
+     * @return {@link Map<String, String>}
+     * keySet = [id, sub]
      */
-    public static String[] getUserIdAndSubFromToken(String token) {
+    public static Map<String, String> getUserIdAndSubFromToken(String token) {
         Claims claims = getClaimsWithoutKey(token);
-        String id = (String) claims.get("userId");
+        int id = (Integer) claims.get("userId");
         String sub = claims.getSubject();
-        return new String[]{id, sub};
+        Map<String, String> m = new HashMap<>();
+        m.put("id", id + "");
+        m.put("sub", sub);
+        return m;
     }
 
     /**
@@ -309,7 +311,8 @@ public class JwtUtil {
         long nowMillis = System.currentTimeMillis();
         Date now = new Date(nowMillis);
         //set the JWT Claims
-        JwtBuilder jwtBuilder = Jwts.builder().setHeaderParam("typ", "JWT")
+        JwtBuilder jwtBuilder = Jwts.builder()
+//                .setHeaderParam("typ", "JWT")
                 .setId(id)
                 //压缩
                 .compressWith(CompressionCodecs.DEFLATE)

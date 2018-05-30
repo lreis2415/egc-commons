@@ -2,6 +2,7 @@ package org.egc.commons.web;
 
 import com.alibaba.fastjson.support.spring.FastJsonJsonView;
 import com.google.common.collect.Maps;
+import org.springframework.http.HttpStatus;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -12,8 +13,7 @@ import java.util.Map;
  * @Author houzhiwei
  * @Date 2016/11/4 21:52.
  */
-public class JsonResult implements Serializable
-{
+public class JsonResult implements Serializable {
     private static final long serialVersionUID = -6559362101721248596L;
 
     private Object data;
@@ -23,6 +23,26 @@ public class JsonResult implements Serializable
      */
     private String url;
 
+    /**
+     * Getter for property 'status'.
+     *
+     * @return Value for property 'status'.
+     */
+    public HttpStatus getStatus() {
+        return status;
+    }
+
+    /**
+     * Setter for property 'status'.
+     *
+     * @param status Value to set for property 'status'.
+     */
+    public void setStatus(HttpStatus status) {
+        this.status = status;
+    }
+
+    private HttpStatus status;
+
     public JsonResult()
     {
         super();
@@ -31,6 +51,12 @@ public class JsonResult implements Serializable
     public JsonResult(String msg)
     {
         this.msg = msg;
+    }
+
+    public JsonResult(String msg, HttpStatus status)
+    {
+        this.msg = msg;
+        this.status = status;
     }
 
     public JsonResult(Object data)
@@ -74,6 +100,7 @@ public class JsonResult implements Serializable
         Map<String, Object> attrs = Maps.newHashMap();
         attrs.put("data", data);
         attrs.put("msg", msg);
+        view.setAttributesMap(attrs);
         return view;
     }
 }

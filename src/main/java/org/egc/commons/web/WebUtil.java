@@ -74,12 +74,11 @@ public class WebUtil {
         for (String header : HEADERS_TO_TRY) {
             String ip = request.getHeader(header);
             //本地localhost访问
-            if ("127.0.0.1".equalsIgnoreCase(ip) || "0:0:0:0:0:0:0:1".equalsIgnoreCase(ip)) {
+            if ("127.0.0.1".equals(ip) || "0:0:0:0:0:0:0:1".equals(ip)) {
                 if (InetAddress.getLocalHost() instanceof Inet4Address)
                     return Inet4Address.getLocalHost().getHostAddress();
                 else if (InetAddress.getLocalHost() instanceof Inet6Address)
                     return Inet6Address.getLocalHost().getHostAddress();
-                System.out.println("getLocalHost: " + ip);
                 return InetAddress.getLocalHost().getHostAddress();
             }
             if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
@@ -87,7 +86,6 @@ public class WebUtil {
                 int index = ip.indexOf(',');
                 if (index != -1)
                     ip = ip.substring(0, index);
-//                System.out.println("ip: " + ip);
                 return ip;
             }
         }
@@ -109,8 +107,7 @@ public class WebUtil {
             for (String header : HEADERS_TO_TRY) {
                 String ip = request.getHeader(header);
                 //本地localhost访问
-                if ("127.0.0.1".equalsIgnoreCase(ip) || "0:0:0:0:0:0:0:1".equalsIgnoreCase(ip)) {
-                    System.out.println("localhost  " + ip);
+                if ("127.0.0.1".equals(ip) || "0:0:0:0:0:0:0:1".equals(ip) || "::1".equals(ip)) {
                     if (InetAddress.getLocalHost() instanceof Inet4Address)
                         return Inet4Address.getLocalHost();
                     else if (InetAddress.getLocalHost() instanceof Inet6Address)
@@ -119,10 +116,8 @@ public class WebUtil {
                 }
             }
             if (address instanceof Inet4Address) {
-//                System.out.println("ipv4 getByName getHostAddress: " + address.getHostAddress());
                 return Inet4Address.getByName(getClientIP(request));
             } else if (address instanceof Inet6Address) {
-//                System.out.println("ipv6 getByName getHostAddress: " + address.getHostAddress());
                 return Inet6Address.getByName(getClientIP(request));
             }
             return address;

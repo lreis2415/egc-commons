@@ -14,6 +14,11 @@ public class JwtTokenInfo implements Serializable {
 
     private static final long serialVersionUID = -6494580347610919968L;
 
+    public JwtTokenInfo(String id,String subject){
+        this.id =id;
+        this.subject = subject;
+    }
+
     /**
      * 该JWT的签发者
      * JWT {@code Issuer} claims parameter name: <code>"iss"</code>

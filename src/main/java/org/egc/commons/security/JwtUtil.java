@@ -97,46 +97,33 @@ public class JwtUtil {
     /**
      * create access json web token
      *
-     * @param uuid   token id
-     * @param userId subject id
-     * @param sub    subject, such as email or username
-     * @param roles  user's roles 用户角色列表
+     * @param info 用于生成token的信息 {@link JwtTokenInfo}
      * @param config jwt 配置信息（key等）
      * @return jwt string
      */
-    public static String createUserJwt(UUID uuid, int userId, String sub, List<String> roles, JwtConfig config, Key key) {
-        return generateUserToken(uuid, userId, sub, roles, config, key);
+    public static String createUserJwt(JwtTokenInfo info, JwtConfig config, Key key) {
+        //UUID uuid, int userId, String sub, List<String> roles
+        JwtBuilder jwtBuilder = basicJwtBuilder(info.getId(), info.getSubject(), config, key, false);
+        jwtBuilder.claim("roles", info.getRoles()).claim("userId", info.getUserId());
+        //生成JWT
+        return jwtBuilder.compact();
+
     }
 
     /**
-     * 生成用于刷新用户access token的refresh token
-     *
-     * @param oldToken 旧的token
-     * @param config   jwt 配置信息（key等）
-     * @return jwt string
-     */
-    /*public static String createRefreshJwt(String oldToken, JwtConfig config) {
-        JwtTokenInfo tokenInfo = parseUserJwt(oldToken, config.getKey(), config.getIssuer());
-        long refreshTTL = config.getRefreshTTL();
-        return generateUserToken(UUID.randomUUID(), tokenInfo.getUserId(),
-                                 tokenInfo.getSubject(), tokenInfo.getRoles(), config, refreshTTL);//生成JWT
-    }*/
-
-    /**
      * <pre>
-     * 生成 userJwt（access token）时生成refreshJwt（refresh token）
+     * 生成refreshJwt（refresh token）
      * 若 access token 过期而 refresh token 没有过期，则重新生成 access token
      * 若 refresh token 也过期，则需要重新登录
      * </pre>
      *
-     * @param uuid
-     * @param sub
-     * @param config jwt configuration
+     * @param info {@link JwtTokenInfo}
+     * @param config jwt configuration {@link JwtConfig}
      * @return
      */
-    public static String createRefreshJwt(UUID uuid, String sub, JwtConfig config, Key key) {
-        JwtBuilder jwtBuilder = basicJwtBuilder(uuid.toString(), sub, config, key, true);
-        //生成JWT
+    public static String createRefreshJwt( JwtTokenInfo info, JwtConfig config, Key key) {
+        JwtBuilder jwtBuilder = basicJwtBuilder(info.getId(), info.getSubject(), config, key, true);
+        jwtBuilder.claim("roles", info.getRoles()).claim("userId", info.getUserId());
         return jwtBuilder.compact();
     }
 
@@ -160,13 +147,11 @@ public class JwtUtil {
     {
         // make sure that we can trust jwt
         Claims claims = parseJwt(token, secret, iss);
-        JwtTokenInfo tokenInfo = new JwtTokenInfo();
-        tokenInfo.setId(claims.getId());
+        JwtTokenInfo tokenInfo = new JwtTokenInfo(claims.getId(),claims.getSubject());
         tokenInfo.setUserId((int) claims.get("userId"));
-        tokenInfo.setSubject(claims.getSubject());
         tokenInfo.setIssuer(claims.getIssuer());
         tokenInfo.setIssued_at(claims.getIssuedAt());
-//        tokenInfo.setRoles((List) claims.get("roles"));
+        tokenInfo.setRoles((List) claims.get("roles"));
         tokenInfo.setExpiration(claims.getExpiration());
         return tokenInfo;
     }
@@ -258,7 +243,7 @@ public class JwtUtil {
         int id = (Integer) claims.get("userId");
         String sub = claims.getSubject();
         Map<String, String> m = new HashMap<>();
-        m.put("id", id + "");
+        m.put("uid", id + "");
         m.put("sub", sub);
         return m;
     }
@@ -280,23 +265,6 @@ public class JwtUtil {
     //endregion
 
     //region private functions
-
-    /**
-     * 生成用户token
-     *
-     * @param uuid
-     * @param userId
-     * @param sub
-     * @param roles
-     * @param config
-     * @return
-     */
-    private static String generateUserToken(UUID uuid, int userId, String sub, List<String> roles, JwtConfig config, Key key) {
-        JwtBuilder jwtBuilder = basicJwtBuilder(uuid.toString(), sub, config, key, false);
-        jwtBuilder.claim("roles", roles).claim("userId", userId);
-        //生成JWT
-        return jwtBuilder.compact();
-    }
 
     /**
      * 生成具有基本信息的 JwtBuilder

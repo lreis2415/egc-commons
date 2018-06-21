@@ -15,8 +15,8 @@ import java.net.UnknownHostException;
 /**
  * TODO
  *
- * @Author houzhiwei
- * @Date 2016/6/22 17:51.
+ * @author houzhiwei
+ * @date 2016/6/22 17:51.
  */
 public class WebUtil {
     /**

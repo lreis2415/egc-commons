@@ -11,6 +11,7 @@ import java.util.Map;
  * @author houzhiwei
  * @date 2016/7/9 17:35.
  */
+@Deprecated
 public class DataTable implements Serializable {
 
     private static final long serialVersionUID = 2052103483654583307L;
@@ -31,9 +32,12 @@ public class DataTable implements Serializable {
      * 总数据量
      */
     private static final String TOTAL = "total";
-    private static final String PAGE_SIZE = "limit";//"pageSize";
-    private static final String PAGE_NUMBER = "offset";//"pageNumber";
-    private static final String SEARCH_TEXT = "search";//"searchText";
+
+    private static final String PAGE_SIZE = "limit";
+
+    private static final String PAGE_NUMBER = "offset";
+
+    private static final String SEARCH_TEXT = "search";
     private static final String SORT_NAME = "sort";
     private static final String SORT_ORDER = "order";
 

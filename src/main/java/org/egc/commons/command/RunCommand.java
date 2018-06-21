@@ -20,7 +20,7 @@ import java.io.InputStreamReader;
  * 参考 http://wuhongyu.iteye.com/blog/461477
  *
  * @author houzhiwei
- * @date 2017 /9/16 10:46
+ * @date 2017/9/16 10:46
  */
 public abstract class RunCommand {
 

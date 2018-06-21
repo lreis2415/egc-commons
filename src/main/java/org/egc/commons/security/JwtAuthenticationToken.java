@@ -3,7 +3,7 @@ package org.egc.commons.security;
 import org.apache.shiro.authc.AuthenticationToken;
 
 /**
- * TODO
+ * 用于 shiro 验证 JWT 的token
  *
  * @author houzhiwei
  * @date 2018/5/5 20:55

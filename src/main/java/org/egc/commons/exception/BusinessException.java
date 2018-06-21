@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
  * 业务异常处理类
  *
  * @author houzhiwei
- * @date 2016 /12/8 14:43
+ * @date 2016/12/8 14:43
  * @link http ://blog.csdn.net/king87130/article/details/8011843
  */
 public class BusinessException extends RuntimeException {

@@ -10,8 +10,8 @@ import java.util.Map;
 /**
  * 用于组织数据为一个JSON对象
  *
- * @Author houzhiwei
- * @Date 2016/11/4 21:52.
+ * @author houzhiwei
+ * @date 2016/11/4 21:52.
  */
 public class JsonResult implements Serializable {
     private static final long serialVersionUID = -6559362101721248596L;

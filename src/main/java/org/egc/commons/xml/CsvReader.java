@@ -7,7 +7,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by lp on 2017/5/3.
@@ -92,7 +91,7 @@ public class CsvReader {
         return csvSampleInfos;
 
     }
-    public double getMax(List<double> arrayData){
+    public double getMax(List<Double> arrayData){
         double max = -9999999999999999.0;
         for (int i = 0; i < arrayData.size(); i++){
             if (arrayData.get(i) > max){
@@ -101,7 +100,7 @@ public class CsvReader {
         }
         return max;
     }
-    public double getMin(List<double> arrayData){
+    public double getMin(List<Double> arrayData){
         double min = 99999999999999999.0;
         for (int i = 0; i < arrayData.size(); i++){
             if (arrayData.get(i) < min){

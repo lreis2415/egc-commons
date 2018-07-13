@@ -49,4 +49,11 @@ public class RasterTest {
         String[] b = a.split("/");
         System.out.println(b[1]);
     }
+    @Test
+    public void testGetRasterInfo(){
+        String path = "D:/DataBase/xuancheng/slope.tif";
+        GeoInfoExtraction geoInfoExtraction = new GeoInfoExtraction();
+        RasterInfo rasterInfo = geoInfoExtraction.readMetaData(path);
+        System.out.println(rasterInfo.getPixelSize());
+    }
 }

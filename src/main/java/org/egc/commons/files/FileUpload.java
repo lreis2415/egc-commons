@@ -13,7 +13,7 @@ public class FileUpload {
 
   public String uploadFile(String rootFilePath, Integer userId, Integer datasetId,String fileName, MultipartFile file) throws IOException {
     String filePath = rootFilePath + userId.toString() + "/" + datasetId + "/";
-    String storeName = getFilePath(userId, datasetId,fileName, file);
+    String storeName = getFilePath(fileName, file);
 
     //filePath = filePath + storeName;
     if (!file.isEmpty()) {
@@ -37,7 +37,7 @@ public class FileUpload {
 
   }
 
-  public String getFilePath(Integer userId, Integer datasetId,String fileName, MultipartFile file){
+  public String getFilePath(String fileName, MultipartFile file){
     String originalFilename = file.getOriginalFilename();
     String[] splitArray = StringUtil.stringSplit(originalFilename, "\\.");
     String filePostfix = splitArray[splitArray.length - 1];

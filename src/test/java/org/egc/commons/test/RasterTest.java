@@ -6,10 +6,6 @@ import org.egc.commons.raster.RasterFile2PostGIS;
 import org.egc.commons.raster.RasterInfo;
 import org.junit.Test;
 
-import java.io.Console;
-import java.sql.Timestamp;
-import java.util.Date;
-
 
 /**
  * Created by lp on 2017/4/25.
@@ -51,7 +47,8 @@ public class RasterTest {
     }
     @Test
     public void testGetRasterInfo(){
-        String path = "D:/DataBase/xuancheng/slope.tif";
+        //String path = "D:/DataBase/xuancheng/slope.tif";
+        String path = "H:/GIS data/SRTM/SRTM_China_Geo_3s.tif";
         GeoInfoExtraction geoInfoExtraction = new GeoInfoExtraction();
         RasterInfo rasterInfo = geoInfoExtraction.readMetaData(path);
         System.out.println(rasterInfo.getPixelSize());

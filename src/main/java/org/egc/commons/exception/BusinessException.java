@@ -1,5 +1,7 @@
 package org.egc.commons.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -13,6 +15,7 @@ import org.springframework.http.HttpStatus;
 public class BusinessException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
+    private static final Logger logger = LoggerFactory.getLogger(BusinessException.class);
     private int errorCode;
 
     /**
@@ -33,6 +36,7 @@ public class BusinessException extends RuntimeException {
         super(createFriendlyErrMsg(friendlyErrMsg));
         this.errorCode = status.value();
         this.httpStatus = status;
+        logger.info(friendlyErrMsg);
     }
 
 
@@ -49,6 +53,7 @@ public class BusinessException extends RuntimeException {
         this.errorCode = status.value();
         this.httpStatus = status;
         this.print = print;
+        logger.info(friendlyErrMsg);
     }
 
     public BusinessException(Throwable throwable)
@@ -61,6 +66,7 @@ public class BusinessException extends RuntimeException {
         super(throwable);
         this.errorCode = status.value();
         this.httpStatus = status;
+        logger.error(status.getReasonPhrase(), throwable);
     }
 
     public BusinessException(Throwable throwable, String friendlyErrMsg)
@@ -73,6 +79,7 @@ public class BusinessException extends RuntimeException {
         super(friendlyErrMsg, throwable);
         this.errorCode = status.value();
         this.httpStatus = status;
+        logger.error(friendlyErrMsg, throwable);
     }
 
     /**

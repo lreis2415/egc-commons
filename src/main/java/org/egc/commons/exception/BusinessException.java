@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
+import java.io.Serializable;
+
 /**
  * TODO
  * 业务异常处理类
@@ -12,7 +14,7 @@ import org.springframework.http.HttpStatus;
  * @date 2016/12/8 14:43
  * @link http ://blog.csdn.net/king87130/article/details/8011843
  */
-public class BusinessException extends RuntimeException {
+public class BusinessException extends RuntimeException implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final Logger logger = LoggerFactory.getLogger(BusinessException.class);

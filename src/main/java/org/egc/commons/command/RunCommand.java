@@ -36,9 +36,11 @@ public abstract class RunCommand {
      */
     protected int run(StringBuilder sb) throws IOException, InterruptedException {
         String cmd = sb.toString();
-        Runtime runtime = Runtime.getRuntime();//返回与当前 Java 应用程序相关的运行时对象
-        Process process = runtime.exec(cmd);// 启动另一个进程来执行命令
-        BufferedInputStream in = new BufferedInputStream(process.getInputStream()); //
+        //返回与当前 Java 应用程序相关的运行时对象
+        Runtime runtime = Runtime.getRuntime();
+        // 启动另一个进程来执行命令;
+        Process process = runtime.exec(cmd);
+        BufferedInputStream in = new BufferedInputStream(process.getInputStream());
         BufferedReader inBr = new BufferedReader(new InputStreamReader(in));
         String lineStr;
         while ((lineStr = inBr.readLine()) != null) {
@@ -47,7 +49,8 @@ public abstract class RunCommand {
         }
         //检查命令是否执行失败
         if (process.waitFor() != 0) {
-            if (process.exitValue() == 1)//p.exitValue()==0表示正常结束，1：非正常结束
+            //p.exitValue()==0表示正常结束，1：非正常结束
+            if (process.exitValue() == 1)
             {
                 log.error("Run command [ {} ] failed.", cmd);
             }
@@ -82,7 +85,8 @@ public abstract class RunCommand {
      */
     protected int exec(CommandLine cmd) throws IOException {
         Executor executor = new DefaultExecutor();
-        ExecuteWatchdog watchdog = new ExecuteWatchdog(60000); // 设置超时时间，毫秒
+        // 设置超时时间，毫秒
+        ExecuteWatchdog watchdog = new ExecuteWatchdog(60000);
         executor.setWatchdog(watchdog);
         int exitValue = executor.execute(cmd);
         return exitValue;

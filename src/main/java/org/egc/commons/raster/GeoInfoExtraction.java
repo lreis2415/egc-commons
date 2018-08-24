@@ -1,4 +1,5 @@
 package org.egc.commons.raster;
+
 import org.egc.commons.exception.RasterReadException;
 import org.gdal.gdal.Band;
 import org.gdal.gdal.Dataset;
@@ -6,11 +7,16 @@ import org.gdal.gdal.Driver;
 import org.gdal.gdal.gdal;
 import org.gdal.gdalconst.gdalconstConstants;
 import org.gdal.osr.SpatialReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by lp on 2017/4/25.
  */
 public class GeoInfoExtraction {
+
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+
     RasterInfo rasterInfo = new RasterInfo();
     //读取栅格的空间坐标系编码srid、空间分辨率、no_data、包络面范围（上下左右）
     public RasterInfo readMetaData(String rasterPath){
@@ -26,6 +32,7 @@ public class GeoInfoExtraction {
 
         String  spatialReference = dataset.GetProjectionRef();
         SpatialReference spatialReference1 = new SpatialReference(spatialReference);
+        System.out.println(spatialReference1.GetAuthorityCode(null));
         Integer srid = Integer.parseInt(spatialReference1.GetAuthorityCode(null));
 
         Band band = dataset.GetRasterBand(1);

@@ -1,11 +1,12 @@
 package org.egc.commons.files;
 
-import java.io.File;
-import java.io.IOException;
 import org.egc.commons.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
 
 public class FileUpload {
 
@@ -24,7 +25,6 @@ public class FileUpload {
         }else{
           logger.info(tempFile.getParentFile().toString() + "  create folder error");
         }
-
       }
       if (!tempFile.exists()) {
         tempFile.createNewFile();

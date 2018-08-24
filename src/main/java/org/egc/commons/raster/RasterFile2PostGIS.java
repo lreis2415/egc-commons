@@ -1,17 +1,17 @@
 package org.egc.commons.raster;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import org.egc.commons.command.RunCommand;
 
 /**
  * Created by lp on 2017/4/26.
  */
 public class RasterFile2PostGIS {
+	Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public boolean file2PostGIS(Integer srid, String filePath,String tableName, String dateBaseInfo, String postGISPath, String passWord) {
 		boolean flag = true;
@@ -32,6 +32,7 @@ public class RasterFile2PostGIS {
 		} catch (IOException | InterruptedException e) {
 			flag = false;
 			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
 		return flag;
 	}

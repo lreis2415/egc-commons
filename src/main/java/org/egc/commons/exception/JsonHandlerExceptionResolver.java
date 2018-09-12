@@ -22,8 +22,7 @@ import java.util.Map;
  * @author houzhiwei
  * @date 2016/12/6 15:49
  */
-public class JsonHandlerExceptionResolver implements HandlerExceptionResolver
-{
+public class JsonHandlerExceptionResolver implements HandlerExceptionResolver {
     private static final Logger logger = LoggerFactory.getLogger(JsonHandlerExceptionResolver.class);
 
     @Override
@@ -40,10 +39,12 @@ public class JsonHandlerExceptionResolver implements HandlerExceptionResolver
         mv.setView(jsonView);
         if (ex instanceof BusinessException) {
             HttpStatus status = ((BusinessException) ex).getHttpStatus();
-            if (status != null)
+            if (status != null) {
                 mv.setStatus(status);
-            if(((BusinessException) ex).isPrint())
+            }
+            if (((BusinessException) ex).isPrint()) {
                 logger.error("Exception Log: ", ex);
+            }
         }
         return mv;
     }

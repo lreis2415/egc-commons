@@ -1,5 +1,7 @@
 package org.egc.commons.files;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,12 +10,13 @@ import java.nio.channels.FileChannel;
 
 /**
  * Created by lp on 2017/5/26.
+ * update houzhiwei
  */
 public class FilesOperation {
 
     private static final Logger logger = LoggerFactory.getLogger(FilesOperation.class);
 
-    public static long copyFile(String srcFilePath, String destDirPath, String destFileName){
+    public static long copyFile(String srcFilePath, String destDirPath, String destFileName) {
         long copySizes = 0;
         File srcFile = new File(srcFilePath);
         File destDir = new File(destDirPath);
@@ -44,12 +47,11 @@ public class FilesOperation {
     public static Boolean deleteDiskFile(String path) {
         Boolean delete = true;
         File deleteFile = new File(path);
-        if(deleteFile.isFile() && deleteFile.exists())
-        {
-            if (deleteFile.delete()){
+        if (deleteFile.isFile() && deleteFile.exists()) {
+            if (deleteFile.delete()) {
                 delete = true;
                 logger.info("delete file of " + path + " in the server folder successfully");
-            }else {
+            } else {
                 logger.info("delete file of " + path + " in the server folder failure");
                 delete = false;
             }
@@ -60,17 +62,12 @@ public class FilesOperation {
     public static void deleteDiskFolder(File file)
     {
         Boolean delete = true;
-        if (file.exists())
-        {
-            if (file.isFile())
-            {
+        if (file.exists()) {
+            if (file.isFile()) {
                 file.delete();
-            }
-            else if (file.isDirectory())
-            {
+            } else if (file.isDirectory()) {
                 File[] files = file.listFiles();
-                for (int i = 0; i < files.length; i++)
-                {
+                for (int i = 0; i < files.length; i++) {
                     deleteDiskFolder(files[i]);
                 }
             }
@@ -78,4 +75,18 @@ public class FilesOperation {
         }
     }
 
+
+    /**
+     * 获取文件后缀
+     *
+     * @param filename
+     * @return 文件后缀
+     */
+    public static String getFileSuffix(String filename) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(filename), "Filename can not be null or empty");
+        File file = new File(filename);
+        String name = file.getName();
+        String suffix = name.substring(name.lastIndexOf(".") + 1);
+        return suffix;
+    }
 }

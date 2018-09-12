@@ -32,7 +32,8 @@ public class XmlParser {
         Document document = null;
         try {
             SAXReader saxReader = new SAXReader();
-            document = saxReader.read(new File(filename)); // 读取XML文件,获得document对象
+            // 读取XML文件,获得document对象
+            document = saxReader.read(new File(filename));
         } catch (DocumentException ex) {
             ex.printStackTrace();
             throw new BusinessException(ex, "Read XML file [ " + filename + " ] failed!");
@@ -51,7 +52,8 @@ public class XmlParser {
         Document document = null;
         try {
             SAXReader saxReader = new SAXReader();
-            document = saxReader.read(url); // 读取XML文件,获得document对象
+            // 读取XML文件,获得document对象
+            document = saxReader.read(url);
         } catch (DocumentException ex) {
             ex.printStackTrace();
             throw new BusinessException(ex, "Read XML file from [ " + url + " ] failed!");

@@ -20,7 +20,7 @@ public class GeoInfoExtraction {
     RasterInfo rasterInfo = new RasterInfo();
     //读取栅格的空间坐标系编码srid、空间分辨率、no_data、包络面范围（上下左右）
     public RasterInfo readMetaData(String rasterPath){
-        System.out.print("i have modified");
+
         gdal.AllRegister();
         Dataset dataset = gdal.Open(rasterPath, gdalconstConstants.GA_ReadOnly);
         if (dataset == null){

@@ -4,6 +4,18 @@ Reusable Java components for EGC
 
 > Formerly ***commons*** module in project cybersolim
 
+## Maven dependency
+
+> in private nexus repository  http://192.168.6.56:8081/repository/egc/
+
+```xml
+<dependency>
+    <groupId>org.egc</groupId>
+    <artifactId>commons</artifactId>
+    <version>2.0-SNAPSHOT</version>
+</dependency>
+```
+
 ## Packages
 
 - Command

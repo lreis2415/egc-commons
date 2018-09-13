@@ -54,7 +54,7 @@ public class GeoInfoExtraction {
         }
         rasterInfo.setSrid(srid);
         rasterInfo.setPixelSize(pixelSize);
-        driver.delete();
+        dataset.delete();
         gdal.GDALDestroyDriverManager();
         return rasterInfo;
     }

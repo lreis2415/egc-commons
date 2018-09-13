@@ -3,6 +3,7 @@
  */
 package org.egc.commons.util;
 
+import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,16 +21,17 @@ import org.apache.tools.zip.ZipOutputStream;
 /**
  * 文件操作工具类
  * 实现文件的创建、删除、复制、压缩、解压以及目录的创建、删除、复制、压缩解压等功能
+ *
  * @author ThinkGem
  * @version 2013-06-21
  */
-public class FileUtil extends org.apache.commons.io.FileUtils
-{
+public class FileUtil extends org.apache.commons.io.FileUtils {
     private static Logger log = LoggerFactory.getLogger(FileUtil.class);
 
     /**
      * 复制单个文件，如果目标文件存在，则不覆盖
-     * @param srcFileName 待复制的文件名
+     *
+     * @param srcFileName  待复制的文件名
      * @param descFileName 目标文件名
      * @return 如果复制成功，则返回true，否则返回false
      */
@@ -39,13 +41,15 @@ public class FileUtil extends org.apache.commons.io.FileUtils
 
     /**
      * 复制单个文件
-     * @param srcFileName 待复制的文件名
+     *
+     * @param srcFileName  待复制的文件名
      * @param descFileName 目标文件名
-     * @param coverlay 如果目标文件已存在，是否覆盖
+     * @param coverlay     如果目标文件已存在，是否覆盖
      * @return 如果复制成功，则返回true，否则返回false
      */
     public static boolean copyFileCover(String srcFileName,
-                                        String descFileName, boolean coverlay) {
+                                        String descFileName, boolean coverlay)
+    {
         File srcFile = new File(srcFileName);
         // 判断源文件是否存在
         if (!srcFile.exists()) {
@@ -126,7 +130,8 @@ public class FileUtil extends org.apache.commons.io.FileUtils
 
     /**
      * 复制整个目录的内容，如果目标目录存在，则不覆盖
-     * @param srcDirName 源目录名
+     *
+     * @param srcDirName  源目录名
      * @param descDirName 目标目录名
      * @return 如果复制成功返回true，否则返回false
      */
@@ -137,13 +142,15 @@ public class FileUtil extends org.apache.commons.io.FileUtils
 
     /**
      * 复制整个目录的内容
-     * @param srcDirName 源目录名
+     *
+     * @param srcDirName  源目录名
      * @param descDirName 目标目录名
-     * @param coverlay 如果目标目录存在，是否覆盖
+     * @param coverlay    如果目标目录存在，是否覆盖
      * @return 如果复制成功返回true，否则返回false
      */
     public static boolean copyDirectoryCover(String srcDirName,
-                                             String descDirName, boolean coverlay) {
+                                             String descDirName, boolean coverlay)
+    {
         File srcDir = new File(srcDirName);
         // 判断源目录是否存在
         if (!srcDir.exists()) {
@@ -200,7 +207,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils
             // 如果是子目录，则继续复制目录
             if (files[i].isDirectory()) {
                 flag = FileUtil.copyDirectory(files[i]
-                                                       .getAbsolutePath(), descDirName + files[i].getName());
+                                                      .getAbsolutePath(), descDirName + files[i].getName());
                 // 如果拷贝目录失败，则退出循环
                 if (!flag) {
                     break;
@@ -218,7 +225,6 @@ public class FileUtil extends org.apache.commons.io.FileUtils
     }
 
     /**
-     *
      * 删除文件，可以删除单个文件或文件夹
      *
      * @param fileName 被删除的文件名
@@ -239,7 +245,6 @@ public class FileUtil extends org.apache.commons.io.FileUtils
     }
 
     /**
-     *
      * 删除单个文件
      *
      * @param fileName 被删除的文件名
@@ -262,7 +267,6 @@ public class FileUtil extends org.apache.commons.io.FileUtils
     }
 
     /**
-     *
      * 删除目录及目录下的文件
      *
      * @param dirName 被删除的目录所在的文件路径
@@ -293,7 +297,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils
             // 删除子目录
             else if (files[i].isDirectory()) {
                 flag = FileUtil.deleteDirectory(files[i]
-                                                         .getAbsolutePath());
+                                                        .getAbsolutePath());
                 // 如果删除子目录失败，则退出循环
                 if (!flag) {
                     break;
@@ -318,6 +322,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils
 
     /**
      * 创建单个文件
+     *
      * @param descFileName 文件名，包含路径
      * @return 如果创建成功，则返回true，否则返回false
      */
@@ -358,6 +363,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils
 
     /**
      * 创建目录
+     *
      * @param descDirName 目录名,包含路径
      * @return 如果创建成功，则返回true，否则返回false
      */
@@ -384,6 +390,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils
 
     /**
      * 写入文件
+     *
      * @param fileName 要写入的文件
      */
     public static void writeToFile(String fileName, String content, boolean append) {
@@ -397,6 +404,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils
 
     /**
      * 写入文件
+     *
      * @param fileName 要写入的文件
      */
     public static void writeToFile(String fileName, String content, String encoding, boolean append) {
@@ -410,12 +418,14 @@ public class FileUtil extends org.apache.commons.io.FileUtils
 
     /**
      * 压缩文件或目录
-     * @param srcDirName 压缩的根目录
-     * @param fileName 根目录下的待压缩的文件名或文件夹名，其中*或""表示跟目录下的全部文件
+     *
+     * @param srcDirName   压缩的根目录
+     * @param fileName     根目录下的待压缩的文件名或文件夹名，其中*或""表示跟目录下的全部文件
      * @param descFileName 目标zip文件
      */
     public static void zipFiles(String srcDirName, String fileName,
-                                String descFileName) {
+                                String descFileName)
+    {
         // 判断目录是否存在
         if (srcDirName == null) {
             log.debug("文件压缩失败，目录 " + srcDirName + " 不存在!");
@@ -508,12 +518,14 @@ public class FileUtil extends org.apache.commons.io.FileUtils
 
     /**
      * 将目录压缩到ZIP输出流
+     *
      * @param dirPath 目录路径
      * @param fileDir 文件信息
-     * @param zouts 输出流
+     * @param zouts   输出流
      */
     public static void zipDirectoryToZipFile(String dirPath, File fileDir,
-                                             ZipOutputStream zouts) {
+                                             ZipOutputStream zouts)
+    {
         if (fileDir.isDirectory()) {
             File[] files = fileDir.listFiles();
             // 空的文件夹
@@ -547,12 +559,14 @@ public class FileUtil extends org.apache.commons.io.FileUtils
 
     /**
      * 将文件压缩到ZIP输出流
+     *
      * @param dirPath 目录路径
-     * @param file 文件
-     * @param zouts 输出流
+     * @param file    文件
+     * @param zouts   输出流
      */
     public static void zipFilesToZipFile(String dirPath, File file,
-                                         ZipOutputStream zouts) {
+                                         ZipOutputStream zouts)
+    {
         FileInputStream fin = null;
         ZipEntry entry = null;
         // 创建复制缓冲区
@@ -583,8 +597,9 @@ public class FileUtil extends org.apache.commons.io.FileUtils
 
     /**
      * 获取待压缩文件在ZIP文件中entry的名字，即相对于跟目录的相对路径名
+     *
      * @param dirPath 目录名
-     * @param file entry文件名
+     * @param file    entry文件名
      * @return
      */
     private static String getEntryName(String dirPath, File file) {
@@ -604,18 +619,41 @@ public class FileUtil extends org.apache.commons.io.FileUtils
 
     /**
      * 修复路径，将 \\ 或 / 等替换为 File.separator
+     *
      * @param path
      * @return
      */
-    public static String path(String path){
+    public static String path(String path) {
         String p = StringUtils.replace(path, "\\", "/");
         p = StringUtils.join(StringUtils.split(p, "/"), "/");
-        if (!StringUtils.startsWithAny(p, "/") && StringUtils.startsWithAny(path, "\\", "/")){
+        if (!StringUtils.startsWithAny(p, "/") && StringUtils.startsWithAny(path, "\\", "/")) {
             p += "/";
         }
-        if (!StringUtils.endsWithAny(p, "/") && StringUtils.endsWithAny(path, "\\", "/")){
+        if (!StringUtils.endsWithAny(p, "/") && StringUtils.endsWithAny(path, "\\", "/")) {
             p = p + "/";
         }
         return p;
+    }
+
+    /**
+     * 获取文件扩展名
+     *
+     * @param filename
+     * @return
+     */
+    public static String getFileExtension(String filename) {
+        Preconditions.checkNotNull(filename, "filename must not be null");
+        return filename.substring(filename.lastIndexOf(".") + 1);
+    }
+
+    /**
+     * 获取文件扩展名
+     *
+     * @param file
+     * @return
+     */
+    public static String getFileExtension(File file) {
+        Preconditions.checkNotNull(file,"file must not be null");
+        return getFileExtension(file.getName());
     }
 }

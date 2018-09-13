@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 
 /**
  * Created by lp on 2017/4/26.
+ * TODO 使用commons-exec改写；Linux下如何执行
  */
 public class RasterFile2PostGIS {
 	Logger logger = LoggerFactory.getLogger(this.getClass());

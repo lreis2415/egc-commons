@@ -11,14 +11,15 @@ import org.junit.Test;
  */
 public class StringsTest {
     @Test
-    public void uriTest(){
+    public void uriTest() {
         String u = "htpaontbase/uni/UniProps#你好---";
         System.out.println(StringUtil.isUriValid(u));
     }
 
     @Test
-    public void testAuth(){
-        String header ="Bearer jwt";
-        System.out.println(header.substring(header.indexOf(" ")+1));
+    public void testAuth() {
+        String header = "Bearer jwt";
+        System.out.println(header.substring(header.indexOf(" ") + 1));
     }
+
 }

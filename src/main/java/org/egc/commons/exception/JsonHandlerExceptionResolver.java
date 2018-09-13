@@ -13,11 +13,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /**
- * <pre/>
+ * <pre>
  * 全局异常处理，返回json数据
  * 不需要捕获异常，抛出即可
  * 需要在spring中配置bean
  * 参考 http://blog.csdn.net/chwshuang/article/details/48089203
+ * </pre>
  *
  * @author houzhiwei
  * @date 2016/12/6 15:49

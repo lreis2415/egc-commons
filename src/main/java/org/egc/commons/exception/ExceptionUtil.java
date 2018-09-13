@@ -10,12 +10,15 @@ import java.io.StringWriter;
  * 关于异常的工具类.
  *
  * @author calvin
- * @version 2013-01-15
+ * @version 2013 -01-15
  */
 public class ExceptionUtil
 {
     /**
      * 将CheckedException转换为UncheckedException.
+     *
+     * @param e the e
+     * @return the runtime exception
      */
     public static RuntimeException unchecked(Exception e)
     {
@@ -28,6 +31,9 @@ public class ExceptionUtil
 
     /**
      * 将ErrorStack转化为String.
+     *
+     * @param e the e
+     * @return the stack trace as string
      */
     public static String getStackTraceAsString(Throwable e)
     {
@@ -41,6 +47,10 @@ public class ExceptionUtil
 
     /**
      * 判断异常是否由某些底层的异常引起.
+     *
+     * @param ex                    the ex
+     * @param causeExceptionClasses the cause exception classes
+     * @return the boolean
      */
     public static boolean isCausedBy(Exception ex, Class<? extends Exception>... causeExceptionClasses)
     {
@@ -59,8 +69,8 @@ public class ExceptionUtil
     /**
      * 在request中获取异常类
      *
-     * @param request
-     * @return
+     * @param request the request
+     * @return throwable
      */
     public static Throwable getThrowable(HttpServletRequest request)
     {
@@ -73,7 +83,13 @@ public class ExceptionUtil
         return ex;
     }
 
-    //TODO 测试
+    /**
+     * Throw and logging exception.
+     *
+     * @param e              the e
+     * @param logger         the logger
+     * @param friendlyErrMsg the friendly err msg
+     */
     public static void throwAndLoggingException(Throwable e, Logger logger, String friendlyErrMsg)
     {
         e.printStackTrace();

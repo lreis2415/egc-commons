@@ -32,25 +32,28 @@ import java.util.List;
  *    <context:component-scan base-package="org.egc.commons.exception" use-default-filters="false">
  *       <context:include-filter type="assignable" expression="org.egc.commons.exception.ValidationExceptionHandler"/>
  *    </context:component-scan>
- * }
+ * }*
  * 参考：https://www.cnblogs.com/woshimrf/p/spring-web-400.html
  * </pre>
  *
  * @author houzhiwei
- * @date 2018/9/17 8:20
+ * @date 2018 /9/17 8:20
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 @ResponseBody
 public class ValidationExceptionHandler {
 
+    /**
+     * The Logger.
+     */
     Logger logger = LoggerFactory.getLogger(ValidationExceptionHandler.class);
 
     /**
      * 参数校验异常
      *
-     * @param e
-     * @return
+     * @param e the MethodArgumentNotValidException
+     * @return json error result
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -68,6 +71,12 @@ public class ValidationExceptionHandler {
         return new JsonErrorResult(errorMesssage, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Process argument type mismatch exception.
+     *
+     * @param e the MethodArgumentTypeMismatchException
+     * @return the json error result
+     */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public JsonErrorResult processArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
@@ -79,8 +88,8 @@ public class ValidationExceptionHandler {
     /**
      * 无法反序列化JSON数据，相对应的另一个异常为 HttpMessageNotWritableException
      *
-     * @param e
-     * @return
+     * @param e the HttpMessageNotReadableException
+     * @return json error result
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -91,6 +100,13 @@ public class ValidationExceptionHandler {
 
     }
 
+    /**
+     * Spring Controller 参数绑定异常.
+     *
+     * @param e    the BindException
+     * @param resp the resp
+     * @return the json object
+     */
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public JSONObject bindException(BindException e, HttpServletResponse resp) {
@@ -120,6 +136,12 @@ public class ValidationExceptionHandler {
         return jsonObject;
     }
 
+    /**
+     * Illegal params exception.
+     *
+     * @param e the UnexpectedTypeException
+     * @return the json error result
+     */
     @ExceptionHandler(UnexpectedTypeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public JsonErrorResult illegalParamsException(UnexpectedTypeException e) {

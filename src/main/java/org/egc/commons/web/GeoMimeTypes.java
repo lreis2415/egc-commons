@@ -5,7 +5,7 @@ import java.nio.file.Path;
 
 /**
  * <pre>
- * 空间数据的MimeType
+ * 空间数据的MimeType（参考52 North WPS）
  * MIME(Multipurpose Internet Mail Extensions)多用途互联网邮件扩展类型
  * 普通文件的MimeType常量(例如“application/json”)可通过下述两个类之一获得
  * {@link org.springframework.http.MediaType}

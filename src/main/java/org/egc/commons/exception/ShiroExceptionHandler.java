@@ -16,18 +16,25 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * http://blog.didispace.com/springbootexception/
  *
  * @author houzhiwei
- * @date 2018/5/18 19:41
+ * @date 2018 /5/18 19:41
  */
 @ControllerAdvice
 public class ShiroExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ShiroExceptionHandler.class);
 
-    @ExceptionHandler(AuthenticationException.class)
+
+    /**
+     * Authentication exception.
+     *
+     * @param e the e
+     * @return the json error result
+     */
     @ResponseBody
+    @ExceptionHandler(AuthenticationException.class)
     public JsonErrorResult authenticationException(AuthenticationException e) {
         String msg = e.getMessage();
         logger.error(msg);
-        return new JsonErrorResult(msg, HttpStatus.UNAUTHORIZED);
+        return new JsonErrorResult("[ Authentication Error ] "+msg, HttpStatus.UNAUTHORIZED);
     }
 }

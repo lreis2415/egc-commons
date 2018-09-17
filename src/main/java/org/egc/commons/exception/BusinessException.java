@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import java.io.Serializable;
 
 /**
- * TODO
  * 业务异常处理类
  *
  * @author houzhiwei
@@ -24,7 +23,7 @@ public class BusinessException extends RuntimeException implements Serializable 
      * 是否打印异常信息
      * print exception or not
      */
-    private boolean print = true;
+    private boolean print = false;
 
     private HttpStatus httpStatus;
 

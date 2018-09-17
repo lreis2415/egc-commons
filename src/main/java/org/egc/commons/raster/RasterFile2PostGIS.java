@@ -9,7 +9,8 @@ import java.io.InputStreamReader;
 
 /**
  * Created by lp on 2017/4/26.
- * TODO Ê¹ÓÃcommons-exec¸ÄĞ´£»LinuxÏÂÈçºÎÖ´ĞĞ
+ * update houzhiwei
+ * TODO ä½¿ç”¨commons-execæ”¹å†™ï¼Œæµ‹è¯•Linuxä¸‹è¿è¡Œ
  */
 public class RasterFile2PostGIS {
 	Logger logger = LoggerFactory.getLogger(this.getClass());

@@ -77,11 +77,12 @@ public class FilesOperation {
 
 
     /**
-     * 获取文件后缀
-     *
+     * 获取文件后缀。
+     * 使用{@link org.egc.commons.util.FileUtil#getFileExtension(String)}
      * @param filename
      * @return 文件后缀
      */
+    @Deprecated
     public static String getFileSuffix(String filename) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(filename), "Filename can not be null or empty");
         File file = new File(filename);

@@ -4,7 +4,10 @@ import com.alibaba.fastjson.support.spring.FastJsonJsonView;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -17,12 +20,15 @@ import java.util.Map;
  * 全局异常处理，返回json数据
  * 不需要捕获异常，抛出即可
  * 需要在spring中配置bean
+ *  &lt;bean id="exceptionHandler" class="org.egc.commons.exception.JsonHandlerExceptionResolver"/&gt;
  * 参考 http://blog.csdn.net/chwshuang/article/details/48089203
  * </pre>
  *
  * @author houzhiwei
  * @date 2016/12/6 15:49
  */
+@Component
+@Order(Ordered.LOWEST_PRECEDENCE)
 public class JsonHandlerExceptionResolver implements HandlerExceptionResolver {
     private static final Logger logger = LoggerFactory.getLogger(JsonHandlerExceptionResolver.class);
 
@@ -35,7 +41,6 @@ public class JsonHandlerExceptionResolver implements HandlerExceptionResolver {
         Map<String, Object> attrs = Maps.newHashMap();
         attrs.put("msg", ex.getMessage());
         attrs.put("cause", ex.getCause());
-//        attrs.put("localMsg", ex.getLocalizedMessage());
         jsonView.setAttributesMap(attrs);
         mv.setView(jsonView);
         if (ex instanceof BusinessException) {
@@ -49,4 +54,5 @@ public class JsonHandlerExceptionResolver implements HandlerExceptionResolver {
         }
         return mv;
     }
+
 }

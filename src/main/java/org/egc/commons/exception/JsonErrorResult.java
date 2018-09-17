@@ -1,5 +1,6 @@
 package org.egc.commons.exception;
 
+import com.alibaba.fastjson.JSONArray;
 import org.springframework.http.HttpStatus;
 
 import java.io.Serializable;
@@ -11,7 +12,7 @@ import java.io.Serializable;
  * @date 2017/1/19 15:30
  */
 public class JsonErrorResult implements Serializable {
-    private String msg;
+    private Object msg;
 
     /**
      * Getter for property 'status'.
@@ -47,7 +48,13 @@ public class JsonErrorResult implements Serializable {
         this.status = status;
     }
 
-    public String getMsg()
+    public JsonErrorResult(JSONArray errors, HttpStatus status)
+    {
+        this.msg = errors;
+        this.status = status;
+    }
+
+    public Object getMsg()
     {
         return msg;
     }
@@ -77,4 +84,6 @@ public class JsonErrorResult implements Serializable {
                 ", cause='" + cause + '\'' +
                 '}';
     }
+
+
 }

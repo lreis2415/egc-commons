@@ -2,7 +2,6 @@ package org.egc.commons.exception;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import freemarker.core.UnexpectedTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.UnexpectedTypeException;
 import java.util.List;
 
 /**
@@ -57,7 +57,7 @@ public class ValidationExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public JsonErrorResult bindException(MethodArgumentNotValidException e) {
+    public JsonErrorResult argumentNotValidException(MethodArgumentNotValidException e) {
 
         // 获取字段绑定的异常信息，如 @Size(min=1, max=6,message="Size should be between 1 to 6")
         BindingResult bindingResult = e.getBindingResult();
@@ -79,9 +79,9 @@ public class ValidationExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public JsonErrorResult processArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+    public JsonErrorResult argumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
 
-        logger.error("[ Argument Type Mismatch ] {}", e.getMessage());
+        logger.error("[ Argument Type Mismatch ] {}", e.getCause());
         return new JsonErrorResult("[ Argument Type Mismatch ]" + e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
@@ -93,9 +93,9 @@ public class ValidationExceptionHandler {
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public JsonErrorResult messageNotReadable(HttpMessageNotReadableException e) {
+    public JsonErrorResult messageNotReadableException(HttpMessageNotReadableException e) {
 
-        logger.error("JSON parse error: ", e);
+        logger.error("JSON parse error: {}", e.getCause());
         return new JsonErrorResult("[ JSON Parse Error ] " + e.getMessage(), HttpStatus.BAD_REQUEST);
 
     }
@@ -145,7 +145,7 @@ public class ValidationExceptionHandler {
     @ExceptionHandler(UnexpectedTypeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public JsonErrorResult illegalParamsException(UnexpectedTypeException e) {
-        logger.error("[ Unexpected Type ]", e);
-        return new JsonErrorResult("[ Illegal_params ] " + e.getBlamedExpressionString(), HttpStatus.BAD_REQUEST);
+        logger.error("[ Unexpected Type ] {}", e.getCause());
+        return new JsonErrorResult("[ Illegal_params ] " + e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

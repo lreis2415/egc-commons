@@ -27,8 +27,7 @@
         <commons-exec.version>1.3</commons-exec.version>
         <commons-csv.version>1.5</commons-csv.version>
         <joda.version>2.9.7</joda.version>
-        <servlet.version>3.1.0</servlet.version>
-
+        <gdal.gisinternal.version>1.11.4</gdal.gisinternal.version>
         <jjwt.version>0.9.0</jjwt.version>
         <spring.version>4.3.5.RELEASE</spring.version>
         <shiro.version>1.4.0</shiro.version>
@@ -37,7 +36,8 @@
         <mybatis-spring.version>1.3.0</mybatis-spring.version>
         <freemarker.version>2.3.23</freemarker.version>
         <dom4j.version>1.6.1</dom4j.version>
-
+        <servlet.version>3.1.0</servlet.version>
+        <validation.version>2.0.1.Final</validation.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -85,14 +85,13 @@
             <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>${spring.version}</version>
             <scope>compile</scope>
         </dependency>
-        <!-- commons-lang3 -->
+        <!-- commons -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-exec</artifactId>
@@ -103,7 +102,6 @@
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3.version}</version>
         </dependency>
-        <!-- commons-io -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -114,6 +112,7 @@
             <artifactId>commons-csv</artifactId>
             <version>${commons-csv.version}</version>
         </dependency>
+        <!--security-->
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-core</artifactId>
@@ -144,8 +143,9 @@
             <groupId>org.gdal</groupId>
             <artifactId>gdal</artifactId>
             <classifier>gisinternals</classifier>
-            <version>1.11.4</version>
+            <version>${gdal.gisinternal.version}</version>
         </dependency>
+        <!--test-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -158,6 +158,13 @@
             <version>${mockito.version}</version>
             <scope>compile</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${validation.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>

@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * TODO
+ * 栅格数据元数据
  *
  * @author houzhiwei
  * @date 2018 /8/28 18:55
@@ -17,9 +17,20 @@ public class RasterMetadata implements Serializable {
      * Coordinate Reference System Identify
      */
     private String crs;
-    private String projStr;
+    /**
+     * Coordinate Reference System string in PROJ.4 format
+     */
+    private String crsProj4;
+    /**
+     * Coordinate Reference System string in WKT format
+     */
     private String crsWkt;
-    private Integer epsg;
+    /**
+     * 空间引用标识符 (spatial reference identifier)，
+     * 通常为EPSG代码，如4326。
+     * 参考：http://epsg.io
+     */
+    private Integer srid;
     private double nodata;
     private String format;
     private double maxValue;

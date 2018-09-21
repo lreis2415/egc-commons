@@ -1,5 +1,6 @@
 package org.egc.commons.raster;
 
+import lombok.extern.slf4j.Slf4j;
 import org.egc.commons.exception.BusinessException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -18,8 +19,6 @@ import org.opengis.parameter.ParameterValue;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.osgeo.proj4j.CRSFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -37,9 +36,8 @@ import java.util.Set;
  * @author houzhiwei
  * @date 2018/9/21
  */
+@Slf4j
 public class GeoTiffUtil {
-
-    private static final Logger logger = LoggerFactory.getLogger(GeoTiffUtil.class);
 
     /**
      * Read geotiff file.
@@ -56,11 +54,11 @@ public class GeoTiffUtil {
             reader = new GeoTiffReader(new FileInputStream(rasterFile));
         } catch (DataSourceException e) {
             msg = "Error in GeoTIFF file!";
-            logger.error(msg, e);
+            log.error(msg, e);
             throw new BusinessException(e, msg + e.getLocalizedMessage());
         } catch (FileNotFoundException e) {
             msg = "GeoTIFF file not found! ";
-            logger.error(msg, e);
+            log.error(msg, e);
             throw new BusinessException("GeoTIFF file not found! " + e.getLocalizedMessage());
         }
 
@@ -79,20 +77,19 @@ public class GeoTiffUtil {
             coverage = reader.read(new GeneralParameterValue[]{policy, gridSize, useJaiRead});
         } catch (IOException e) {
             msg = "Error while reading GeoTIFF file!";
-            logger.error(msg, e);
+            log.error(msg, e);
             throw new BusinessException(msg + e.getLocalizedMessage());
         }
         return coverage;
     }
 
     /**
-     * Read geotiff and return metadata.
+     * Read geotiff and gets metadata.
      *
-     * @param tif the tif
+     * @param tif the geotiff
      * @return the raster metadata
-     * @throws IOException the io exception
      */
-    public static RasterMetadata getGeoTiffMetadata(String tif) {
+    public static RasterMetadata getMetadata(String tif) {
         GridCoverage2D coverage2D = read(tif);
         RasterMetadata metadata = getCoverageMetadata(coverage2D);
         metadata.setFormat("GeoTIFF");
@@ -101,29 +98,30 @@ public class GeoTiffUtil {
 
     /**
      * <pre>
-     * Read metadata raster metadata.
+     * Get coverage metadata.
      * format not set
      * </pre>
      *
      * @param coverage the coverage
      * @return the raster metadata
-     * @throws IOException the io exception
      */
     public static RasterMetadata getCoverageMetadata(GridCoverage2D coverage) {
         RasterMetadata metadata = new RasterMetadata();
         double nodata = CoverageUtilities.getNoDataProperty(coverage).getAsSingleValue();
         metadata.setNodata(nodata);
         CoordinateReferenceSystem crs = coverage.getCoordinateReferenceSystem();
+        //获取wkt格式的投影信息
         metadata.setCrsWkt(crs.toWKT());
         try {
-            metadata.setEpsg(CRS.lookupEpsgCode(crs, true));
+            metadata.setSrid(CRS.lookupEpsgCode(crs, true));
         } catch (FactoryException e) {
-            logger.error("Error occured while searching for the identifier.", e);
+            log.error("Error occured while searching for the identifier.", e);
             throw new BusinessException(e, "Error occured while searching for the CRS identifier");
         }
         CRSFactory csFactory = new CRSFactory();
         org.osgeo.proj4j.CoordinateReferenceSystem crsProj = csFactory.createFromName(crs.getIdentifiers().toArray()[0].toString());
-        metadata.setProjStr(crsProj.getProjection().getPROJ4Description());
+        //获取proj4格式的投影信息
+        metadata.setCrsProj4(crsProj.getProjection().getPROJ4Description());
         Envelope2D envelope2D = coverage.getEnvelope2D();
         metadata.setHeight(envelope2D.height);
         metadata.setWidth(envelope2D.width);
@@ -150,7 +148,7 @@ public class GeoTiffUtil {
             results = rasterProcess.execute(coverage, set, band_i, 1,
                                             ClassificationMethod.QUANTILE, nodata, null);
         } catch (IOException e) {
-            logger.error("Process raster file statistics failed", e);
+            log.error("Process raster file statistics failed", e);
             throw new BusinessException(e, "Process raster file statistics failed");
         }
         metadata.setMinValue(results.value(0, Statistic.MIN));

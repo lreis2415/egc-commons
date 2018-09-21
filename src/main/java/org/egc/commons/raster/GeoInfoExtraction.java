@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by lp on 2017/4/25.
  */
+@Deprecated
 public class GeoInfoExtraction {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());

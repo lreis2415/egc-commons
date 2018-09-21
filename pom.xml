@@ -38,6 +38,7 @@
         <dom4j.version>1.6.1</dom4j.version>
         <servlet.version>3.1.0</servlet.version>
         <validation.version>2.0.1.Final</validation.version>
+        <geotools.version>19.2</geotools.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -49,6 +50,13 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
+        </dependency>
+        <!-- 帮助开发人员消除Java的冗长代码 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.16</version>
+            <scope>provided</scope>
         </dependency>
         <!--google通用类库-->
         <dependency>
@@ -139,12 +147,6 @@
             <artifactId>dom4j</artifactId>
             <version>${dom4j.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.gdal</groupId>
-            <artifactId>gdal</artifactId>
-            <classifier>gisinternals</classifier>
-            <version>${gdal.gisinternal.version}</version>
-        </dependency>
         <!--test-->
         <dependency>
             <groupId>junit</groupId>
@@ -164,7 +166,28 @@
             <artifactId>validation-api</artifactId>
             <version>${validation.version}</version>
         </dependency>
-
+        <!--gis-->
+        <dependency>
+            <groupId>org.gdal</groupId>
+            <artifactId>gdal</artifactId>
+            <classifier>gisinternals</classifier>
+            <version>${gdal.gisinternal.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osgeo</groupId>
+            <artifactId>proj4j</artifactId>
+            <version>0.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-process-raster</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-geotiff</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -3,6 +3,7 @@ package org.egc.commons.test;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.crypto.AesCipherService;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.util.ByteSource;
 import org.egc.commons.security.AesEncryption;
 import org.egc.commons.security.EncryptionUtil;
@@ -89,4 +90,15 @@ public class EncryptionTest {
 //		System.out.println(DatatypeConverter.printHexBinary(JwtUtil.generateKey().getEncoded()));
 //		System.out.println(JwtUtil.parseJWT4Username("eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiIxIiwiaWF0IjoxNDk3NzcyMzA3LCJzdWIiOiJ5ZXMiLCJpc3MiOiJtZSIsImV4cCI6MTQ5Nzc3MjM0N30.EpmWHXB4ybldDyFFD8dKjtjhyJ052iWoxkMnyENmAHw"));
 	}
+
+	@Test
+	public void md5(){
+		String a = "aaaa";
+		System.out.println(EncryptionUtil.md5Digest(a));
+		Md5Hash md5Hash = new Md5Hash(a, "egc", 2);
+		System.out.println(md5Hash.toBase64());
+		System.out.println(md5Hash.toString());
+		System.out.println(md5Hash.toHex());
+	}
+
 }

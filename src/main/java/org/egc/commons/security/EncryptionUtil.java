@@ -5,7 +5,6 @@ import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.*;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * <pre/>
@@ -65,7 +64,8 @@ public class EncryptionUtil {
     public static EncryptedDTO md5Encrypt(String src)
     {
         String salt = generateSaltWithSeed(src);
-        String result = new Md5Hash(src, salt, 5).toHex();//新的加密之后的密码
+        //新的加密之后的密码
+        String result = new Md5Hash(src, salt, 5).toHex();
         return getEncrypted(salt, result);
     }
 
@@ -196,9 +196,26 @@ public class EncryptionUtil {
         return flag;
     }
 
-    public static String md5Digest(String src) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        md.update((src).getBytes());
-        return new String(md.digest());
+    public static String md5Digest(String src) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update((src).getBytes("UTF-8"));
+            return new String(md.digest());
+        } catch (Exception e) {
+            // 已知不会出现异常
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 使用shiro的md5hash 进行哈希；
+     * 使用参数本身生成盐值，迭代5次
+     * @param src 需要哈希的字符串
+     * @return hex md5 hash
+     */
+    public static String md5Hash(String src){
+        String salt = generateSaltWithSeed(src);
+        return new Md5Hash(src, salt, 5).toHex();
     }
 }

@@ -1,6 +1,8 @@
 package org.egc.commons.raster;
 import org.gdal.osr.CoordinateTransformation;
 import org.gdal.osr.SpatialReference;
+
+@Deprecated
 public class PointCoordinateTransform {
 
     public double[] coordinateTransform(int sourceEPSG, int destinationEPSG, double x, double y){

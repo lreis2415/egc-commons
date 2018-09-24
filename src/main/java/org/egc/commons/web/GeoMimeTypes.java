@@ -5,7 +5,7 @@ import java.nio.file.Path;
 
 /**
  * <pre>
- * 空间数据的MimeType（参考52 North WPS）
+ * 空间数据的MimeType
  * MIME(Multipurpose Internet Mail Extensions)多用途互联网邮件扩展类型
  * 普通文件的MimeType常量(例如“application/json”)可通过下述两个类之一获得
  * {@link org.springframework.http.MediaType}
@@ -14,6 +14,7 @@ import java.nio.file.Path;
  * 1. {@link javax.activation.MimetypesFileTypeMap#getContentType(File)}
  * 2. {@link java.nio.file.Files#probeContentType(Path)}<br/>
  * </pre>
+ * 参考： 52 North WPS 与 Web Processing Service Best Practices Discussion Paper
  *
  * @author houzhiwei
  * @date 2018/9/13 16:34
@@ -48,5 +49,8 @@ public class GeoMimeTypes {
     public static final String APPLICATION_RDATA_SPATIAL = "application/rData+Spatial";
     public static final String APPLICATION_RDATA_SPATIALPOINTS = "application/rData+SpatialPoints";
     public static final String APPLICATION_RDATA_SPATIALPOLYGONS = "application/rData+SpatialPolygons";
+    public static final String APPLICATION_GEOJSON = "application/geojson";
+    public static final String APPLICATION_GML = "application/gml+xml";
+    public static final String ARC_INFO_ASCII_GRID = "application/x‐ogc‐aaigrid";
 
 }

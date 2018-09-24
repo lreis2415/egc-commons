@@ -1,10 +1,8 @@
 package org.egc.commons.test;
 
-import org.egc.commons.raster.GeoInfoExtraction;
-import org.egc.commons.raster.PointCoordinateTransform;
-import org.egc.commons.raster.RasterFile2PostGIS;
-import org.egc.commons.raster.RasterInfo;
+import org.egc.commons.raster.*;
 import org.junit.Test;
+import org.osgeo.proj4j.ProjCoordinate;
 
 
 /**
@@ -36,8 +34,12 @@ public class RasterTest {
         double y = 3637696.4693184034;
         PointCoordinateTransform pointCoordinateTransform = new PointCoordinateTransform();
         double[] newCoord = pointCoordinateTransform.coordinateTransform(3857, 32650, x, y);
-        System.out.println(newCoord[0]);
-        System.out.print(newCoord[1]);
+        System.out.println(newCoord[0]);//688876.5583467542
+        System.out.println(newCoord[1]);//3435505.2951291953
+
+       ProjCoordinate coordinate =  Proj4Util.coordinateTransform(3857, 32650, x, y);
+        System.out.println(coordinate.x);//688876.5583467542
+        System.out.println(coordinate.y);//3435505.2951291953
     }
     @Test
     public void testSplit(){

@@ -9,14 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.lang.reflect.Method;
+import java.nio.MappedByteBuffer;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-/*
-*
-import org.apache.tools.zip.ZipEntry;
-import org.apache.tools.zip.ZipFile;
-import org.apache.tools.zip.ZipOutputStream;
-* */
 
 /**
  * 文件操作工具类
@@ -47,8 +45,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * @param coverlay     如果目标文件已存在，是否覆盖
      * @return 如果复制成功，则返回true，否则返回false
      */
-    public static boolean copyFileCover(String srcFileName,
-                                        String descFileName, boolean coverlay)
+    public static boolean copyFileCover(String srcFileName, String descFileName, boolean coverlay)
     {
         File srcFile = new File(srcFileName);
         // 判断源文件是否存在
@@ -148,8 +145,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * @param coverlay    如果目标目录存在，是否覆盖
      * @return 如果复制成功返回true，否则返回false
      */
-    public static boolean copyDirectoryCover(String srcDirName,
-                                             String descDirName, boolean coverlay)
+    public static boolean copyDirectoryCover(String srcDirName, String descDirName, boolean coverlay)
     {
         File srcDir = new File(srcDirName);
         // 判断源目录是否存在
@@ -423,8 +419,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * @param fileName     根目录下的待压缩的文件名或文件夹名，其中*或""表示跟目录下的全部文件
      * @param descFileName 目标zip文件
      */
-    public static void zipFiles(String srcDirName, String fileName,
-                                String descFileName)
+    public static void zipFiles(String srcDirName, String fileName, String descFileName)
     {
         // 判断目录是否存在
         if (srcDirName == null) {
@@ -462,69 +457,13 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
     }
 
     /**
-     * 解压缩ZIP文件，将ZIP文件里的内容解压到descFileName目录下
-     * @param zipFileName 需要解压的ZIP文件
-     * @param descFileName 目标文件
-     */
-    /*public static boolean unZipFiles(String zipFileName, String descFileName) {
-        String descFileNames = descFileName;
-        if (!descFileNames.endsWith(File.separator)) {
-            descFileNames = descFileNames + File.separator;
-        }
-        try {
-            // 根据ZIP文件创建ZipFile对象
-            ZipFile zipFile = new ZipFile(zipFileName);
-            ZipEntry entry = null;
-            String entryName = null;
-            String descFileDir = null;
-            byte[] buf = new byte[4096];
-            int readByte = 0;
-            // 获取ZIP文件里所有的entry
-            @SuppressWarnings("rawtypes")
-            Enumeration enums = zipFile.getEntries();
-            // 遍历所有entry
-            while (enums.hasMoreElements()) {
-                entry = (ZipEntry) enums.nextElement();
-                // 获得entry的名字
-                entryName = entry.getName();
-                descFileDir = descFileNames + entryName;
-                if (entry.isDirectory()) {
-                    // 如果entry是一个目录，则创建目录
-                    new File(descFileDir).mkdirs();
-                    continue;
-                } else {
-                    // 如果entry是一个文件，则创建父目录
-                    new File(descFileDir).getParentFile().mkdirs();
-                }
-                File file = new File(descFileDir);
-                // 打开文件输出流
-                OutputStream os = new FileOutputStream(file);
-                // 从ZipFile对象中打开entry的输入流
-                InputStream is = zipFile.getInputStream(entry);
-                while ((readByte = is.read(buf)) != -1) {
-                    os.write(buf, 0, readByte);
-                }
-                os.close();
-                is.close();
-            }
-            zipFile.close();
-            log.debug("文件解压成功!");
-            return true;
-        } catch (Exception e) {
-            log.debug("文件解压失败：" + e.getMessage());
-            return false;
-        }
-    }*/
-
-    /**
      * 将目录压缩到ZIP输出流
      *
      * @param dirPath 目录路径
      * @param fileDir 文件信息
      * @param zouts   输出流
      */
-    public static void zipDirectoryToZipFile(String dirPath, File fileDir,
-                                             ZipOutputStream zouts)
+    public static void zipDirectoryToZipFile(String dirPath, File fileDir, ZipOutputStream zouts)
     {
         if (fileDir.isDirectory()) {
             File[] files = fileDir.listFiles();
@@ -564,8 +503,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * @param file    文件
      * @param zouts   输出流
      */
-    public static void zipFilesToZipFile(String dirPath, File file,
-                                         ZipOutputStream zouts)
+    public static void zipFilesToZipFile(String dirPath, File file, ZipOutputStream zouts)
     {
         FileInputStream fin = null;
         ZipEntry entry = null;
@@ -653,7 +591,43 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * @return
      */
     public static String getFileExtension(File file) {
-        Preconditions.checkNotNull(file,"file must not be null");
+        Preconditions.checkNotNull(file, "file must not be null");
         return getFileExtension(file.getName());
+    }
+
+    /**
+     * 清除 MappedByteBuffer
+     * <pre>
+     * 在MappedByteBuffer释放后再对它进行读操作的话就会引发jvm crash，在并发情况下很容易发生
+     * 正在释放时另一个线程正开始读取，于是crash就发生了。所以为了系统稳定性释放前一般需要检 查是否还有线程在读或写
+     * 参考：
+     * https://blog.csdn.net/ljh_learn_from_base/article/details/77816957
+     * https://github.com/Fourwenwen/Breakpoint-http/blob/master/src/main/java/win/pangniu/learn/utils/FileMD5Util.java
+     * </pre>
+     *
+     * @param buffer mappedByteBuffer
+     */
+    public static void cleanMappedByteBuffer(final MappedByteBuffer buffer) throws Exception {
+        if (buffer == null) {
+            return;
+        }
+        buffer.force();
+        AccessController.doPrivileged(new PrivilegedAction<Object>() {
+            //Privileged特权
+            @Override
+            public Object run() {
+                try {
+                    Method getCleanerMethod = buffer.getClass().getMethod("cleaner", new Class[0]);
+                    getCleanerMethod.setAccessible(true);
+                    sun.misc.Cleaner cleaner = (sun.misc.Cleaner) getCleanerMethod.invoke(buffer, new Object[0]);
+                    cleaner.clean();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    log.error("clean MappedByteBuffer error!!!", e);
+                }
+                log.info("clean MappedByteBuffer completed!!!");
+                return null;
+            }
+        });
     }
 }

@@ -1,5 +1,8 @@
 package org.egc.commons.util;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -13,6 +16,8 @@ import java.util.regex.Pattern;
  * @date 2017/6/29 16:31
  */
 public class StringUtil {
+    private StringUtil() {
+    }
 
     private static final char SEPARATOR = '_';
 
@@ -144,5 +149,10 @@ public class StringUtil {
         }
 
         return sb.toString();
+    }
+
+    public static void isNullOrEmptyPrecondition(String s, String msg) {
+        s = Strings.emptyToNull(s);
+        Preconditions.checkNotNull(s, msg);
     }
 }

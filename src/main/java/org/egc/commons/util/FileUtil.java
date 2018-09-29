@@ -4,6 +4,7 @@
 package org.egc.commons.util;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -571,6 +572,22 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
             p = p + "/";
         }
         return p;
+    }
+
+    /**
+     * 为路径添加 {@link File#separator}
+     * @param directory
+     * @return
+     */
+    public static String normalizeDirectory(String directory) {
+        directory = Strings.emptyToNull(directory);
+        Preconditions.checkNotNull(directory);
+        directory = path(directory);
+        if (directory.endsWith(File.separator)) {
+            return directory;
+        } else {
+            return directory + File.separator;
+        }
     }
 
     /**

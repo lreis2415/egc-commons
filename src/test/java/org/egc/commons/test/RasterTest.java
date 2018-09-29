@@ -16,20 +16,22 @@ public class RasterTest {
     String passWord = "123";
     RasterInfo rasterInfo = new RasterInfo();
     RasterFile2PostGIS rasterFile2PostGIS = new RasterFile2PostGIS();
+
     @Test
-    public void rasterInfoTest(){
+    public void rasterInfoTest() {
         GeoInfoExtraction geoInfoExtraction = new GeoInfoExtraction();
         rasterInfo = geoInfoExtraction.readMetaData(path);
         System.out.println("");
     }
+
     @Test
-    public void tt(){
-        rasterFile2PostGIS.file2PostGIS(32650, "D:/DataBase/xuancheng/slope.tif",rasterTableName,dateBaseInfo, postGISPath,passWord);
+    public void tt() {
+        rasterFile2PostGIS.file2PostGIS(32650, "D:/DataBase/xuancheng/slope.tif", rasterTableName, dateBaseInfo, postGISPath, passWord);
         //String a = "raster2pgsql -s 32650  -I -a -M  D:\\SampleBase\\dem.tif  -a  public.t_rasters | psql  dbname=db_cyberSolim user=postgres password=123";
     }
 
     @Test
-    public void coordTest(){
+    public void coordTest() {
         double x = 13244689.433917364;
         double y = 3637696.4693184034;
         PointCoordinateTransform pointCoordinateTransform = new PointCoordinateTransform();
@@ -37,18 +39,20 @@ public class RasterTest {
         System.out.println(newCoord[0]);//688876.5583467542
         System.out.println(newCoord[1]);//3435505.2951291953
 
-       ProjCoordinate coordinate =  Proj4Util.coordinateTransform(3857, 32650, x, y);
+        ProjCoordinate coordinate = Proj4Util.coordinateTransform(3857, 32650, x, y);
         System.out.println(coordinate.x);//688876.5583467542
         System.out.println(coordinate.y);//3435505.2951291953
     }
+
     @Test
-    public void testSplit(){
+    public void testSplit() {
         String a = "D:\\ee/wo.ww";
         String[] b = a.split("/");
         System.out.println(b[1]);
     }
+
     @Test
-    public void testGetRasterInfo(){
+    public void testGetRasterInfo() {
         //String path = "D:/DataBase/xuancheng/slope.tif";
         String path = "H:/GIS data/SRTM/SRTM_China_Geo_3s.tif";
         GeoInfoExtraction geoInfoExtraction = new GeoInfoExtraction();

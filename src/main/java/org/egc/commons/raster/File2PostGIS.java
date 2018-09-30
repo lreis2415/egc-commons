@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * Description:
  * <pre>
- *
+ * Load geosptaial data to postgis
  * </pre>
  *
  * @author houzhiwei
@@ -32,6 +32,8 @@ public class File2PostGIS {
     private static final String PSQL = "psql";
     private static final String RASTER_2_PGSQL = "raster2pgsql";
     private static final String SHP_2_PGSQL = "shp2pgsql";
+    private static final String PGSQL_2_SHP = "pgsql2shp";
+    private static final String OSM_2_PGROUTING = "osm2pgrouting";
 
     /**
      * Import raster file to postgis.
@@ -65,7 +67,7 @@ public class File2PostGIS {
         List<String> envs = Lists.newArrayList();
         envs.add(PGPASSWORD + "=" + pgInfo.getPassword());
         if (Strings.isNullOrEmpty(System.getenv("PSQL"))) {
-            envs.add(PSQL + "=" + pgInfo.getBinDirectory());
+            envs.add( "PSQL=" + pgInfo.getBinDirectory());
         }
 
         commandLine.addArgument(RASTER_2_PGSQL);
@@ -74,6 +76,8 @@ public class File2PostGIS {
         commandLine.addArgument("-I");
         // Vacuum analyze the raster table.
         commandLine.addArgument("-M");
+        //-F Add a column with the name of the file
+        commandLine.addArgument("-F");
         // raster file or files (eg. *.tif)
         commandLine.addArgument("${file}");
         // Append raster(s) to an existing table.
@@ -99,6 +103,8 @@ public class File2PostGIS {
         } catch (IOException e) {
             e.printStackTrace();
             log.error(e.getMessage());
+            out = new HashMap();
+            out.put("error", e.getMessage());
         }
         return out;
     }

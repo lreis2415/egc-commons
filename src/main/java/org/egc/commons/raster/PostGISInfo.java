@@ -6,7 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Description:
  * <pre>
- *
+ * postgis 数据库连接信息。
+ * 若导入栅格数据，必须设置 rasterTable 值
+ * 若导入shapefile数据，必须设置 shapeTable 值
+ * schema默认为public
+ * host默认localhost
+ * binDirectory默认为环境变量PSQL值
  * </pre>
  *
  * @author houzhiwei

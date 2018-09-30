@@ -1,8 +1,9 @@
 # EGC-Commons
 
 Reusable Java components for EGC
-
 > Formerly ***commons*** module in project cybersolim
+
+**开发完之后，必须deploy到maven仓库，同时在项目中刷新之后才能使用**
 
 ## Maven dependency
 

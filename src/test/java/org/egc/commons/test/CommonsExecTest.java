@@ -78,8 +78,9 @@ public class CommonsExecTest {
         } catch (IOException e) {
             e.printStackTrace();
         }*/
-        info.setRasterTable("t_rasters_test");
+        info.setRasterTable("t_rasters");
         Map out = File2PostGIS.raster2PostGIS(9001, "H:\\dem_TX_out.tif", info);
         System.out.println(out.get("error"));
+        System.out.println(out.get("exitValue"));
     }
 }

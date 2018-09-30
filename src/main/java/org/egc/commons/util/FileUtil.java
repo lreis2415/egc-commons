@@ -9,10 +9,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.nio.MappedByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.AccessController;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivilegedAction;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -22,7 +27,9 @@ import java.util.zip.ZipOutputStream;
  * 实现文件的创建、删除、复制、压缩、解压以及目录的创建、删除、复制、压缩解压等功能
  *
  * @author ThinkGem
- * @version 2013-06-21
+ * @version 2013 -06-21
+ * @author houzhiwei
+ * @version 2018
  */
 public class FileUtil extends org.apache.commons.io.FileUtils {
     private static Logger log = LoggerFactory.getLogger(FileUtil.class);
@@ -32,7 +39,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      *
      * @param srcFileName  待复制的文件名
      * @param descFileName 目标文件名
-     * @return 如果复制成功，则返回true，否则返回false
+     * @return 如果复制成功 ，则返回true，否则返回false
      */
     public static boolean copyFile(String srcFileName, String descFileName) {
         return FileUtil.copyFileCover(srcFileName, descFileName, false);
@@ -44,7 +51,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * @param srcFileName  待复制的文件名
      * @param descFileName 目标文件名
      * @param coverlay     如果目标文件已存在，是否覆盖
-     * @return 如果复制成功，则返回true，否则返回false
+     * @return 如果复制成功 ，则返回true，否则返回false
      */
     public static boolean copyFileCover(String srcFileName, String descFileName, boolean coverlay)
     {
@@ -131,7 +138,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      *
      * @param srcDirName  源目录名
      * @param descDirName 目标目录名
-     * @return 如果复制成功返回true，否则返回false
+     * @return 如果复制成功返回true ，否则返回false
      */
     public static boolean copyDirectory(String srcDirName, String descDirName) {
         return FileUtil.copyDirectoryCover(srcDirName, descDirName,
@@ -144,7 +151,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * @param srcDirName  源目录名
      * @param descDirName 目标目录名
      * @param coverlay    如果目标目录存在，是否覆盖
-     * @return 如果复制成功返回true，否则返回false
+     * @return 如果复制成功返回true ，否则返回false
      */
     public static boolean copyDirectoryCover(String srcDirName, String descDirName, boolean coverlay)
     {
@@ -225,7 +232,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * 删除文件，可以删除单个文件或文件夹
      *
      * @param fileName 被删除的文件名
-     * @return 如果删除成功，则返回true，否是返回false
+     * @return 如果删除成功 ，则返回true，否是返回false
      */
     public static boolean delFile(String fileName) {
         File file = new File(fileName);
@@ -245,7 +252,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * 删除单个文件
      *
      * @param fileName 被删除的文件名
-     * @return 如果删除成功，则返回true，否则返回false
+     * @return 如果删除成功 ，则返回true，否则返回false
      */
     public static boolean deleteFile(String fileName) {
         File file = new File(fileName);
@@ -267,7 +274,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * 删除目录及目录下的文件
      *
      * @param dirName 被删除的目录所在的文件路径
-     * @return 如果目录删除成功，则返回true，否则返回false
+     * @return 如果目录删除成功 ，则返回true，否则返回false
      */
     public static boolean deleteDirectory(String dirName) {
         String dirNames = dirName;
@@ -321,7 +328,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * 创建单个文件
      *
      * @param descFileName 文件名，包含路径
-     * @return 如果创建成功，则返回true，否则返回false
+     * @return 如果创建成功 ，则返回true，否则返回false
      */
     public static boolean createFile(String descFileName) {
         File file = new File(descFileName);
@@ -362,7 +369,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * 创建目录
      *
      * @param descDirName 目录名,包含路径
-     * @return 如果创建成功，则返回true，否则返回false
+     * @return 如果创建成功 ，则返回true，否则返回false
      */
     public static boolean createDirectory(String descDirName) {
         String descDirNames = descDirName;
@@ -389,6 +396,8 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * 写入文件
      *
      * @param fileName 要写入的文件
+     * @param content  the content
+     * @param append   the append
      */
     public static void writeToFile(String fileName, String content, boolean append) {
         try {
@@ -403,6 +412,9 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * 写入文件
      *
      * @param fileName 要写入的文件
+     * @param content  the content
+     * @param encoding the encoding
+     * @param append   the append
      */
     public static void writeToFile(String fileName, String content, String encoding, boolean append) {
         try {
@@ -559,8 +571,8 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
     /**
      * 修复路径，将 \\ 或 / 等替换为 File.separator
      *
-     * @param path
-     * @return
+     * @param path the path
+     * @return string
      */
     public static String path(String path) {
         String p = StringUtils.replace(path, "\\", "/");
@@ -576,8 +588,9 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
 
     /**
      * 为路径添加 {@link File#separator}
-     * @param directory
-     * @return
+     *
+     * @param directory the directory
+     * @return string
      */
     public static String normalizeDirectory(String directory) {
         directory = Strings.emptyToNull(directory);
@@ -591,10 +604,11 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
     }
 
     /**
-     * 获取文件扩展名
+     * 获取文件扩展名<br>
+     * 也可以使用 {@link com.google.common.io.Files#getFileExtension(String)}
      *
-     * @param filename
-     * @return
+     * @param filename the filename
+     * @return file extension
      */
     public static String getFileExtension(String filename) {
         Preconditions.checkNotNull(filename, "filename must not be null");
@@ -604,8 +618,8 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
     /**
      * 获取文件扩展名
      *
-     * @param file
-     * @return
+     * @param file the file
+     * @return file extension
      */
     public static String getFileExtension(File file) {
         Preconditions.checkNotNull(file, "file must not be null");
@@ -623,6 +637,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * </pre>
      *
      * @param buffer mappedByteBuffer
+     * @throws Exception the exception
      */
     public static void cleanMappedByteBuffer(final MappedByteBuffer buffer) throws Exception {
         if (buffer == null) {
@@ -646,5 +661,25 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
                 return null;
             }
         });
+    }
+
+    /**
+     * 计算文件的 MD5 <br>
+     * 更多方法参考：https://stackoverflow.com/questions/304268/getting-a-files-md5-checksum-in-java
+     *
+     * @param file the file
+     * @return the md5 string
+     * @throws IOException the io exception
+     */
+    public static String fileMD5(File file) throws IOException {
+        byte[] b = Files.readAllBytes(Paths.get(file.getPath()));
+        try {
+            byte[] hash = MessageDigest.getInstance("MD5").digest(b);
+            return DatatypeConverter.printHexBinary(hash);
+        } catch (NoSuchAlgorithmException e) {
+            // 可以确定存在MD5算法，因此可以直接catch异常
+            log.error("No MD5 Algorithm");
+            return null;
+        }
     }
 }

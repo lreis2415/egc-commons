@@ -81,7 +81,7 @@ public class ValidationExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public JsonErrorResult argumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
 
-        logger.error("[ Argument Type Mismatch ] {}", e.getCause());
+        logger.error("[ Argument Type Mismatch ] {}", e);
         return new JsonErrorResult("[ Argument Type Mismatch ]" + e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
@@ -95,7 +95,7 @@ public class ValidationExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public JsonErrorResult messageNotReadableException(HttpMessageNotReadableException e) {
 
-        logger.error("JSON parse error: {}", e.getCause());
+        logger.error("JSON parse error: {}", e);
         return new JsonErrorResult("[ JSON Parse Error ] " + e.getMessage(), HttpStatus.BAD_REQUEST);
 
     }
@@ -145,7 +145,7 @@ public class ValidationExceptionHandler {
     @ExceptionHandler(UnexpectedTypeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public JsonErrorResult illegalParamsException(UnexpectedTypeException e) {
-        logger.error("[ Unexpected Type ] {}", e.getCause());
+        logger.error("[ Unexpected Type ] {}", e);
         return new JsonErrorResult("[ Illegal_params ] " + e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

@@ -47,9 +47,15 @@ public class RasterMetadata implements Serializable {
     private double centerX;
     private double centerY;
     private double pixelSize;
+    /**
+     * 高度
+     */
     private double height;
-    private double width;
 
+    private double width;
+    /**
+     * 像素个数
+     */
     private int sizeHeight;
     private int sizeWidth;
 

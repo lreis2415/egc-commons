@@ -28,6 +28,8 @@ import java.util.Map;
 @Slf4j
 public class File2PostGIS {
 
+    private File2PostGIS() { }
+
     private static final String PGPASSWORD = "PGPASSWORD";
     private static final String PSQL = "psql";
     private static final String RASTER_2_PGSQL = "raster2pgsql";
@@ -44,6 +46,7 @@ public class File2PostGIS {
      * @return the boolean
      */
     public static Map<String, Object> raster2PostGIS(Integer srid, String filePath, PostGISInfo pgInfo) {
+
         String tableName = pgInfo.getRasterTable();
         StringUtil.isNullOrEmptyPrecondition(tableName, "Must set raster table name ");
         String pgBinDir = pgInfo.getBinDirectory();
@@ -55,20 +58,9 @@ public class File2PostGIS {
 
         pgBinDir = FileUtil.normalizeDirectory(pgBinDir);
 
-        CommandLine commandLine = null;
-        // use shell
-        if (OS.isFamilyWindows()) {
-            commandLine = new CommandLine("cmd");
-            commandLine.addArgument("/C");
-        } else if (OS.isFamilyUnix()) {
-            commandLine = new CommandLine("/bin/sh ");
-        }
-        // 环境变量
-        List<String> envs = Lists.newArrayList();
-        envs.add(PGPASSWORD + "=" + pgInfo.getPassword());
-        if (Strings.isNullOrEmpty(System.getenv("PSQL"))) {
-            envs.add( "PSQL=" + pgInfo.getBinDirectory());
-        }
+        CommandLine commandLine = initShellCommand();
+
+        List<String> envs = getEnvironmentVariables(pgInfo);
 
         commandLine.addArgument(RASTER_2_PGSQL);
         commandLine.addArgument("-s ${srid}", false);
@@ -87,6 +79,7 @@ public class File2PostGIS {
         commandLine.addArgument(PSQL);
         commandLine.addArgument("-U ${username}", false);
         commandLine.addArgument("-d ${db}", false);
+
         Map map = new HashMap();
         map.put("srid", srid);
         map.put("file", file);
@@ -102,10 +95,43 @@ public class File2PostGIS {
             out = CommonsExec.execWithOutput(cmd, envs);
         } catch (IOException e) {
             e.printStackTrace();
-            log.error(e.getMessage());
+            log.error("Load raster to postgis error: ", e);
             out = new HashMap();
             out.put("error", e.getMessage());
         }
         return out;
+    }
+
+    /**
+     * 初始化shell命令
+     *
+     * @return
+     */
+    private static CommandLine initShellCommand() {
+        CommandLine commandLine = null;
+        // use shell
+        if (OS.isFamilyWindows()) {
+            commandLine = new CommandLine("cmd");
+            commandLine.addArgument("/C");
+        } else if (OS.isFamilyUnix()) {
+            commandLine = new CommandLine("/bin/sh ");
+        }
+        return commandLine;
+    }
+
+    /**
+     * 设置环境变量
+     *
+     * @param pgInfo
+     * @return
+     */
+    private static List<String> getEnvironmentVariables(PostGISInfo pgInfo) {
+        // 环境变量
+        List<String> envs = Lists.newArrayList();
+        envs.add(PGPASSWORD + "=" + pgInfo.getPassword());
+        if (Strings.isNullOrEmpty(System.getenv("PSQL"))) {
+            envs.add("PSQL=" + pgInfo.getBinDirectory());
+        }
+        return envs;
     }
 }

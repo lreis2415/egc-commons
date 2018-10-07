@@ -11,15 +11,21 @@ package org.egc.commons.files;
  */
 public enum FileTypeEnum {
 
-    Raster("raster file"), Vector("vector file"), Sample("sample file");
+    Raster("raster", "raster file"), Vector("vector", "vector file"), Sample("sample", "sample file");
 
+    private String value;
     private String description;
 
-    FileTypeEnum(String description) {
+    FileTypeEnum(String value, String description) {
+        this.value = value;
         this.description = description;
     }
 
     public String getDescription() {
         return this.description;
+    }
+
+    public String getValue() {
+        return this.value;
     }
 }

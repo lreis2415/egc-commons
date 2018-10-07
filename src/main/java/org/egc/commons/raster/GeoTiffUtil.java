@@ -1,7 +1,16 @@
 package org.egc.commons.raster;
 
+import com.google.common.base.Strings;
+import it.geosolutions.jaiext.range.NoDataContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.egc.commons.exception.BusinessException;
+import org.egc.commons.util.StringUtil;
+import org.gdal.gdal.Band;
+import org.gdal.gdal.Dataset;
+import org.gdal.gdal.Driver;
+import org.gdal.gdal.gdal;
+import org.gdal.gdalconst.gdalconstConstants;
+import org.gdal.osr.SpatialReference;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -25,6 +34,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -99,7 +110,7 @@ public class GeoTiffUtil {
     /**
      * <pre>
      * Get coverage metadata.
-     * format not set
+     * slower than gdal
      * </pre>
      *
      * @param coverage the coverage
@@ -107,21 +118,33 @@ public class GeoTiffUtil {
      */
     public static RasterMetadata getCoverageMetadata(GridCoverage2D coverage) {
         RasterMetadata metadata = new RasterMetadata();
-        double nodata = CoverageUtilities.getNoDataProperty(coverage).getAsSingleValue();
+        metadata.setFormat(coverage.getName().toString());
+        NoDataContainer noDataProperty = CoverageUtilities.getNoDataProperty(coverage);
+        //default no data value
+        double nodata = -9999d;
+        if (noDataProperty != null) {
+            nodata = noDataProperty.getAsSingleValue();
+        }
         metadata.setNodata(nodata);
         CoordinateReferenceSystem crs = coverage.getCoordinateReferenceSystem();
         //获取wkt格式的投影信息
+        metadata.setCrs(crs.getName().getCode());
         metadata.setCrsWkt(crs.toWKT());
         try {
-            metadata.setSrid(CRS.lookupEpsgCode(crs, true));
+            CRS.getProjectedCRS(crs).getName();
+            Integer epsg = CRS.lookupEpsgCode(crs, true);
+            metadata.setSrid(epsg);
+            CRSFactory csFactory = new CRSFactory();
+            if (epsg != null) {
+                org.osgeo.proj4j.CoordinateReferenceSystem crsProj = csFactory.createFromName("EPSG:"+epsg);
+                //获取proj4格式的投影信息
+                metadata.setCrsProj4(crsProj.getProjection().getPROJ4Description());
+            }
         } catch (FactoryException e) {
-            log.error("Error occured while searching for the identifier.", e);
-            throw new BusinessException(e, "Error occured while searching for the CRS identifier");
+            log.error("Error occured while searching for the srid.", e);
+            throw new BusinessException(e, "Error occured while searching for the CRS srid");
         }
-        CRSFactory csFactory = new CRSFactory();
-        org.osgeo.proj4j.CoordinateReferenceSystem crsProj = csFactory.createFromName(crs.getIdentifiers().toArray()[0].toString());
-        //获取proj4格式的投影信息
-        metadata.setCrsProj4(crsProj.getProjection().getPROJ4Description());
+
         Envelope2D envelope2D = coverage.getEnvelope2D();
         metadata.setHeight(envelope2D.height);
         metadata.setWidth(envelope2D.width);
@@ -156,5 +179,88 @@ public class GeoTiffUtil {
         metadata.setMeanValue(results.value(0, Statistic.MEAN));
         metadata.setSdev(results.value(0, Statistic.SDEV));
         return metadata;
+    }
+
+    /**
+     * 利用gdal获取栅格数据元数据
+     *
+     * @param tif
+     * @return
+     */
+    public static RasterMetadata getMetadataByGDAL(String tif) {
+        StringUtil.isNullOrEmptyPrecondition(tif, "Raster file must exists");
+        gdal.AllRegister();
+        RasterMetadata metadata = new RasterMetadata();
+        Dataset dataset = gdal.Open(tif, gdalconstConstants.GA_ReadOnly);
+        Driver driver = dataset.GetDriver();
+        metadata.setFormat(driver.getShortName());
+        SpatialReference sr = new SpatialReference(dataset.GetProjectionRef());
+        metadata.setCrsProj4(sr.ExportToProj4());
+        metadata.setCrsWkt(sr.ExportToWkt());
+        String authorityCode = sr.GetAuthorityCode(null);
+
+        if (authorityCode != null) {
+            Integer srid = Integer.parseInt(authorityCode);
+            metadata.setSrid(srid);
+        } else {
+            String geogcs = sr.GetAttrValue("GEOGCS");
+            String projcs = sr.GetAttrValue("PROJCS");
+            if (Strings.isNullOrEmpty(projcs)) {
+                metadata.setCrs(geogcs);
+            } else {
+                metadata.setCrs(projcs);
+            }
+        }
+        Band band = dataset.GetRasterBand(1);
+        Double[] nodataval = new Double[1];
+        band.GetNoDataValue(nodataval);
+        if (nodataval[0] != null) {
+            metadata.setNodata(nodataval[0]);
+        } else {
+            metadata.setNodata(-9999d);
+        }
+        double[] min = new double[1], max = new double[1], stddev = new double[1], mean = new double[1];
+        band.GetStatistics(true, true, min, max, mean, stddev);
+        metadata.setMinValue(format(min[0]));
+        metadata.setMaxValue(format(max[0]));
+        metadata.setMeanValue(format(mean[0]));
+        metadata.setSdev(format(stddev[0]));
+
+        double[] gt = dataset.GetGeoTransform();
+       /*
+        adfGeoTransform[0] // top left x
+        adfGeoTransform[1] // w-e pixel resolution
+        adfGeoTransform[2] // 0
+        adfGeoTransform[3] // top left y
+        adfGeoTransform[4] // 0
+        adfGeoTransform[5] // n-s pixel resolution (negative value)
+        */
+        metadata.setMinX(gt[0]);
+        metadata.setMaxX(gt[0] + gt[1] * dataset.GetRasterXSize());
+        metadata.setCenterX(format(gt[0] + gt[1] * dataset.GetRasterXSize() / 2));
+        metadata.setMaxY(gt[3]);
+        metadata.setMinY(format(gt[3] + gt[5] * dataset.GetRasterYSize()));
+        metadata.setCenterY(format(gt[3] + gt[5] * dataset.GetRasterYSize() / 2));
+        //gt[5]
+        metadata.setPixelSize(format(gt[1]));
+        metadata.setWidth(format(dataset.GetRasterXSize() * gt[1]));
+        metadata.setHeight(format(dataset.GetRasterYSize() * gt[5]));
+        metadata.setSizeHeight(dataset.GetRasterYSize());
+        metadata.setSizeWidth(dataset.GetRasterXSize());
+
+        dataset.delete();
+        gdal.GDALDestroyDriverManager();
+        return metadata;
+    }
+
+    private static double format(double d) {
+        NumberFormat nf = NumberFormat.getNumberInstance();
+        // 5 位小数
+        nf.setMaximumFractionDigits(5);
+        // 四舍五入
+        nf.setRoundingMode(RoundingMode.HALF_UP);
+        // 是否分组，即每三位加逗号分隔
+        nf.setGroupingUsed(false);
+        return Double.parseDouble(nf.format(d));
     }
 }

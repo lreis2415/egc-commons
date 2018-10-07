@@ -34,7 +34,7 @@ public class ShiroExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public JsonErrorResult authenticationException(AuthenticationException e) {
         String msg = e.getMessage();
-        logger.error(msg);
+        logger.error("Authentication Error: ",e);
         return new JsonErrorResult("[ Authentication Error ] "+msg, HttpStatus.UNAUTHORIZED);
     }
 }

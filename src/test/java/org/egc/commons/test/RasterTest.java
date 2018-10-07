@@ -16,7 +16,8 @@ public class RasterTest {
     String passWord = "123";
     RasterInfo rasterInfo = new RasterInfo();
     RasterFile2PostGIS rasterFile2PostGIS = new RasterFile2PostGIS();
-
+    String tif = "H:\\dem_TX.tif";
+    String tif2 = "D:\\data\\WebSites\\egcDataFiles\\upload\\20181006\\raster\\bdbb2fce7d81d3d70d284e37d92bb08b.tif";
     @Test
     public void rasterInfoTest() {
         GeoInfoExtraction geoInfoExtraction = new GeoInfoExtraction();
@@ -53,10 +54,17 @@ public class RasterTest {
 
     @Test
     public void testGetRasterInfo() {
-        //String path = "D:/DataBase/xuancheng/slope.tif";
-        String path = "H:/GIS data/SRTM/SRTM_China_Geo_3s.tif";
         GeoInfoExtraction geoInfoExtraction = new GeoInfoExtraction();
-        RasterInfo rasterInfo = geoInfoExtraction.readMetaData(path);
+        RasterInfo rasterInfo = geoInfoExtraction.readMetaData(tif);
         System.out.println(rasterInfo.getPixelSize());
+        System.out.println(rasterInfo.getSrid());
+    }
+
+
+    @Test
+    public void testMeta(){
+//        String s= GeoTiffUtil.getMetadata(tif2).toString();
+        String s= GeoTiffUtil.getMetadata(tif).toString();
+        System.out.println(s);
     }
 }

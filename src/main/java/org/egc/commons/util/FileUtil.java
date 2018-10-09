@@ -657,7 +657,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
                     e.printStackTrace();
                     log.error("clean MappedByteBuffer error!!!", e);
                 }
-                log.info("clean MappedByteBuffer completed!!!");
+                log.debug("clean MappedByteBuffer completed!!!");
                 return null;
             }
         });

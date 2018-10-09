@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
  * update houzhiwei
  * TODO 使用commons-exec改写，测试Linux下运行
  */
+@Deprecated
 public class RasterFile2PostGIS {
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 

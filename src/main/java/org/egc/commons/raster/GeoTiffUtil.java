@@ -34,8 +34,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.math.RoundingMode;
-import java.text.NumberFormat;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -96,7 +94,7 @@ public class GeoTiffUtil {
 
     /**
      * Read geotiff and gets metadata.
-     *
+     * Recommend to use {@link #getMetadataByGDAL(String)}
      * @param tif the geotiff
      * @return the raster metadata
      */
@@ -130,13 +128,13 @@ public class GeoTiffUtil {
         //获取wkt格式的投影信息
         metadata.setCrs(crs.getName().getCode());
         metadata.setCrsWkt(crs.toWKT());
+        metadata.setUnit(crs.getCoordinateSystem().getAxis(0).getUnit().toString());
         try {
-            CRS.getProjectedCRS(crs).getName();
             Integer epsg = CRS.lookupEpsgCode(crs, true);
             metadata.setSrid(epsg);
             CRSFactory csFactory = new CRSFactory();
             if (epsg != null) {
-                org.osgeo.proj4j.CoordinateReferenceSystem crsProj = csFactory.createFromName("EPSG:"+epsg);
+                org.osgeo.proj4j.CoordinateReferenceSystem crsProj = csFactory.createFromName("EPSG:" + epsg);
                 //获取proj4格式的投影信息
                 metadata.setCrsProj4(crsProj.getProjection().getPROJ4Description());
             }
@@ -202,15 +200,17 @@ public class GeoTiffUtil {
         if (authorityCode != null) {
             Integer srid = Integer.parseInt(authorityCode);
             metadata.setSrid(srid);
-        } else {
-            String geogcs = sr.GetAttrValue("GEOGCS");
-            String projcs = sr.GetAttrValue("PROJCS");
-            if (Strings.isNullOrEmpty(projcs)) {
-                metadata.setCrs(geogcs);
-            } else {
-                metadata.setCrs(projcs);
-            }
         }
+        String projcs = sr.GetAttrValue("PROJCS");
+        String geogcs = sr.GetAttrValue("GEOGCS");
+        if (Strings.isNullOrEmpty(projcs)) {
+            metadata.setCrs(geogcs);
+        } else {
+            metadata.setCrs(projcs);
+        }
+
+        metadata.setUnit(sr.GetLinearUnitsName());
+
         Band band = dataset.GetRasterBand(1);
         Double[] nodataval = new Double[1];
         band.GetNoDataValue(nodataval);
@@ -221,10 +221,10 @@ public class GeoTiffUtil {
         }
         double[] min = new double[1], max = new double[1], stddev = new double[1], mean = new double[1];
         band.GetStatistics(true, true, min, max, mean, stddev);
-        metadata.setMinValue(format(min[0]));
-        metadata.setMaxValue(format(max[0]));
-        metadata.setMeanValue(format(mean[0]));
-        metadata.setSdev(format(stddev[0]));
+        metadata.setMinValue(min[0]);
+        metadata.setMaxValue(max[0]);
+        metadata.setMeanValue(mean[0]);
+        metadata.setSdev(stddev[0]);
 
         double[] gt = dataset.GetGeoTransform();
        /*
@@ -237,30 +237,19 @@ public class GeoTiffUtil {
         */
         metadata.setMinX(gt[0]);
         metadata.setMaxX(gt[0] + gt[1] * dataset.GetRasterXSize());
-        metadata.setCenterX(format(gt[0] + gt[1] * dataset.GetRasterXSize() / 2));
+        metadata.setCenterX(gt[0] + gt[1] * dataset.GetRasterXSize() / 2);
         metadata.setMaxY(gt[3]);
-        metadata.setMinY(format(gt[3] + gt[5] * dataset.GetRasterYSize()));
-        metadata.setCenterY(format(gt[3] + gt[5] * dataset.GetRasterYSize() / 2));
+        metadata.setMinY(gt[3] + gt[5] * dataset.GetRasterYSize());
+        metadata.setCenterY(gt[3] + gt[5] * dataset.GetRasterYSize() / 2);
         //gt[5]
-        metadata.setPixelSize(format(gt[1]));
-        metadata.setWidth(format(dataset.GetRasterXSize() * gt[1]));
-        metadata.setHeight(format(dataset.GetRasterYSize() * gt[5]));
+        metadata.setPixelSize(gt[1]);
+        metadata.setWidth(dataset.GetRasterXSize() * gt[1]);
+        metadata.setHeight(dataset.GetRasterYSize() * gt[5]);
         metadata.setSizeHeight(dataset.GetRasterYSize());
         metadata.setSizeWidth(dataset.GetRasterXSize());
 
         dataset.delete();
         gdal.GDALDestroyDriverManager();
         return metadata;
-    }
-
-    private static double format(double d) {
-        NumberFormat nf = NumberFormat.getNumberInstance();
-        // 5 位小数
-        nf.setMaximumFractionDigits(5);
-        // 四舍五入
-        nf.setRoundingMode(RoundingMode.HALF_UP);
-        // 是否分组，即每三位加逗号分隔
-        nf.setGroupingUsed(false);
-        return Double.parseDouble(nf.format(d));
     }
 }

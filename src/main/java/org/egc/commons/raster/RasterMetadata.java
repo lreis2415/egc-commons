@@ -59,6 +59,7 @@ public class RasterMetadata implements Serializable {
     private int sizeHeight;
     private int sizeWidth;
 
+    private String unit;
     private double[] upperLeft;
     private double[] upperRight;
     private double[] lowerLeft;

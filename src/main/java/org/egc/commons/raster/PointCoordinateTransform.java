@@ -2,6 +2,9 @@ package org.egc.commons.raster;
 import org.gdal.osr.CoordinateTransformation;
 import org.gdal.osr.SpatialReference;
 
+/**
+ * use {@link CoordinateTransformUtil#transformByGdal(int, int, double, double)}
+ */
 @Deprecated
 public class PointCoordinateTransform {
 

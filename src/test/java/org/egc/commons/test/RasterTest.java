@@ -35,12 +35,11 @@ public class RasterTest {
     public void coordTest() {
         double x = 13244689.433917364;
         double y = 3637696.4693184034;
-        PointCoordinateTransform pointCoordinateTransform = new PointCoordinateTransform();
-        double[] newCoord = pointCoordinateTransform.coordinateTransform(3857, 32650, x, y);
+        double[] newCoord = CoordinateTransformUtil.transformByGdal(3857, 32650, x, y);
         System.out.println(newCoord[0]);//688876.5583467542
         System.out.println(newCoord[1]);//3435505.2951291953
 
-        ProjCoordinate coordinate = Proj4Util.coordinateTransform(3857, 32650, x, y);
+        ProjCoordinate coordinate = CoordinateTransformUtil.transformByProj4(3857, 32650, x, y);
         System.out.println(coordinate.x);//688876.5583467542
         System.out.println(coordinate.y);//3435505.2951291953
     }

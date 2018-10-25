@@ -34,8 +34,6 @@ public class CommonsExecTest {
         String cmd3 = "\"D:/Program Files/PostgreSQL/9.5/bin/raster2pgsql\" -s 9001 -I -M H:\\dem_TX_out.tif -a public.t_rasters | psql -U egcadmin -d db_cybersolim";
 
         CommonsExec.execWithOutput(CommandLine.parse(cmd3), Lists.newArrayList("PGPASSWORD=lreis2415"));
-//        CommonsExec.execWithOutput(CommandLine.parse(cmd));
-
     }
 
     @Test
@@ -60,7 +58,7 @@ public class CommonsExecTest {
         String cmd = String.join(" ", commandLine.toStrings());
         System.out.println(cmd);
 
-        Map map3 = CommonsExec.execWithOutput(cmd, Lists.newArrayList("PGPASSWORD=lreis2415"));
+        Map map3 = CommonsExec.execWithOutput(CommandLine.parse(cmd), Lists.newArrayList("PGPASSWORD=lreis2415"));
         System.out.println("out: " + map3.get("out"));
         System.out.println("error: " + map3.get("error"));
     }

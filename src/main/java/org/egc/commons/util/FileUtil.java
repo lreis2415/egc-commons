@@ -27,7 +27,6 @@ import java.util.zip.ZipOutputStream;
  * 实现文件的创建、删除、复制、压缩、解压以及目录的创建、删除、复制、压缩解压等功能
  *
  * @author ThinkGem
- * @version 2013 -06-21
  * @author houzhiwei
  * @version 2018
  */
@@ -391,7 +390,6 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
         }
 
     }
-
     /**
      * 写入文件
      *
@@ -606,6 +604,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
     /**
      * 获取文件扩展名<br>
      * 也可以使用 {@link com.google.common.io.Files#getFileExtension(String)}
+     * 或者 {@link org.apache.commons.io.FilenameUtils#getExtension(String)}
      *
      * @param filename the filename
      * @return file extension
@@ -682,4 +681,6 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
             return null;
         }
     }
+
+
 }

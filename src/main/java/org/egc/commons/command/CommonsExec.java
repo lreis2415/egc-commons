@@ -1,11 +1,13 @@
 package org.egc.commons.command;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.*;
 import org.apache.commons.exec.environment.EnvironmentUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -21,9 +23,9 @@ import java.util.Map;
  * @author houzhiwei
  * @date 2017 /9/16 10:46
  */
+@Slf4j
 public class CommonsExec {
 
-    private static final Logger log = LoggerFactory.getLogger(CommonsExec.class);
     private static final String UTF8 = "UTF-8";
     private static final String GBK = "GBK";
     private static final String ISO_8859_1 = "ISO-8859-1";
@@ -94,52 +96,58 @@ public class CommonsExec {
      * Execute command line and return output string
      *
      * @param cmd the cmd
-     * @return command line output with key <b> out</b> and<b>  error</b>
+     * @return the output string map with key： {@link CommonsExec#OUT} and {@link CommonsExec#ERROR} and {@link CommonsExec#EXIT_VALUE}
      * @throws IOException the io exception
      */
     public static Map<String, Object> execWithOutput(CommandLine cmd) throws IOException {
-        return execWithOutput(cmd, null);
+        return execWithOutput(cmd, null, null);
     }
 
     /**
-     * Exec with output map.
+     * Execute command line and return output string
      *
-     * @param commandLine the command line
-     * @return command line output with key {@link CommonsExec#OUT} and {@link CommonsExec#ERROR} and {@link CommonsExec#EXIT_VALUE}
+     * @param cmd       命令行. 如果是字符串，则使用 {@link CommandLine#parse(String)} 转换
+     * @param workspace 工作目录(数据输出目录)， blank 时使用当前目录（<code>new File(".")</code>）
+     * @return the output string map with key： {@link CommonsExec#OUT} and {@link CommonsExec#ERROR} and {@link CommonsExec#EXIT_VALUE}
      * @throws IOException the io exception
      */
-    public static Map<String, Object> execWithOutput(String commandLine) throws IOException {
-        CommandLine cmd = CommandLine.parse(commandLine);
-        return execWithOutput(cmd, null);
+    public static Map<String, Object> execWithOutput(CommandLine cmd, String workspace) throws IOException {
+        return execWithOutput(cmd, workspace, null);
     }
+
 
     /**
      * Exec with output string.
      *
-     * @param cmd         the command line string
+     * @param cmd          命令行. 如果是字符串，则使用 {@link CommandLine#parse(String)} 转换
      * @param envKeyValues the environmental variable list in format: <b>key=value</b>
-     * @return the output string map with key {@link CommonsExec#OUT} and {@link CommonsExec#ERROR} and {@link CommonsExec#EXIT_VALUE}
-     * @throws IOException the io exception
-     */
-    public static Map<String, Object> execWithOutput(String cmd, List<String> envKeyValues) throws IOException {
-        CommandLine commandLine = CommandLine.parse(cmd);
-        return execWithOutput(commandLine, envKeyValues);
-    }
-
-    /**
-     * Exec with output string.
-     *
-     * @param cmd          the {@link CommandLine}
-     * @param envKeyValues the environmental variable list in format: <b>key=value</b>
-     * @return the output string map with key {@link CommonsExec#OUT} and {@link CommonsExec#ERROR} and {@link CommonsExec#EXIT_VALUE}
+     * @return the output string map with key： {@link CommonsExec#OUT} and {@link CommonsExec#ERROR} and {@link CommonsExec#EXIT_VALUE}
      * @throws IOException the io exception
      */
     public static Map<String, Object> execWithOutput(CommandLine cmd, List<String> envKeyValues) throws IOException {
+        return execWithOutput(cmd, null, envKeyValues);
+    }
+
+    /**
+     * Exec with output string.
+     *
+     * @param cmd          命令行. 如果是字符串，则使用 {@link CommandLine#parse(String)} 转换
+     * @param workspace    工作目录(数据输出目录)， blank 时使用当前目录（<code>new File(".")</code>）
+     * @param envKeyValues the environmental variable list in format: <b>key=value</b>
+     * @return the output string map with key： {@link CommonsExec#OUT} and {@link CommonsExec#ERROR} and {@link CommonsExec#EXIT_VALUE}
+     * @throws IOException the io exception
+     */
+    public static Map<String, Object> execWithOutput(CommandLine cmd, String workspace, List<String> envKeyValues) throws IOException {
 
         Executor executor = new DefaultExecutor();
         ExecuteWatchdog watchdog = new ExecuteWatchdog(60000);
         executor.setWatchdog(watchdog);
-
+        File dir = new File(FilenameUtils.normalize(workspace));
+        if (StringUtils.isNotBlank(workspace) && dir.exists()) {
+            executor.setWorkingDirectory(dir);
+        } else {
+            log.warn("Illegal workspace [ " + workspace + " ]! Use current working directory.");
+        }
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
         PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream, errorStream);

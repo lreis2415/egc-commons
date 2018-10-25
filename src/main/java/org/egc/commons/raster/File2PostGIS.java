@@ -92,7 +92,7 @@ public class File2PostGIS {
         Map out = null;
         String cmd = String.join(" ", commandLine.toStrings());
         try {
-            out = CommonsExec.execWithOutput(cmd, envs);
+            out = CommonsExec.execWithOutput(CommandLine.parse(cmd), envs);
         } catch (IOException e) {
             e.printStackTrace();
             log.error("Load raster to postgis error: ", e);
@@ -153,7 +153,7 @@ public class File2PostGIS {
         Map out = null;
         String cmd = String.join(" ", commandLine.toStrings());
         try {
-            out = CommonsExec.execWithOutput(cmd, envs);
+            out = CommonsExec.execWithOutput(CommandLine.parse(cmd), envs);
         } catch (IOException e) {
             e.printStackTrace();
             log.error("Load shape file to postgis error: ", e);

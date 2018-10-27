@@ -142,11 +142,11 @@ public class CommonsExec {
         Executor executor = new DefaultExecutor();
         ExecuteWatchdog watchdog = new ExecuteWatchdog(60000);
         executor.setWatchdog(watchdog);
-        File dir = new File(FilenameUtils.normalize(workspace));
+        File dir = new File(FilenameUtils.normalize(workspace == null ? "" : workspace));
         if (StringUtils.isNotBlank(workspace) && dir.exists()) {
             executor.setWorkingDirectory(dir);
         } else {
-            log.warn("Illegal workspace [ " + workspace + " ]! Use current working directory.");
+            log.warn("Workspace not set or illegal [ " + workspace + " ]. Use current working directory.");
         }
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();

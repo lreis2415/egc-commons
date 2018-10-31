@@ -100,7 +100,7 @@ public class CommonsExec {
      * @throws IOException the io exception
      */
     public static Map<String, Object> execWithOutput(CommandLine cmd) throws IOException {
-        return execWithOutput(cmd, null, null);
+        return execWithOutput(cmd, null, null, 0, null);
     }
 
     /**
@@ -112,9 +112,8 @@ public class CommonsExec {
      * @throws IOException the io exception
      */
     public static Map<String, Object> execWithOutput(CommandLine cmd, String workspace) throws IOException {
-        return execWithOutput(cmd, workspace, null);
+        return execWithOutput(cmd, workspace, null, 0, null);
     }
-
 
     /**
      * Exec with output string.
@@ -125,7 +124,7 @@ public class CommonsExec {
      * @throws IOException the io exception
      */
     public static Map<String, Object> execWithOutput(CommandLine cmd, List<String> envKeyValues) throws IOException {
-        return execWithOutput(cmd, null, envKeyValues);
+        return execWithOutput(cmd, null, envKeyValues, 0, null);
     }
 
     /**
@@ -133,14 +132,21 @@ public class CommonsExec {
      *
      * @param cmd          命令行. 如果是字符串，则使用 {@link CommandLine#parse(String)} 转换
      * @param workspace    工作目录(数据输出目录)， blank 时使用当前目录（<code>new File(".")</code>）
+     * @param exitValue    运行退出值，通常为 0
+     * @param timeout      超时时间，默认 60000L ms
      * @param envKeyValues the environmental variable list in format: <b>key=value</b>
-     * @return the output string map with key： {@link CommonsExec#OUT} and {@link CommonsExec#ERROR} and {@link CommonsExec#EXIT_VALUE}
+     * @return the output string map with key： {@link CommonsExec#OUT} and {@link CommonsExec#ERROR} and {@link CommonsExec#EXIT_VALUE}<br/>
+     * 注意：有些程序在执行成功之后，部分信息会出现在 error 中，因此不能根据 error 是否有内容来判断是否执行失败
      * @throws IOException the io exception
      */
-    public static Map<String, Object> execWithOutput(CommandLine cmd, String workspace, List<String> envKeyValues) throws IOException {
-
+    public static Map<String, Object> execWithOutput(CommandLine cmd, String workspace, List<String> envKeyValues,
+                                                     int exitValue, Long timeout) throws IOException
+    {
         Executor executor = new DefaultExecutor();
-        ExecuteWatchdog watchdog = new ExecuteWatchdog(60000);
+        if (timeout == null) {
+            timeout = 60000L;
+        }
+        ExecuteWatchdog watchdog = new ExecuteWatchdog(timeout);
         executor.setWatchdog(watchdog);
         File dir = new File(FilenameUtils.normalize(workspace == null ? "" : workspace));
         if (StringUtils.isNotBlank(workspace) && dir.exists()) {
@@ -152,8 +158,8 @@ public class CommonsExec {
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
         PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream, errorStream);
         executor.setStreamHandler(streamHandler);
+        executor.setExitValue(exitValue);
 
-        int exitValue = 0;
         if (envKeyValues == null || envKeyValues.size() == 0) {
             exitValue = executor.execute(cmd);
         } else {

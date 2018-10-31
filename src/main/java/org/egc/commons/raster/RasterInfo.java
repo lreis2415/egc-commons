@@ -3,6 +3,7 @@ package org.egc.commons.raster;
 /**
  * Created by lp on 2017/4/24.
  */
+@Deprecated
 public class RasterInfo {
     private Integer srid;
     private  double left;

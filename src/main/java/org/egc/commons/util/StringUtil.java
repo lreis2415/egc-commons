@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -154,5 +155,21 @@ public class StringUtil {
     public static void isNullOrEmptyPrecondition(String s, String msg) {
         s = Strings.emptyToNull(s);
         Preconditions.checkNotNull(s, msg);
+    }
+
+    /**
+     * 去除字符串中的空格、回车、换行符、制表符等
+     *
+     * @param str
+     * @return
+     */
+    public static String replaceSpecialStr(String str) {
+        Pattern p = Pattern.compile("\\s*|\t|\r|\n");
+        String repl = "";
+        if (str != null) {
+            Matcher m = p.matcher(str);
+            repl = m.replaceAll("");
+        }
+        return repl;
     }
 }

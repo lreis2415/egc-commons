@@ -5,7 +5,9 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.environment.EnvironmentUtils;
 import org.egc.commons.command.CommonsExec;
 import org.egc.commons.raster.File2PostGIS;
+import org.egc.commons.raster.GeoTiffUtil;
 import org.egc.commons.raster.PostGISInfo;
+import org.egc.commons.raster.RasterMetadata;
 import org.junit.Test;
 
 import java.io.File;
@@ -43,14 +45,14 @@ public class CommonsExecTest {
 //        CommandLine commandLine = new CommandLine( "raster2pgsql");
         commandLine.addArgument("/C");
         commandLine.addArgument("raster2pgsql");
-        commandLine.addArgument("-s 9001",false);
-        commandLine.addArgument("-I -M",false);
+        commandLine.addArgument("-s 9001", false);
+        commandLine.addArgument("-I -M", false);
         commandLine.addArgument("${file}");
-        commandLine.addArgument("-a public.t_rasters",false);
+        commandLine.addArgument("-a public.t_rasters", false);
         commandLine.addArgument("|");
         commandLine.addArgument("psql");
-        commandLine.addArgument("-U egcadmin",false);
-        commandLine.addArgument("-d db_cybersolim",false);
+        commandLine.addArgument("-U egcadmin", false);
+        commandLine.addArgument("-d db_cybersolim", false);
         Map map = new HashMap();
         map.put("file", new File("H:\\dem_TX_out.tif"));
         commandLine.setSubstitutionMap(map);
@@ -64,8 +66,13 @@ public class CommonsExecTest {
     }
 
 
+    String file = "G:\\DDL Driver\\Projects\\CyberSoLIM\\Training\\DEM_ah.tif";//32650
+    String file2 = "H:\\dem_TX_out.tif";//9001
+
     @Test
     public void loadToPg() {
+        RasterMetadata metadata = GeoTiffUtil.getMetadata(file);
+        System.out.println(metadata.getSrid());
         PostGISInfo info = new PostGISInfo("egcadmin", "db_cybersolim", "lreis2415");
 
        /*CommandLine commandLine = new CommandLine(FileUtil.normalizeDirectory(info.getBinDirectory()) +  "raster2pgsql");
@@ -77,7 +84,8 @@ public class CommonsExecTest {
             e.printStackTrace();
         }*/
         info.setRasterTable("t_rasters");
-        Map out = File2PostGIS.raster2PostGIS(9001, "H:\\dem_TX_out.tif", info);
+        Map out = File2PostGIS.raster2PostGIS(32650, file, info);
+        System.out.println(out.get("out"));
         System.out.println(out.get("error"));
         System.out.println(out.get("exitValue"));
     }

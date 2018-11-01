@@ -1,5 +1,7 @@
 package org.egc.commons.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
@@ -7,11 +9,12 @@ import java.io.IOException;
 /**
  * TODO
  * 路径获取工具类
+ *
  * @author houzhiwei
  * @date 2016/11/23 16:06
  */
-public class PathUtil
-{
+@Slf4j
+public class PathUtil {
     /**
      * 项目根路径（绝对）
      *
@@ -33,7 +36,19 @@ public class PathUtil
      */
     public static String getClassPath(Class clazz)
     {
-        return clazz.getClass().getResource("/").getPath();
+        String path = null;
+        try {
+            path = clazz.getClass().getResource("/").getPath();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            path = getClassPath();
+        }
+        return path;
+    }
+
+    public static String getClassPath()
+    {
+        return Thread.currentThread().getContextClassLoader().getResource("/").getPath();
     }
 
     /**

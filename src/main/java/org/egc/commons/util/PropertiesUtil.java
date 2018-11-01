@@ -1,6 +1,7 @@
 package org.egc.commons.util;
 
 import com.google.common.base.Preconditions;
+import org.apache.commons.io.FilenameUtils;
 import org.egc.commons.exception.BusinessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +38,8 @@ public class PropertiesUtil
     public static String getPropertyFromConfig(String key, String filename)
     {
         String msg = "";
-        String path = PathUtil.getClassPath(PropertiesUtil.class) + "/config/";
-        String fullFilename = path + filename + ".properties";
+        String path = PathUtil.getClassPath() + "/config/";
+        String fullFilename = FilenameUtils.normalize(path + filename + ".properties");
         Properties properties = new Properties();
         String p = "";
         File propertiesFile = new File(fullFilename);
@@ -74,7 +75,6 @@ public class PropertiesUtil
         String path = "/config/";
         String fullFilename = path + filename + ".properties";
         properties = readProperties(fullFilename);
-        // properties.load(Class.class.getResourceAsStream(fullFilename));
         return properties;
     }
 
@@ -91,9 +91,6 @@ public class PropertiesUtil
         Preconditions.checkNotNull(filepath, "Error, filename can not be null!");
         Properties properties = new Properties();
         try {
-            System.out.println(filepath);
-//            System.out.println(Class.class.getResourceAsStream(filepath));
-//            properties.load(Class.class.getResourceAsStream(filepath));
             properties.load(PropertiesUtil.class.getResourceAsStream(filepath));
         } catch (IOException e) {
             logger.debug("properties file " + filepath + " not found!");

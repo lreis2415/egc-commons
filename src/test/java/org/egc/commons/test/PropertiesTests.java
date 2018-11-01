@@ -11,7 +11,7 @@ import java.util.Properties;
  * TODO
  *
  * @author houzhiwei
- * @date 2016/11/23 15:58
+ * @Date 2016/11/23 15:58
  */
 public class PropertiesTests
 {

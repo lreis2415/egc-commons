@@ -24,5 +24,10 @@ public class fileSizeCalTest {
         String md5 = FileUtil.fileMD5(new File("H:/GIS data/全国地图/全国土壤图/tiff/clay1.tif"));
         System.out.println(md5);//F5513385D0DC27BEEE98A8DE1B866237
     }
+    @Test
+    public void test() throws IOException {
+       String zip =  "H:/gisdemo/in/in.zip";
+       FileUtil.unzip(zip,null);
+    }
 
 }

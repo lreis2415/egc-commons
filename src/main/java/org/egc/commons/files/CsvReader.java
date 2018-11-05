@@ -1,7 +1,9 @@
-package org.egc.commons.xml;
+package org.egc.commons.files;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.egc.commons.exception.BusinessException;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -14,29 +16,29 @@ import java.util.List;
 /**
  * Created by lp on 2017/5/3.
  */
+@Slf4j
 public class CsvReader {
 
+    public static final String X = "X";
+    public static final String Y = "Y";
+    public static final String ID = "ID";
+    public static final String DEPTH_UP = "DepthUp";
+    public static final String DEPTH_DOWN = "DepthDown";
+    public static final String SRID = "srid";
+
     public List<String> csvHeaderRead(String csvPath) {
-        BufferedReader buffer;
-        List<String> filds = new ArrayList<>();
+        List<String> fields = new ArrayList<>();
         try {
-//            buffer = new BufferedReader(new FileReader(csvPath));
-//            String line = buffer.readLine();
-//            String[] colums = line.split(",");
-//            for(String colum : colums){
-//                filds.add(colum);
-//            }
-//            buffer.close();
-            Reader in = new FileReader(csvPath);
+            Reader in = new BufferedReader(new FileReader(csvPath));
             Iterable<CSVRecord> records = CSVFormat.DEFAULT.parse(in);
             CSVRecord record = records.iterator().next();
             for (int i = 0; i < record.size(); i++) {
-                filds.add(record.get(i));
+                fields.add(record.get(i));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new BusinessException(e, "CSV file not found or invalid");
         }
-        return filds;
+        return fields;
     }
 
     //TODO:添加只读的模糊匹配
@@ -44,7 +46,9 @@ public class CsvReader {
         return "";
     }
 
-    //读取样点，第一行表头也包括在内
+    /**
+     * 读取样点，第一行表头也包括在内
+     */
     public List<String> readSamples(String csvPath) {
         BufferedReader bufferedReader;
         List<String> samples = new ArrayList<>();
@@ -56,14 +60,14 @@ public class CsvReader {
             }
             bufferedReader.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new BusinessException(e, "CSV file not found or invalid");
         }
         return samples;
     }
 
     public List<CsvSampleInfo> readCsvSamples(String csvPath) {
         List<String> headers = csvHeaderRead(csvPath);
-        String[] knownHeaders = {"ID", "X", "Y", "DepthUp", "DepthDown", "srid"};
+        String[] knownHeaders = {ID, X, Y, DEPTH_UP, DEPTH_DOWN, SRID};
         List<CsvSampleInfo> csvSampleInfos = new ArrayList<>();
         try {
             Reader in = new FileReader(csvPath);
@@ -80,17 +84,15 @@ public class CsvReader {
                             csvSampleInfo.setSemanticValue(Double.parseDouble(semanticValue));
                         }
                         csvSampleInfos.add(csvSampleInfo);
-
                     }
                 }
                 if (flag) {
                     CsvSampleInfo csvSampleInfo = getRecordItem(headers, record);
                     csvSampleInfos.add(csvSampleInfo);
                 }
-
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new BusinessException(e, "CSV file not found or invalid");
         }
         return csvSampleInfos;
 
@@ -118,42 +120,41 @@ public class CsvReader {
 
     public CsvSampleInfo getRecordItem(List<String> headers, CSVRecord record) {
         CsvSampleInfo csvSampleInfo = new CsvSampleInfo();
-        if (headers.contains("ID")) {
-            String id = record.get("ID");
+        if (headers.contains(ID)) {
+            String id = record.get(ID);
             csvSampleInfo.setId(id);
         }
-        if (headers.contains("X")) {
-            String x = record.get("X");
+        if (headers.contains(X)) {
+            String x = record.get(X);
             if (x != null) {
-                csvSampleInfo.setX(Double.parseDouble(record.get("X")));
+                csvSampleInfo.setX(Double.parseDouble(record.get(X)));
             }
         }
-        if (headers.contains("Y")) {
-            String y = record.get("Y");
+        if (headers.contains(Y)) {
+            String y = record.get(Y);
             if (y != null) {
                 csvSampleInfo.setY(Double.parseDouble(y));
             }
         }
-        if (headers.contains("DepthUp")) {
-            String depthUp = record.get("DepthUp");
+        if (headers.contains(DEPTH_UP)) {
+            String depthUp = record.get(DEPTH_UP);
             if (depthUp != null) {
                 csvSampleInfo.setDepthUp(Double.parseDouble(depthUp));
             }
         }
-        if (headers.contains("DepthDown")) {
-            String depthDown = record.get("DepthDown");
+        if (headers.contains(DEPTH_DOWN)) {
+            String depthDown = record.get(DEPTH_DOWN);
             if (depthDown != null) {
                 csvSampleInfo.setDepthDown(Double.parseDouble(depthDown));
             }
         }
-        if (headers.contains("srid")) {
-            String srid = record.get("srid");
+        if (headers.contains(SRID)) {
+            String srid = record.get(SRID);
             if (srid != null) {
                 csvSampleInfo.setSrid(Integer.parseInt(srid));
             }
         }
         return csvSampleInfo;
     }
-
 
 }

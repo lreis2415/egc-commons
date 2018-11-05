@@ -1,4 +1,4 @@
-package org.egc.commons.raster;
+package org.egc.commons.gis;
 import org.gdal.osr.CoordinateTransformation;
 import org.gdal.osr.SpatialReference;
 

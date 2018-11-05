@@ -5,6 +5,8 @@ package org.egc.commons.util;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +21,9 @@ import java.security.AccessController;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivilegedAction;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -390,6 +394,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
         }
 
     }
+
     /**
      * 写入文件
      *
@@ -542,6 +547,43 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
             }
         }
 
+    }
+
+    /**
+     * https://stackoverflow.com/questions/9324933/what-is-a-good-java-library-to-zip-unzip-files
+     * @param file zip 文件
+     * @param outputDir
+     * @throws IOException
+     */
+    public static void unzip(String file,String outputDir) throws IOException {
+        if (!FilenameUtils.getExtension(file).equalsIgnoreCase("zip")) {
+            log.warn(file + " is not a zipped file");
+            return;
+        }
+        ZipFile zipFile = new ZipFile(file);
+        if (StringUtils.isBlank(outputDir)) {
+            outputDir = FilenameUtils.getFullPath(file)+File.separator+FilenameUtils.getBaseName(file);
+        }
+        try {
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                File entryDestination = new File(outputDir, entry.getName());
+                if (entry.isDirectory()) {
+                    entryDestination.mkdirs();
+                } else {
+                    entryDestination.getParentFile().mkdirs();
+                    InputStream in = zipFile.getInputStream(entry);
+                    OutputStream out = new FileOutputStream(entryDestination);
+                    IOUtils.copy(in, out);
+                    IOUtils.closeQuietly(in);
+                    out.close();
+                }
+            }
+            log.info(file + " unzipped");
+        } finally {
+            zipFile.close();
+        }
     }
 
     /**

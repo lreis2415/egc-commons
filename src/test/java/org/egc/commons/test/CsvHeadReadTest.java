@@ -1,17 +1,10 @@
 package org.egc.commons.test;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVRecord;
-import org.egc.commons.xml.CsvReader;
+import org.egc.commons.files.CsvReader;
 import org.junit.Test;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by lp on 2017/5/3.

@@ -35,15 +35,15 @@ public interface RunCommand {
     CommandLine initCmd();
 
     /**
-     * Run Command.
+     * 执行命令
      * <p>通用，文件使用全路径
      * <p>需要使用命令行标记(flag)时，params 中设置 &lt;flag, true&gt;
      *
      * @param exec   the executable 可执行文件，若所在目录不在环境变量PATH中，需为全路径
      * @param params the params 若参数值为文件，需为全路径
-     * @return HashMap with key: {@link CommonsExec#OUT}, {@link CommonsExec#ERROR}, {@link CommonsExec#EXIT_VALUE}
+     * @return {@link ExecResult}
      */
-    Map run(@NotBlank String exec, Map<String, Object> params);
+    ExecResult run(@NotBlank String exec, Map<String, Object> params);
 
     /**
      * Run Command.
@@ -53,26 +53,28 @@ public interface RunCommand {
      * @param exec        the executable
      * @param files       the  files
      * @param inputParams the input params
-     * @return HashMap with key: {@link CommonsExec#OUT}, {@link CommonsExec#ERROR}, {@link CommonsExec#EXIT_VALUE}
+     * @return {@link ExecResult}
      * @throws IOException the io exception
      */
-    Map run(@NotBlank String exec, Map<String, String> files, Map<String, Object> inputParams) throws IOException;
+    ExecResult run(@NotBlank String exec, Map<String, String> files, Map<String, Object> inputParams) throws
+            IOException;
 
     /**
-     * Run Command.
+     * 执行命令
      * <p>可以为输入、输出数据指定存放目录</p>
      * <p> <b>若 Input_* 和 Output_* 文件参数已包含路径， *Dir 参数可为 null</b></p>
      *
-     * @param exec        the executable 可执行文件，若所在目录不在环境变量PATH中，需为全路径
-     * @param inputFiles  the input files 输入文件（含后缀）
-     * @param outputFiles the output files 输出文件（含后缀）。若 map 的 value 为空（""或null），则使用第一个输入文件名结合 key 值为文件名
-     * @param params      the params 非文件类型参数及命令行标记（flag）
-     * @param inputDir    the input dir 输入文件目录
-     * @param outputDir   the output dir 输出文件目录
-     * @return HashMap with key: {@link CommonsExec#OUT}, {@link CommonsExec#ERROR}, {@link CommonsExec#EXIT_VALUE}
+     * @param exec        可执行文件，若所在目录不在环境变量PATH中，需为全路径
+     * @param inputFiles  输入文件参数（含后缀）, Map的值指向一个文件
+     * @param outputFiles 输出文件参数（含后缀）。若 map 的 value 为空（""或null），则使用第一个输入文件名结合 key 值为文件名
+     * @param params      非文件类型参数及命令行标记（flag），Map的值为布尔值或数值等
+     * @param inputDir    （所有）输入文件目录，此时 inputFiles 可指包含文件名（含后缀）
+     * @param outputDir   工作目录，所有输出文件默认存放目录
+     * @return {@link ExecResult}
      * @throws IOException the io exception
      */
-    Map run(@NotBlank String exec, Map<String, String> inputFiles, Map<String, String> outputFiles, Map<String, Object> params, String inputDir, String outputDir) throws IOException;
+    ExecResult run(@NotBlank String exec, Map<String, String> inputFiles, Map<String, String> outputFiles,
+                   Map<String, Object> params, String inputDir, String outputDir) throws IOException;
 
     /**
      * 一些所有接口实现类都可使用的方法
@@ -98,22 +100,22 @@ public interface RunCommand {
          * @param files Substitution Map
          * @return boolean boolean
          */
-        public static boolean execute(CommandLine cmd, Map files) {
+        public static ExecResult execute(CommandLine cmd, Map files) {
+            ExecResult result = null;
             if (files != null) {
                 cmd.setSubstitutionMap(files);
             }
             try {
-                Map map = CommonsExec.execWithOutput(cmd);
-                String out = (String) map.get("out");
-                String error = (String) map.get("error");
-                log.debug(out);
+                result = CommonsExec.execWithOutput(cmd);
+                log.debug(result.getOut());
                 // error 中输出的内容类似 This run may take on the order of 1 minutes to complete，并非错误信息
-                log.debug(error);
+                log.debug(result.getError());
+                result.setSuccess(true);
             } catch (IOException io) {
                 log.error(io.getMessage(), io);
-                return false;
+                result.setSuccess(false);
             }
-            return true;
+            return result;
         }
 
         /**
@@ -147,9 +149,11 @@ public interface RunCommand {
          * @param fileParams 文件类型参数 {@link java.util.Map}，如 ("-z", Input_Elevation_Grid)，Input_Elevation_Grid 为 Geotiff 文件
          * @param dir        文件参数中所有文件所在目录
          */
-        public static void addFileParams(CommandLine cmd, Map<String, String> files, Map<String, String> fileParams, String dir) {
+        public static void addFileParams(CommandLine cmd, Map<String, String> files, Map<String, String> fileParams,
+                                         String dir)
+        {
             fileParams.forEach((k, v) -> {
-                if (StringUtils.isNotBlank(v)) {
+                if (StringUtils.isNotBlank(k) && StringUtils.isNotBlank(v)) {
                     cmd.addArgument(k);
                     if (k.startsWith("-")) {
                         k = k.replaceFirst("-", "");
@@ -161,6 +165,10 @@ public interface RunCommand {
                     } else {
                         files.put(k + "file", v);
                     }
+                }
+                // e.g. Threshold <basefilename>
+                else if (StringUtils.isBlank(k) && StringUtils.isNotBlank(v)) {
+                    cmd.addArgument(v);
                 }
             });
         }
@@ -176,15 +184,20 @@ public interface RunCommand {
                 return;
             }
             params.forEach((k, v) -> {
-                if (v instanceof Boolean && (Boolean) v) {
+                if (k == null) {
+                    // do nothing
+                }
+                if (StringUtils.isBlank(String.valueOf(v))) {
+                    // do nothing
+                } else if (v instanceof Boolean && (Boolean) v) {
                     cmd.addArgument(k);
                 } else if (v instanceof Integer && (Integer) v > -1) {
                     cmd.addArgument(k);
                     cmd.addArgument(String.valueOf(v));
-                } else if (v instanceof Long && (Long) v > -1) {
+                } else if (v instanceof Long && (Long) v > -1L) {
                     cmd.addArgument(k);
                     cmd.addArgument(String.valueOf(v));
-                } else if (v instanceof Double && (Double) v > -1) {
+                } else if (v instanceof Double && (Double) v > -1d) {
                     cmd.addArgument(k);
                     cmd.addArgument(String.valueOf(v));
                 } else if (v instanceof String) {

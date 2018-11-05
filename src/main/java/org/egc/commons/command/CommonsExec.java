@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,18 +28,6 @@ public class CommonsExec {
     private static final String UTF8 = "UTF-8";
     private static final String GBK = "GBK";
     private static final String ISO_8859_1 = "ISO-8859-1";
-    /**
-     * The constant OUT.
-     */
-    public static final String OUT = "out";
-    /**
-     * The constant ERROR.
-     */
-    public static final String ERROR = "error";
-    /**
-     * The constant EXIT_VALUE.
-     */
-    public static final String EXIT_VALUE = "exitValue";
 
     /**
      * <pre>
@@ -96,10 +83,10 @@ public class CommonsExec {
      * Execute command line and return output string
      *
      * @param cmd the cmd
-     * @return the output string map with key： {@link CommonsExec#OUT} and {@link CommonsExec#ERROR} and {@link CommonsExec#EXIT_VALUE}
+     * @return {@link ExecResult}
      * @throws IOException the io exception
      */
-    public static Map<String, Object> execWithOutput(CommandLine cmd) throws IOException {
+    public static ExecResult execWithOutput(CommandLine cmd) throws IOException {
         return execWithOutput(cmd, null, null, 0, null);
     }
 
@@ -108,10 +95,10 @@ public class CommonsExec {
      *
      * @param cmd       命令行. 如果是字符串，则使用 {@link CommandLine#parse(String)} 转换
      * @param workspace 工作目录(数据输出目录)， blank 时使用当前目录（<code>new File(".")</code>）
-     * @return the output string map with key： {@link CommonsExec#OUT} and {@link CommonsExec#ERROR} and {@link CommonsExec#EXIT_VALUE}
+     * @return {@link ExecResult}
      * @throws IOException the io exception
      */
-    public static Map<String, Object> execWithOutput(CommandLine cmd, String workspace) throws IOException {
+    public static ExecResult execWithOutput(CommandLine cmd, String workspace) throws IOException {
         return execWithOutput(cmd, workspace, null, 0, null);
     }
 
@@ -120,10 +107,10 @@ public class CommonsExec {
      *
      * @param cmd          命令行. 如果是字符串，则使用 {@link CommandLine#parse(String)} 转换
      * @param envKeyValues the environmental variable list in format: <b>key=value</b>
-     * @return the output string map with key： {@link CommonsExec#OUT} and {@link CommonsExec#ERROR} and {@link CommonsExec#EXIT_VALUE}
+     * @return {@link ExecResult}
      * @throws IOException the io exception
      */
-    public static Map<String, Object> execWithOutput(CommandLine cmd, List<String> envKeyValues) throws IOException {
+    public static ExecResult execWithOutput(CommandLine cmd, List<String> envKeyValues) throws IOException {
         return execWithOutput(cmd, null, envKeyValues, 0, null);
     }
 
@@ -135,11 +122,11 @@ public class CommonsExec {
      * @param exitValue    运行退出值，通常为 0
      * @param timeout      超时时间，默认 60000L ms
      * @param envKeyValues the environmental variable list in format: <b>key=value</b>
-     * @return the output string map with key： {@link CommonsExec#OUT} and {@link CommonsExec#ERROR} and {@link CommonsExec#EXIT_VALUE}<br/>
+     * @return {@link ExecResult}<br/>
      * 注意：有些程序在执行成功之后，部分信息会出现在 error 中，因此不能根据 error 是否有内容来判断是否执行失败
      * @throws IOException the io exception
      */
-    public static Map<String, Object> execWithOutput(CommandLine cmd, String workspace, List<String> envKeyValues,
+    public static ExecResult execWithOutput(CommandLine cmd, String workspace, List<String> envKeyValues,
                                                      int exitValue, Long timeout) throws IOException
     {
         Executor executor = new DefaultExecutor();
@@ -152,7 +139,7 @@ public class CommonsExec {
         if (StringUtils.isNotBlank(workspace) && dir.exists()) {
             executor.setWorkingDirectory(dir);
         } else {
-            log.warn("Workspace not set or illegal [ " + workspace + " ]. Use current working directory.");
+            log.info("Workspace not set or illegal [ " + workspace + " ]. Use current working directory.");
         }
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
@@ -169,10 +156,10 @@ public class CommonsExec {
             }
             exitValue = executor.execute(cmd, env);
         }
-        Map out = new HashMap();
-        out.put(OUT, outputStream.toString(UTF8));
-        out.put(ERROR, errorStream.toString(UTF8));
-        out.put(EXIT_VALUE, exitValue);
-        return out;
+
+        ExecResult result = new ExecResult(outputStream.toString(UTF8));
+        result.setError(errorStream.toString(UTF8));
+        result.setExitValue(exitValue);
+        return result;
     }
 }

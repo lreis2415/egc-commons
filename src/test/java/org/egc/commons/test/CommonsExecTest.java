@@ -4,10 +4,11 @@ import com.google.common.collect.Lists;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.environment.EnvironmentUtils;
 import org.egc.commons.command.CommonsExec;
-import org.egc.commons.raster.File2PostGIS;
-import org.egc.commons.raster.GeoTiffUtil;
-import org.egc.commons.raster.PostGISInfo;
-import org.egc.commons.raster.RasterMetadata;
+import org.egc.commons.command.ExecResult;
+import org.egc.commons.gis.File2PostGIS;
+import org.egc.commons.gis.GeoTiffUtils;
+import org.egc.commons.gis.PostGISInfo;
+import org.egc.commons.gis.RasterMetadata;
 import org.junit.Test;
 
 import java.io.File;
@@ -60,9 +61,9 @@ public class CommonsExecTest {
         String cmd = String.join(" ", commandLine.toStrings());
         System.out.println(cmd);
 
-        Map map3 = CommonsExec.execWithOutput(CommandLine.parse(cmd), Lists.newArrayList("PGPASSWORD=lreis2415"));
-        System.out.println("out: " + map3.get("out"));
-        System.out.println("error: " + map3.get("error"));
+        ExecResult map3 = CommonsExec.execWithOutput(CommandLine.parse(cmd), Lists.newArrayList("PGPASSWORD=lreis2415"));
+        System.out.println("out: " + map3.getOut());
+        System.out.println("error: " + map3.getError());
     }
 
 
@@ -71,7 +72,7 @@ public class CommonsExecTest {
 
     @Test
     public void loadToPg() {
-        RasterMetadata metadata = GeoTiffUtil.getMetadata(file);
+        RasterMetadata metadata = GeoTiffUtils.getMetadata(file);
         System.out.println(metadata.getSrid());
         PostGISInfo info = new PostGISInfo("egcadmin", "db_cybersolim", "lreis2415");
 
@@ -84,9 +85,9 @@ public class CommonsExecTest {
             e.printStackTrace();
         }*/
         info.setRasterTable("t_rasters");
-        Map out = File2PostGIS.raster2PostGIS(32650, file, info);
-        System.out.println(out.get("out"));
-        System.out.println(out.get("error"));
-        System.out.println(out.get("exitValue"));
+        ExecResult out = File2PostGIS.raster2PostGIS(32650, file, info);
+        System.out.println(out.getOut());
+        System.out.println(out.getError());
+        System.out.println(out.getExitValue());
     }
 }

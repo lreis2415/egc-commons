@@ -1,4 +1,4 @@
-package org.egc.commons.raster;
+package org.egc.commons.gis;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

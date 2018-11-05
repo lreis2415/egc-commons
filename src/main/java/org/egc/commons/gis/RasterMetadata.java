@@ -1,4 +1,4 @@
-package org.egc.commons.raster;
+package org.egc.commons.gis;
 
 import lombok.Data;
 

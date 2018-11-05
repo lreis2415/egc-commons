@@ -1,4 +1,4 @@
-package org.egc.commons.raster;
+package org.egc.commons.gis;
 
 import org.egc.commons.exception.RasterReadException;
 import org.gdal.gdal.Band;

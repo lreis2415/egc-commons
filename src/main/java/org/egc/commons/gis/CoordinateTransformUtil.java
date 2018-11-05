@@ -1,4 +1,4 @@
-package org.egc.commons.raster;
+package org.egc.commons.gis;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import org.gdal.osr.CoordinateTransformation;

@@ -25,7 +25,7 @@ public class BusinessException extends RuntimeException implements Serializable 
      */
     private boolean print = false;
 
-    private HttpStatus httpStatus;
+    private HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 
     public BusinessException(String friendlyErrMsg)
     {

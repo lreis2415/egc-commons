@@ -1,4 +1,4 @@
-package org.egc.commons.raster;
+package org.egc.commons.gis;
 
 import com.google.common.base.Strings;
 import it.geosolutions.jaiext.range.NoDataContainer;
@@ -46,7 +46,7 @@ import java.util.Set;
  * @date 2018/9/21
  */
 @Slf4j
-public class GeoTiffUtil {
+public class GeoTiffUtils {
 
     /**
      * Read geotiff file.

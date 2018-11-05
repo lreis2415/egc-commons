@@ -1,6 +1,6 @@
 package org.egc.commons.test;
 
-import org.egc.commons.raster.*;
+import org.egc.commons.gis.*;
 import org.junit.Test;
 import org.osgeo.proj4j.ProjCoordinate;
 
@@ -62,8 +62,8 @@ public class RasterTest {
 
     @Test
     public void testMeta(){
-//        String s= GeoTiffUtil.getMetadata(tif2).toString();
-        String s= GeoTiffUtil.getMetadata(tif).toString();
+//        String s= GeoTiffUtils.getMetadata(tif2).toString();
+        String s= GeoTiffUtils.getMetadata(tif).toString();
         System.out.println(s);
     }
 }

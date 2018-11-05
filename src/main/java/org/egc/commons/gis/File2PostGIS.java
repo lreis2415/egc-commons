@@ -1,4 +1,4 @@
-package org.egc.commons.raster;
+package org.egc.commons.gis;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.OS;
 import org.egc.commons.command.CommonsExec;
+import org.egc.commons.command.ExecResult;
 import org.egc.commons.exception.BusinessException;
 import org.egc.commons.util.FileUtil;
 import org.egc.commons.util.StringUtil;
@@ -43,9 +44,9 @@ public class File2PostGIS {
      * @param srid     the srid
      * @param filePath the file path
      * @param pgInfo   the postgis database info
-     * @return the boolean
+     * @return
      */
-    public static Map<String, Object> raster2PostGIS(Integer srid, String filePath, PostGISInfo pgInfo) {
+    public static ExecResult raster2PostGIS(Integer srid, String filePath, PostGISInfo pgInfo) {
 
         String tableName = pgInfo.getRasterTable();
         StringUtil.isNullOrEmptyPrecondition(tableName, "Must set raster table name ");
@@ -89,27 +90,30 @@ public class File2PostGIS {
         map.put("db", pgInfo.getDatabase());
         commandLine.setSubstitutionMap(map);
 
-        Map out = null;
+        ExecResult out = null;
         String cmd = String.join(" ", commandLine.toStrings());
         try {
-            out = CommonsExec.execWithOutput(CommandLine.parse(cmd),null, envs,1,null);
+            out = CommonsExec.execWithOutput(CommandLine.parse(cmd), null, envs, 1, null);
+            out.setSuccess(true);
         } catch (IOException e) {
             e.printStackTrace();
             log.error("Load raster to postgis error: ", e);
-            out = new HashMap();
-            out.put("error", e.getMessage());
+            out = new ExecResult("");
+            out.setError(e.getMessage());
+            out.setSuccess(false);
         }
         return out;
     }
 
     /**
      * TODO not fully implemented
+     *
      * @param srid
      * @param filePath
      * @param pgInfo
      * @return
      */
-    public static Map<String, Object> shp2PostGIS(Integer srid, String filePath, PostGISInfo pgInfo){
+    public static ExecResult shp2PostGIS(Integer srid, String filePath, PostGISInfo pgInfo) {
         String tableName = pgInfo.getRasterTable();
         StringUtil.isNullOrEmptyPrecondition(tableName, "Must set vector table name ");
         String pgBinDir = pgInfo.getBinDirectory();
@@ -150,15 +154,17 @@ public class File2PostGIS {
         map.put("db", pgInfo.getDatabase());
         commandLine.setSubstitutionMap(map);
 
-        Map out = null;
+        ExecResult out = null;
         String cmd = String.join(" ", commandLine.toStrings());
         try {
             out = CommonsExec.execWithOutput(CommandLine.parse(cmd), envs);
+            out.setSuccess(true);
         } catch (IOException e) {
             e.printStackTrace();
             log.error("Load shape file to postgis error: ", e);
-            out = new HashMap();
-            out.put("error", e.getMessage());
+            out = new ExecResult("");
+            out.setError(e.getMessage());
+            out.setSuccess(false);
         }
         return out;
     }

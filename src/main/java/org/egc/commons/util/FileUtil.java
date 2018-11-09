@@ -555,10 +555,10 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * @param outputDir
      * @throws IOException
      */
-    public static void unzip(String file,String outputDir) throws IOException {
+    public static String unzip(String file,String outputDir) throws IOException {
         if (!FilenameUtils.getExtension(file).equalsIgnoreCase("zip")) {
             log.warn(file + " is not a zipped file");
-            return;
+            return null;
         }
         ZipFile zipFile = new ZipFile(file);
         if (StringUtils.isBlank(outputDir)) {
@@ -584,6 +584,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
         } finally {
             zipFile.close();
         }
+        return outputDir;
     }
 
     /**

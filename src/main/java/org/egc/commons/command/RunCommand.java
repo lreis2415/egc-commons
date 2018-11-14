@@ -90,6 +90,10 @@ public interface RunCommand {
          * @return the string
          */
         public static String filePath(String workspace, @NotNull String file) {
+            // 已包含完整路径
+            if (StringUtils.isNotBlank(FilenameUtils.getFullPath(file))) {
+                return file;
+            }
             return FilenameUtils.normalize(workspace + File.separator + file);
         }
 

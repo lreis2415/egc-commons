@@ -3,6 +3,7 @@ package org.egc.commons.command;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.CommandLine;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotBlank;
@@ -73,7 +74,15 @@ public abstract class AbstractRunCommand implements RunCommand {
         RunUtils.addFileParams(cmd, files, outputFiles, null);
         cmd.setSubstitutionMap(files);
         ExecResult result = CommonsExec.execWithOutput(cmd, outputDir);
+
+        Map results = new HashMap();
+        outputFiles.forEach((k, v) -> {
+            if (StringUtils.isNotBlank(v)) {
+                results.put(FilenameUtils.getBaseName(v), v);
+            }
+        });
         result.setResultFiles(mapFiles2List(outputFiles));
+        result.setResultFilesMap(results);
         return result;
     }
 

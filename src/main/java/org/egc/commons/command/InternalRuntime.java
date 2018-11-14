@@ -1,7 +1,6 @@
 package org.egc.commons.command;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -14,9 +13,8 @@ import java.io.InputStreamReader;
  * @author houzhiwei
  * @date 2018/9/3 20:17
  */
+@Slf4j
 public class InternalRuntime {
-    private static final Logger log = LoggerFactory.getLogger(InternalRuntime.class);
-
     /**
      * Execute command line use Java {@link Runtime#exec(String)} API.
      *

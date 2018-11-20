@@ -60,7 +60,6 @@ public class VectorUtils {
         metadata.setCrsWkt(sr.ExportToWkt());
         SpatialReference a = new SpatialReference();
         a.ImportFromProj4(sr.ExportToProj4());
-        System.out.println(a.GetAuthorityCode(null));
         double[] extent = layer.GetExtent();
         metadata.setMinX(extent[0]);
         metadata.setMaxX(extent[1]);

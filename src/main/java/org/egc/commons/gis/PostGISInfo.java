@@ -38,6 +38,7 @@ public class PostGISInfo {
     private String schema = "public";
     private String rasterTable;
     private String shapeTable;
+    private String shapeTableEncoding="UTF-8";
     /**
      * postgis executable files directory
      */

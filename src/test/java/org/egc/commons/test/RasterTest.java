@@ -26,7 +26,7 @@ public class RasterTest {
     }
 
     @Test
-    public void tt() {
+    public void rasterFile2PostGIS() {
         rasterFile2PostGIS.file2PostGIS(32650, "D:/DataBase/xuancheng/slope.tif", rasterTableName, dateBaseInfo, postGISPath, passWord);
         //String a = "raster2pgsql -s 32650  -I -a -M  D:\\SampleBase\\dem.tif  -a  public.t_rasters | psql  dbname=db_cyberSolim user=postgres password=123";
     }

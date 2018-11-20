@@ -107,14 +107,14 @@ public class File2PostGIS {
 
     /**
      * TODO not fully implemented
-     *
+     * http://www.bostongis.com/pgsql2shp_shp2pgsql_quickguide.bqg
      * @param srid
      * @param filePath
      * @param pgInfo
      * @return
      */
     public static ExecResult shp2PostGIS(Integer srid, String filePath, PostGISInfo pgInfo) {
-        String tableName = pgInfo.getRasterTable();
+        String tableName = pgInfo.getShapeTable();
         StringUtil.isNullOrEmptyPrecondition(tableName, "Must set vector table name ");
         String pgBinDir = pgInfo.getBinDirectory();
         String password = pgInfo.getPassword();
@@ -131,14 +131,21 @@ public class File2PostGIS {
 
         commandLine.addArgument(SHP_2_PGSQL);
         commandLine.addArgument("-s ${srid}", false);
+        commandLine.addArgument("-a");
+        // Use the PostgreSQL "dump" format for the output data.
+        // Use this for very large data sets.
+        commandLine.addArgument("-D");
         // Create a GiST index on the geometry column.
         commandLine.addArgument("-I");
-        //-F Add a column with the name of the file
-        commandLine.addArgument("-F");
-        // raster file or files (eg. *.tif)
+        // shape file or files path (eg. *.shp)
         commandLine.addArgument("${file}");
+
+        if(!pgInfo.getShapeTableEncoding().equalsIgnoreCase("UTF-8")){
+            commandLine.addArgument("-W");
+            commandLine.addArgument(pgInfo.getShapeTableEncoding());
+        }
         // Appends data from the Shape file into the database table.
-        commandLine.addArgument("-a ${schema}.${table}", false);
+        commandLine.addArgument("${schema}.${table}", false);
         //pipe psql
         commandLine.addArgument("|");
         commandLine.addArgument(PSQL);
@@ -149,7 +156,7 @@ public class File2PostGIS {
         map.put("srid", srid);
         map.put("file", file);
         map.put("schema", pgInfo.getSchema());
-        map.put("table", pgInfo.getRasterTable());
+        map.put("table", pgInfo.getShapeTable());
         map.put("username", pgInfo.getUsername());
         map.put("db", pgInfo.getDatabase());
         commandLine.setSubstitutionMap(map);

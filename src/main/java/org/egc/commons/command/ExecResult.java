@@ -2,9 +2,6 @@ package org.egc.commons.command;
 
 import lombok.Data;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * 命令行执行结果
  *
@@ -26,27 +23,10 @@ public class ExecResult {
     /**
      * 退出值
      */
-    private int exitValue;
-    private List<String> resultFiles;
-
-    private Map<String, Object> resultFilesMap;
-    private Boolean success;
-
+    private int exitValue = 0;
     /**
-     * list of result/output file names, e.g. "path_of_xcDEM_Pit_Removed_Elevation_Grid.tif"
-     * <p><i>for (k,v) in outputFiles, list of v</i>
+     * 将方法输入输出参数封装为对象，传递输出数据
      */
-    public List<String> getResultFiles(){
-        return this.resultFiles;
-    }
-
-    /**
-     * key is FilenameUtils.getBaseName(result/output file name without extension), e.g. "xcDEM_Pit_Removed_Elevation_Grid"
-     * <p> value is result/output file name, e.g.  "path_of_xcDEM_Pit_Removed_Elevation_Grid.tif"
-     * <p> <i>for (k,v) in outputFiles,
-     * key and value of resultFilesMap is < FilenameUtils.getBaseName(v), v ></i>
-     */
-    public Map<String, Object> getResultFilesMap() {
-        return this.resultFilesMap;
-    }
+    private Params params;
+    private Boolean success = true;
 }

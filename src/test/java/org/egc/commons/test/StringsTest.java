@@ -3,7 +3,7 @@ package org.egc.commons.test;
 import org.egc.commons.util.StringUtil;
 import org.junit.Test;
 
-import java.nio.file.Paths;
+import java.io.File;
 
 /**
  * TODO
@@ -26,8 +26,9 @@ public class StringsTest {
 
     @Test
     public void strTest(){
-        String path="F:\\GIScience\\GDAL-2.1.3.win-amd64-py3.4.msi";
-        System.out.println(Paths.get(""));
+        String path="./";
+        System.out.println(new File(path).toPath());
+        System.out.println(new File("."));
     }
 
 }

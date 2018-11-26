@@ -74,8 +74,7 @@ public abstract class AbstractRunCommand implements RunCommand {
         ExecResult result = null;
         try {
             result = CommonsExec.execWithOutput(cmd, outputDir);
-            log.info(result.getOut());
-            log.info(result.getError());
+            log.info("Execution Info/Error: {}",result.getError());
             result.setSuccess(true);
         } catch (IOException e) {
             log.error(e.getLocalizedMessage(), e);
@@ -83,7 +82,6 @@ public abstract class AbstractRunCommand implements RunCommand {
         }
         return result;
     }
-
 
     private List<String> mapFiles2List(Map<String, String> mapFiles) {
         Preconditions.checkNotNull(mapFiles, "files map can not be null!");

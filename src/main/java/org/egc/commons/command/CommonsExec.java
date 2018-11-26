@@ -127,7 +127,7 @@ public class CommonsExec {
      * @throws IOException the io exception
      */
     public static ExecResult execWithOutput(CommandLine cmd, String workspace, List<String> envKeyValues,
-                                                     int exitValue, Long timeout) throws IOException
+                                            int exitValue, Long timeout) throws IOException
     {
         Executor executor = new DefaultExecutor();
         if (timeout == null) {
@@ -135,8 +135,9 @@ public class CommonsExec {
         }
         ExecuteWatchdog watchdog = new ExecuteWatchdog(timeout);
         executor.setWatchdog(watchdog);
-        File dir = new File(FilenameUtils.normalize(workspace == null ? "" : workspace));
-        if (StringUtils.isNotBlank(workspace) && dir.exists()) {
+        if (StringUtils.isNotBlank(workspace)) {
+            File dir = new File(FilenameUtils.normalize(workspace));
+            if (!dir.exists()) {dir.mkdirs();}
             executor.setWorkingDirectory(dir);
         } else {
             log.info("Workspace not set or illegal [ " + workspace + " ]. Use current working directory.");

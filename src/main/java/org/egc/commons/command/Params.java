@@ -16,6 +16,7 @@ import java.util.Date;
  *  命令行方法的参数对象应当实现此接口，以便调用方法能够从 {@link ExecResult#getParams()}  中获取输出
  *  parameter object of a commandline method should implements this interface,
  *  so that the calling methods could get outputs from {@link ExecResult#getParams()}
+ *  需要对输出变量赋值: 用户输入或者自动命名
  * </pre>
  *
  * @author houzhiwei
@@ -77,8 +78,8 @@ public interface Params extends Serializable {
         String baseName = FilenameUtils.getBaseName(input);
 
         StringBuilder stringBuilder = new StringBuilder();
-        if (input.contains("_") && !input.startsWith("_")) {
-            baseName = input.substring(0, input.indexOf("_"));
+        if (baseName.contains("_") && !baseName.startsWith("_")) {
+            baseName = baseName.substring(0, baseName.indexOf("_"));
         }
         stringBuilder.append(baseName);
         stringBuilder.append("_");

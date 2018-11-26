@@ -148,23 +148,26 @@ public interface RunCommand {
                                          String dir)
         {
             fileParams.forEach((k, v) -> {
-                if (StringUtils.isNotBlank(k) && StringUtils.isNotBlank(v)) {
-                    cmd.addArgument(k);
-                    if (k.startsWith("-")) {
-                        k = k.replaceFirst("-", "");
+                if (StringUtils.isNotBlank(v)) {
+                    if (StringUtils.isNotBlank(k)) {
+                        cmd.addArgument(k);
+                        if (k.startsWith("-")) {
+                            k = k.replaceFirst("-", "");
+                        }
+                        String file = "${" + k + "file}";
+                        cmd.addArgument(file);
+                        if (StringUtils.isNotBlank(dir)) {
+                            files.put(k + "file", RunUtils.filePath(dir, v));
+                        } else {
+                            files.put(k + "file", v);
+                        }
                     }
-                    String file = "${" + k + "file}";
-                    cmd.addArgument(file);
-                    if (StringUtils.isNotBlank(dir)) {
-                        files.put(k + "file", RunUtils.filePath(dir, v));
-                    } else {
-                        files.put(k + "file", v);
+                    // e.g. Threshold <basefilename>
+                    else {
+                        cmd.addArgument(v);
                     }
                 }
-                // e.g. Threshold <basefilename>
-                else if (StringUtils.isBlank(k) && StringUtils.isNotBlank(v)) {
-                    cmd.addArgument(v);
-                }
+                // if v is blank, not add flag to command line
             });
         }
 
@@ -178,16 +181,16 @@ public interface RunCommand {
             if (params == null) {
                 return;
             }
-            params.forEach((k, v) -> {
-                if (k == null) {
-                    // do nothing
+            for (Map.Entry entry : params.entries()) {
+                String k = (String) entry.getKey();
+                Object v = entry.getValue();
+                if (StringUtils.isBlank(k) || v == null) {
+                    continue;
                 }
                 if (k.startsWith("--")) {
                     k = k.replaceFirst("-", "");
                 }
-                if (StringUtils.isBlank(String.valueOf(v))) {
-                    // do nothing
-                } else if (v instanceof Boolean && (Boolean) v) {
+                if (v instanceof Boolean && (Boolean) v) {
                     cmd.addArgument(k);
                 } else if (v instanceof Integer && (Integer) v > -1) {
                     cmd.addArgument(k);
@@ -206,7 +209,7 @@ public interface RunCommand {
                     cmd.addArgument(k);
                     cmd.addArgument(String.valueOf(v));
                 }
-            });
+            }
         }
     }
 }

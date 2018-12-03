@@ -173,9 +173,9 @@ public interface RunCommand {
 
         /**
          * 向命令行中添加非文件类型参数
-         *
+         * <p>原命令中无需赋值的 flag，通过 Boolean 值来决定改 flag 是否加入命令行。如 "-v" (verbose)
          * @param cmd    {@link CommandLine}
-         * @param params 参数 {@link java.util.Map}，如 ("-lyrno", 2)
+         * @param params 参数 {@link java.util.Map}，如 "-z demfile"
          */
         public static void addParams(CommandLine cmd, LinkedHashMultimap<String, Object> params) {
             if (params == null) {
@@ -186,9 +186,6 @@ public interface RunCommand {
                 Object v = entry.getValue();
                 if (StringUtils.isBlank(k) || v == null) {
                     continue;
-                }
-                if (k.startsWith("--")) {
-                    k = k.replaceFirst("-", "");
                 }
                 if (v instanceof Boolean && (Boolean) v) {
                     cmd.addArgument(k);

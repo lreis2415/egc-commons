@@ -2,6 +2,8 @@ package org.egc.commons.command;
 
 import lombok.Data;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * 命令行执行结果
  *
@@ -9,6 +11,7 @@ import lombok.Data;
  * @date 2018/11/3 14:27
  */
 @Data
+@XmlRootElement
 public class ExecResult {
 
     public ExecResult(String out) {

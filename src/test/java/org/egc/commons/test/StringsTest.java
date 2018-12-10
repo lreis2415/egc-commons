@@ -29,6 +29,9 @@ public class StringsTest {
         String path="./";
         System.out.println(new File(path).toPath());
         System.out.println(new File("."));
+        String s = "--ffff-f";
+        s = s.replaceFirst("[-]{1,3}","");
+        System.out.println(s);
     }
 
 }

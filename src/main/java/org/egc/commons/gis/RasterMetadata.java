@@ -1,6 +1,7 @@
 package org.egc.commons.gis;
 
 import lombok.Data;
+import org.egc.commons.util.Formatter;
 
 import java.io.Serializable;
 
@@ -40,9 +41,21 @@ public class RasterMetadata implements Serializable {
      * sample standard deviation
      */
     private double sdev;
+    /**
+     * left/west
+     */
     private double minX;
+    /**
+     * right/east
+     */
     private double maxX;
+    /**
+     * bottom/south
+     */
     private double minY;
+    /**
+     * upper/north
+     */
     private double maxY;
     private double centerX;
     private double centerY;
@@ -60,6 +73,13 @@ public class RasterMetadata implements Serializable {
     private int sizeWidth;
 
     private String unit;
+
+    public String getExtent() {
+        return Formatter.formatDoubleStr(minX, 4) + " " + Formatter.formatDoubleStr(minY, 4)
+                + " " + Formatter.formatDoubleStr(maxX, 4) + " " + Formatter.formatDoubleStr(maxY, 4);
+    }
+
+    private String extent;
     private double[] upperLeft;
     private double[] upperRight;
     private double[] lowerLeft;

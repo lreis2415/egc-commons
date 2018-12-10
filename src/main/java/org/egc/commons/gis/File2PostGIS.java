@@ -93,7 +93,7 @@ public class File2PostGIS {
         ExecResult out = null;
         String cmd = String.join(" ", commandLine.toStrings());
         try {
-            out = CommonsExec.execWithOutput(CommandLine.parse(cmd), null, envs, 1, null);
+            out = CommonsExec.execWithOutput(CommandLine.parse(cmd), null, envs, 0, null);
             out.setSuccess(true);
         } catch (IOException e) {
             e.printStackTrace();

@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.validation.constraints.NotBlank;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +33,7 @@ public abstract class AbstractRunCommand implements RunCommand {
      */
     private CommandLine checkInitCmd(String exec) {
         CommandLine cmd = initCmd();
-        if (StringUtils.isBlank(cmd.getExecutable())) {
+        if (cmd == null || StringUtils.isBlank(cmd.getExecutable())) {
             cmd = new CommandLine(exec);
         } else if (!cmd.getExecutable().equalsIgnoreCase(exec.toLowerCase())) {
             cmd.addArgument(exec);
@@ -42,14 +42,16 @@ public abstract class AbstractRunCommand implements RunCommand {
     }
 
     @Override
-    public ExecResult run(@NotBlank String exec, Map<String, String> fileParams, LinkedHashMultimap<String, Object> params) {
+    public ExecResult run(@NotBlank String exec, Map<String, String> fileParams,
+                          LinkedHashMultimap<String, Object> params) {
         CommandLine cmd = checkInitCmd(exec);
         RunUtils.addParams(cmd, params);
-        Map files = new HashMap(fileParams.size());
+        Map files = new LinkedHashMap(fileParams.size());
         RunUtils.addFileParams(cmd, files, fileParams, null);
         cmd.setSubstitutionMap(files);
         ExecResult result = null;
         try {
+            cmd = handleEqualSign(cmd);
             result = CommonsExec.execWithOutput(cmd);
             log.info(result.getOut());
             log.info(result.getError());
@@ -63,24 +65,45 @@ public abstract class AbstractRunCommand implements RunCommand {
 
     @Override
     public ExecResult run(@NotBlank String exec, Map<String, String> inputFiles, Map<String, String> outputFiles,
-                          LinkedHashMultimap<String, Object> inParams, String outputDir)
-    {
+                          LinkedHashMultimap<String, Object> inParams, String outputDir) {
         CommandLine cmd = checkInitCmd(exec);
         RunUtils.addParams(cmd, inParams);
-        Map files = new HashMap(inputFiles.size() + outputFiles.size());
+        Map files = new LinkedHashMap(inputFiles.size() + outputFiles.size());
         RunUtils.addFileParams(cmd, files, inputFiles, null);
         RunUtils.addFileParams(cmd, files, outputFiles, outputDir);
         cmd.setSubstitutionMap(files);
         ExecResult result = null;
         try {
+            cmd = handleEqualSign(cmd);
             result = CommonsExec.execWithOutput(cmd, outputDir);
-            log.info("Execution Info/Error: {}",result.getError());
+            log.info("Execution Info/Error: {}", result.getError());
             result.setSuccess(true);
         } catch (IOException e) {
             log.error(e.getLocalizedMessage(), e);
             result.setSuccess(false);
         }
         return result;
+    }
+
+    /**
+     * 处理命令行中可能出现的 = 号.
+     * <p>如WhiteBox的命令行
+     * <p>{@code
+     * whitebox_tools -r=ExtractValleys -v --wd="/path/to/data/" --dem=pointer.tif
+     * -o=out.tif
+     * --variant='JandR'
+     * --line_thin}
+     * <p> 不处理的话，= 后存在空格，执行报错
+     * @param cmd CommandLine 对象
+     * @return 处理后或无需处理的 CommandLine 对象
+     */
+    private CommandLine handleEqualSign(CommandLine cmd) {
+        String cmdStr = String.join(" ", cmd.toStrings());
+        if (cmdStr.indexOf("= ") > 0) {
+            cmdStr = cmdStr.replaceAll("= ", "=");
+            cmd = CommandLine.parse(cmdStr);
+        }
+        return cmd;
     }
 
     private List<String> mapFiles2List(Map<String, String> mapFiles) {

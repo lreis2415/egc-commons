@@ -145,14 +145,16 @@ public interface RunCommand {
          * @param dir        文件参数中所有文件所在目录
          */
         public static void addFileParams(CommandLine cmd, Map<String, String> files, Map<String, String> fileParams,
-                                         String dir)
-        {
+                                         String dir) {
             fileParams.forEach((k, v) -> {
                 if (StringUtils.isNotBlank(v)) {
                     if (StringUtils.isNotBlank(k)) {
                         cmd.addArgument(k);
                         if (k.startsWith("-")) {
-                            k = k.replaceFirst("-", "");
+                            k = k.replaceFirst("[-]{1,3}", "");
+                        }
+                        if(k.endsWith("=")){
+                            k = k.replaceFirst("=", "");
                         }
                         String file = "${" + k + "file}";
                         cmd.addArgument(file);

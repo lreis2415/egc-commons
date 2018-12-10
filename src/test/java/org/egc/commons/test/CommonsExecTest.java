@@ -69,10 +69,11 @@ public class CommonsExecTest {
 
     String file = "G:\\DDL Driver\\Projects\\CyberSoLIM\\Training\\DEM_ah.tif";//32650
     String file2 = "H:\\dem_TX_out.tif";//9001
+    String file3 = "D:\\data\\WebSites\\egcDataFiles\\1\\4\\Dem.tif";//32650
 
     @Test
     public void loadToPg() {
-        RasterMetadata metadata = GeoTiffUtils.getMetadata(file);
+        RasterMetadata metadata = GeoTiffUtils.getMetadata(file3);
         System.out.println(metadata.getSrid());
         PostGISInfo info = new PostGISInfo("egcadmin", "db_cybersolim", "lreis2415");
 
@@ -85,9 +86,34 @@ public class CommonsExecTest {
             e.printStackTrace();
         }*/
         info.setRasterTable("t_rasters");
-        ExecResult out = File2PostGIS.raster2PostGIS(32650, file, info);
+        ExecResult out = File2PostGIS.raster2PostGIS(32650, file3, info);
         System.out.println(out.getOut());
         System.out.println(out.getError());
         System.out.println(out.getExitValue());
+    }
+    @Test
+    public void testCmd() throws IOException {
+     String cmd = "D:\\Program Files\\Python35\\Lib\\site-packages\\whitebox\\WBT\\whitebox_tools --run=\"Sink\" --wd=\"H:\\gisdemo\\out\" --dem='H:/gisdemo/DEM.tif' --output='sink.tif' -v";
+        CommandLine commandLine = new CommandLine("D:\\Program Files\\Python35\\Lib\\site-packages\\whitebox\\WBT\\whitebox_tools");
+        commandLine.addArgument("-r=");
+        commandLine.addArgument("Sink");
+        commandLine.addArgument("-v");
+        commandLine.addArgument("--wd=");
+        commandLine.addArgument("H:\\gisdemo\\out");
+        commandLine.addArgument("--dem=");
+        commandLine.addArgument("H:/gisdemo/DEM.tif");
+        commandLine.addArgument("-o=");
+        commandLine.addArgument("sink.tif");
+//        CommandLine cmd2 = CommandLine.parse(cmd);
+//        System.out.println(cmd2.toStrings());
+        String cmdStr = String.join(" ", commandLine.toStrings());
+        System.out.println(cmdStr);
+        String r = cmdStr.replaceAll("= ","=");
+        System.out.println(r);
+        ExecResult result = CommonsExec.execWithOutput(commandLine);
+//        ExecResult result = CommonsExec.execWithOutput(CommandLine.parse(r));
+        System.out.println(result.getError());
+        System.out.println(result.getOut());
+
     }
 }

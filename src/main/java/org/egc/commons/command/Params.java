@@ -3,6 +3,9 @@ package org.egc.commons.command;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.egc.commons.util.IniUtils;
+import org.ini4j.Ini;
+import org.ini4j.Profile;
 
 import java.io.File;
 import java.io.Serializable;
@@ -26,6 +29,7 @@ public interface Params extends Serializable {
     /**
      * 为输出数据设置默认名称文件名
      * 必要时可以覆盖重新实现此方法
+     *
      * @param input       输入文件名
      * @param outputParam 输出参数名
      * @return
@@ -35,42 +39,13 @@ public interface Params extends Serializable {
         if (StringUtils.isNotBlank(formatExtension)) {
             extension = formatExtension;
         } else {
+            Ini ini = IniUtils.getIniFromResource("formats", null);
+            Profile.Section formats = ini.get("formats");
             // 抓取的知识没有 formatExtension，而且都是字符串
             if (StringUtils.isNotBlank(fileType)) {
-                switch (fileType) {
-                    case "Raster Layer":
-                        extension = "tif";
-                        break;
-                    case "Raster Dataset":
-                        extension = "tif";
-                        break;
-                    case "Grid":
-                        extension = "tif";
-                        break;
-                    case "Shapes":
-                        extension = "shp";
-                        break;
-                    case "Shapefile":
-                        extension = "shp";
-                        break;
-                    case "Feature Layer":
-                        extension = "shp";
-                        break;
-                    case "File":
-                        extension = "txt";
-                        break;
-                    case "Text File":
-                        extension = "txt";
-                        break;
-                    case "DBFile":
-                        extension = "dbf";
-                        break;
-                    case "Table":
-                        extension = "dbf";
-                        break;
-                    default:
-                        extension = FilenameUtils.getExtension(input);
-                        break;
+                extension = formats.get(fileType);
+                if (StringUtils.isBlank(extension)) {
+                    extension = FilenameUtils.getExtension(input);
                 }
             }
         }
@@ -88,6 +63,7 @@ public interface Params extends Serializable {
         stringBuilder.append(extension);
         outputParam = stringBuilder.toString();
 
+        //?
         if (new File(outputParam).exists()) {
             outputParam = FilenameUtils.getBaseName(outputParam) + "_" +
                     DateUtils.getFragmentInMilliseconds(new Date(), Calendar.MINUTE) + "." + extension;

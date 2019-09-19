@@ -32,6 +32,7 @@ public class VectorMetadata implements Serializable {
      */
     private Integer srid;
     private String format;
+    private String semantic;
     private String unit;
 
     private double minX;

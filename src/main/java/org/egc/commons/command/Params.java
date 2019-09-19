@@ -23,16 +23,18 @@ import java.util.Date;
  * </pre>
  *
  * @author houzhiwei
- * @date 2018/11/19 11:36
+ * @date 2018 /11/19 11:36
  */
 public interface Params extends Serializable {
     /**
      * 为输出数据设置默认名称文件名
      * 必要时可以覆盖重新实现此方法
      *
-     * @param input       输入文件名
-     * @param outputParam 输出参数名
-     * @return
+     * @param input           输入文件名
+     * @param outputParam     输出参数名
+     * @param fileType        the file type
+     * @param formatExtension the format extension
+     * @return string
      */
     default String namingOutput(String input, String outputParam, String fileType, String formatExtension) {
         String extension = "";

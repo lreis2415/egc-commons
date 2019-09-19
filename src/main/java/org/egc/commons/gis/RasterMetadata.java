@@ -34,6 +34,7 @@ public class RasterMetadata implements Serializable {
     private Integer srid;
     private double nodata;
     private String format;
+    private String semantic;
     private double maxValue;
     private double minValue;
     private double meanValue;

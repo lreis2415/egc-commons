@@ -1,11 +1,11 @@
 package org.egc.commons.util;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import org.joda.time.Days;
 import org.joda.time.Interval;
 import org.joda.time.Minutes;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -31,7 +31,8 @@ public class TimeUtil
             end = temp;
         }
         Interval interval = parserToInterval(start, end);
-        return Minutes.minutesIn(interval).getMinutes();//获得时间段分钟
+        //获得时间段分钟
+        return Minutes.minutesIn(interval).getMinutes();
     }
 
     public static int distanceInDays(Date start, Date end)
@@ -42,7 +43,8 @@ public class TimeUtil
             end = temp;
         }
         Interval interval = parserToInterval(start, end);
-        return Days.daysIn(interval).getDays();//获得时间段
+        //获得时间段
+        return Days.daysIn(interval).getDays();
     }
 
     /**
@@ -60,7 +62,6 @@ public class TimeUtil
     /**
      * @author lp
      */
-
     public static String DateToString(Date date) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String str = format.format(date);

@@ -172,7 +172,6 @@
             <version>${mockito.version}</version>
             <scope>compile</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
@@ -215,7 +214,7 @@
     </dependencies>
 
     <build>
-        <finalName>${project.artifactId}</finalName>
+        <finalName>egc-commons</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

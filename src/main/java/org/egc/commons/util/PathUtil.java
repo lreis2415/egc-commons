@@ -8,6 +8,7 @@ import org.egc.commons.exception.BusinessException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 
@@ -159,7 +160,12 @@ public class PathUtil {
     public static String resourcesFilePath(String filename) {
         ClassLoader classLoader = PathUtil.class.getClassLoader();
         filename = fileNormalize(filename);
-        return classLoader.getResource(filename).getFile();
+        try {
+            return Paths.get(classLoader.getResource(filename).toURI()).toString();
+        } catch (URISyntaxException e) {
+            log.error(e.getMessage());
+            return null;
+        }
     }
 
 

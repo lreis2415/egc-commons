@@ -48,7 +48,7 @@ public class BusinessException extends RuntimeException implements Serializable 
      * @param status         http status
      * @param print          print exception or not
      */
-    public BusinessException(String friendlyErrMsg, HttpStatus status, boolean print )
+    public BusinessException(String friendlyErrMsg, HttpStatus status, boolean print)
     {
         super(createFriendlyErrMsg(friendlyErrMsg));
         this.errorCode = status.value();
@@ -73,6 +73,12 @@ public class BusinessException extends RuntimeException implements Serializable 
     public BusinessException(Throwable throwable, String friendlyErrMsg)
     {
         super(friendlyErrMsg, throwable);
+    }
+
+    public BusinessException(Throwable throwable, String friendlyErrMsg, boolean print)
+    {
+        super(friendlyErrMsg, throwable);
+        this.print = print;
     }
 
     public BusinessException(Throwable throwable, String friendlyErrMsg, HttpStatus status)

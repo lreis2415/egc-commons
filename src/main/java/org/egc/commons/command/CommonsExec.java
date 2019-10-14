@@ -64,12 +64,12 @@ public class CommonsExec {
      * </pre>
      *
      * @param cmd       the CommandLine
-     * @param exitValue the exit value to be considered as successful execution <b>if it is not 0<b/>
+     * @param exitValue the exit value to be considered as successful execution, can be null
      * @return 0 : success; 1: failed
      * @throws IOException          the io exception
      * @throws InterruptedException the interrupted exception
      */
-    public static int exec(CommandLine cmd, int exitValue) throws IOException, InterruptedException {
+    public static int exec(CommandLine cmd, Integer exitValue) throws IOException, InterruptedException {
         Executor executor = new DefaultExecutor();
         // 设置超时时间，毫秒
         ExecuteWatchdog watchdog = new ExecuteWatchdog(60000);
@@ -102,6 +102,10 @@ public class CommonsExec {
         return execWithOutput(cmd, workspace, null, 0, null);
     }
 
+    public static ExecResult execWithOutput(CommandLine cmd, Integer exitValue) throws IOException {
+        return execWithOutput(cmd, null, null, exitValue, null);
+    }
+
     /**
      * Exec with output string.
      *
@@ -119,7 +123,7 @@ public class CommonsExec {
      *
      * @param cmd          命令行. 如果是字符串，则使用 {@link CommandLine#parse(String)} 转换
      * @param workspace    工作目录(数据输出目录)， blank 时使用当前目录（<code>new File(".")</code>）
-     * @param exitValue    运行退出值，通常为 0
+     * @param exitValue    运行退出值，通常为 0, 可为 null
      * @param timeout      超时时间，默认 60000L ms
      * @param envKeyValues the environmental variable list in format: <b>key=value</b>
      * @return {@link ExecResult}<br/>
@@ -127,7 +131,7 @@ public class CommonsExec {
      * @throws IOException the io exception
      */
     public static ExecResult execWithOutput(CommandLine cmd, String workspace, List<String> envKeyValues,
-                                            int exitValue, Long timeout) throws IOException
+                                            Integer exitValue, Long timeout) throws IOException
     {
         Executor executor = new DefaultExecutor();
         if (timeout == null) {
@@ -140,14 +144,15 @@ public class CommonsExec {
             if (!dir.exists()) {dir.mkdirs();}
             executor.setWorkingDirectory(dir);
         } else {
-            log.info("Workspace not set or illegal [ " + workspace + " ]. Use current working directory.");
+            log.debug("Workspace not set or illegal [ " + workspace + " ]. Use current working directory.");
         }
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
         PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream, errorStream);
         executor.setStreamHandler(streamHandler);
-        executor.setExitValue(exitValue);
-
+        if (exitValue != null) {
+            executor.setExitValue(exitValue);
+        }
         if (envKeyValues == null || envKeyValues.size() == 0) {
             exitValue = executor.execute(cmd);
         } else {

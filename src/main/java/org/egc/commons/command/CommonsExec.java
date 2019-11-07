@@ -41,7 +41,7 @@ public class CommonsExec {
      * @throws InterruptedException the interrupted exception
      */
     public static int exec(CommandLine cmd) throws IOException, InterruptedException {
-        return exec(cmd, 0);
+        return exec(cmd, null);
     }
 
     /**
@@ -54,7 +54,7 @@ public class CommonsExec {
      */
     public static int exec(String commandLine) throws IOException, InterruptedException {
         CommandLine cmd = CommandLine.parse(commandLine);
-        return exec(cmd, 0);
+        return exec(cmd, null);
     }
 
     /**
@@ -74,7 +74,9 @@ public class CommonsExec {
         // 设置超时时间，毫秒
         ExecuteWatchdog watchdog = new ExecuteWatchdog(60000);
         executor.setWatchdog(watchdog);
-        executor.setExitValue(exitValue);
+        if (exitValue != null) {
+            executor.setExitValue(exitValue);
+        }
         int exit = executor.execute(cmd);
         return exit;
     }
@@ -87,7 +89,7 @@ public class CommonsExec {
      * @throws IOException the io exception
      */
     public static ExecResult execWithOutput(CommandLine cmd) throws IOException {
-        return execWithOutput(cmd, null, null, 0, null);
+        return execWithOutput(cmd, null, null, null, null);
     }
 
     /**
@@ -99,7 +101,7 @@ public class CommonsExec {
      * @throws IOException the io exception
      */
     public static ExecResult execWithOutput(CommandLine cmd, String workspace) throws IOException {
-        return execWithOutput(cmd, workspace, null, 0, null);
+        return execWithOutput(cmd, workspace, null, null, null);
     }
 
     public static ExecResult execWithOutput(CommandLine cmd, Integer exitValue) throws IOException {
@@ -115,7 +117,7 @@ public class CommonsExec {
      * @throws IOException the io exception
      */
     public static ExecResult execWithOutput(CommandLine cmd, List<String> envKeyValues) throws IOException {
-        return execWithOutput(cmd, null, envKeyValues, 0, null);
+        return execWithOutput(cmd, null, envKeyValues, null, null);
     }
 
     /**

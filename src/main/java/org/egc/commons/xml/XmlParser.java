@@ -1,9 +1,6 @@
 package org.egc.commons.xml;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
+import org.dom4j.*;
 import org.dom4j.io.SAXReader;
 import org.egc.commons.exception.BusinessException;
 import org.slf4j.Logger;
@@ -11,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
+import java.util.*;
 
 /**
  * TODO
@@ -87,4 +85,94 @@ public class XmlParser {
         Element memberElm = root.element("member");
         String memberXmlText = memberElm.asXML();*/
     }
+
+    /**
+     * convert document to map
+     *
+     * @param doc Document
+     * @return HashMap
+     */
+    public static Map dom2Map(Document doc) {
+        Map map = new HashMap();
+        if (doc == null) {
+            return map;
+        }
+        Element root = doc.getRootElement();
+        for (Iterator iterator = root.attributeIterator(); iterator.hasNext(); ) {
+            Attribute attr = (Attribute) iterator.next();
+            map.put(attr.getName(), attr.getValue());
+        }
+        for (Iterator iterator = root.elementIterator(); iterator.hasNext(); ) {
+            Element e = (Element) iterator.next();
+            List list = e.elements();
+            if (list.size() > 0) {
+                map.put(e.getName(), el2Map(e));
+            } else {
+                map.put(e.getName(), e.getText());
+            }
+        }
+        return map;
+    }
+    /**
+     * convert element to map
+     *
+     * @param e Element
+     * @return HashMap
+     */
+    public static Map el2Map(Element e) {
+        Map map = new HashMap();
+        List list = e.elements();
+        if (list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                Element iter = (Element) list.get(i);
+                map = attributes2Map(iter.attributes(), map);
+                List mapList = new ArrayList();
+                if (iter.elements().size() > 0) {
+                    Map m = el2Map(iter);
+                    if (map.get(iter.getName()) != null) {
+                        Object obj = map.get(iter.getName());
+                        if (!obj.getClass().getName().equals("java.util.ArrayList")) {
+                            mapList = new ArrayList();
+                            mapList.add(obj);
+                            mapList.add(m);
+                        }
+                        if (obj.getClass().getName().equals("java.util.ArrayList")) {
+                            mapList = (List) obj;
+                            mapList.add(m);
+                        }
+                        map.put(iter.getName(), mapList);
+                    } else {
+                        map.put(iter.getName(), m);
+                    }
+                } else {
+                    if (map.get(iter.getName()) != null) {
+                        Object obj = map.get(iter.getName());
+                        if (!obj.getClass().getName().equals("java.util.ArrayList")) {
+                            mapList = new ArrayList();
+                            mapList.add(obj);
+                            mapList.add(iter.getText());
+                        }
+                        if (obj.getClass().getName().equals("java.util.ArrayList")) {
+                            mapList = (List) obj;
+                            mapList.add(iter.getText());
+                        }
+                        map.put(iter.getName(), mapList);
+                    } else {
+                        map.put(iter.getName(), iter.getText());
+                    }
+                }
+            }
+        } else {
+            map.put(e.getName(), e.getText());
+        }
+        return map;
+    }
+
+    public static Map attributes2Map(List<Attribute> attrs, Map map) {
+        for (Attribute attr : attrs) {
+            map.put(attr.getName(), attr.getValue());
+        }
+        return map;
+    }
+
 }

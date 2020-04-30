@@ -16,7 +16,7 @@ import java.nio.file.Files;
 /**
  * Description:
  * <pre>
- *
+ * utilities for vector data
  * </pre>
  *
  * @author houzhiwei
@@ -32,7 +32,6 @@ public class VectorUtils {
      * @return Metadata
      */
     public static VectorMetadata getShapefileMetadata(String shapefile) {
-
         ogr.RegisterAll();
         DataSource ds = ogr.Open(shapefile, false);
         Driver driver = ds.GetDriver();
@@ -61,8 +60,7 @@ public class VectorUtils {
                 log.warn("Create prj file failed.", e);
             }
         }
-        String authorityCode = sr.GetAuthorityCode(null);
-        String authorityName = sr.GetAuthorityName(null);
+        String authorityCode = sr.GetAttrValue("Authority", 1);
         if (StringUtils.isNotBlank(authorityCode)) {
             metadata.setSrid(Integer.parseInt(authorityCode));
         }
@@ -88,4 +86,5 @@ public class VectorUtils {
         driver.delete();
         return metadata;
     }
+
 }

@@ -23,7 +23,6 @@ public class ShiroExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ShiroExceptionHandler.class);
 
-
     /**
      * Authentication exception.
      *

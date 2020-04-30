@@ -94,10 +94,8 @@ public class ValidationExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public JsonErrorResult messageNotReadableException(HttpMessageNotReadableException e) {
-
         logger.error("JSON parse error: {}", e);
         return new JsonErrorResult("[ JSON Parse Error ] " + e.getMessage(), HttpStatus.BAD_REQUEST);
-
     }
 
     /**

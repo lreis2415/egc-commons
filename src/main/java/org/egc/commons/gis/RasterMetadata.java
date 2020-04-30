@@ -32,12 +32,14 @@ public class RasterMetadata implements Serializable {
      * 参考：http://epsg.io
      */
     private Integer srid;
+    private String epsg;
     private double nodata;
     private String format;
     private String semantic;
     private double maxValue;
     private double minValue;
     private double meanValue;
+    private boolean isProjected = false;
     /**
      * sample standard deviation
      */

@@ -110,7 +110,7 @@ public class GeoTiffUtils {
      * Get coverage metadata.
      * slower than gdal
      * </pre>
-     *
+     * TODO geogcs,projcs,isProjected
      * @param coverage the coverage
      * @return the raster metadata
      */
@@ -125,6 +125,7 @@ public class GeoTiffUtils {
         }
         metadata.setNodata(nodata);
         CoordinateReferenceSystem crs = coverage.getCoordinateReferenceSystem();
+
         //获取wkt格式的投影信息
         metadata.setCrs(crs.getName().getCode());
         metadata.setCrsWkt(crs.toWKT());
@@ -196,7 +197,8 @@ public class GeoTiffUtils {
         metadata.setCrsProj4(sr.ExportToProj4());
         metadata.setCrsWkt(sr.ExportToWkt());
         String authorityCode = sr.GetAuthorityCode(null);
-
+        String epsg = sr.GetAttrValue("Authority",1);
+        metadata.setEpsg(epsg);
         if (authorityCode != null) {
             Integer srid = Integer.parseInt(authorityCode);
             metadata.setSrid(srid);
@@ -207,9 +209,11 @@ public class GeoTiffUtils {
             metadata.setCrs(geogcs);
         } else {
             metadata.setCrs(projcs);
+            metadata.setProjected(true);
         }
 
-        metadata.setUnit(sr.GetLinearUnitsName());
+//        metadata.setUnit(sr.GetLinearUnitsName());
+        metadata.setUnit(sr.GetAttrValue("UNIT"));
 
         Band band = dataset.GetRasterBand(1);
         Double[] nodataval = new Double[1];

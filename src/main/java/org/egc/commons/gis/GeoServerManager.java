@@ -25,11 +25,11 @@ public class GeoServerManager {
 
     public static boolean publishGeoTiff(@NotNull GeoServerRESTManager manager, String workspace, String storeName, @NotNull File geoTiff, String srs, String styleName) throws FileNotFoundException {
         checkWorkspace(manager, workspace);
-        if (!StringUtils.isNotBlank(srs)) {
+        if (StringUtils.isBlank(srs)) {
             srs = DEFAULT_SRS;
         }
-        if (!StringUtils.isNotBlank(storeName)) {
-            storeName = VECTOR_STORE;
+        if (StringUtils.isBlank(storeName)) {
+            storeName = RASTER_STORE;
         }
         boolean b = manager.getPublisher().publishExternalGeoTIFF(workspace, storeName, geoTiff, geoTiff.getName(), srs, GSResourceEncoder.ProjectionPolicy.FORCE_DECLARED, styleName);
         return b;

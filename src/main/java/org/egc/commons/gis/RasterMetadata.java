@@ -39,6 +39,8 @@ public class RasterMetadata implements Serializable {
     private double maxValue;
     private double minValue;
     private double meanValue;
+    private String quantileBreaks;
+    private String uniqueValues;
     private boolean isProjected = false;
     /**
      * sample standard deviation
@@ -52,6 +54,37 @@ public class RasterMetadata implements Serializable {
      * right/east
      */
     private double maxX;
+
+    /**
+     * left/west
+     *
+     * @return minx
+     */
+    public double getMinX() {
+        return minX;
+    }
+
+    /**
+     * right/east
+     */
+    public double getMaxX() {
+        return maxX;
+    }
+
+    /**
+     * bottom/south
+     */
+    public double getMinY() {
+        return minY;
+    }
+
+    /**
+     * upper/north
+     */
+    public double getMaxY() {
+        return maxY;
+    }
+
     /**
      * bottom/south
      */
@@ -69,6 +102,21 @@ public class RasterMetadata implements Serializable {
     private double height;
 
     private double width;
+
+    /**
+     * @return rasterYSize
+     */
+    public int getSizeHeight() {
+        return sizeHeight;
+    }
+
+    /**
+     * @return rasterXSize
+     */
+    public int getSizeWidth() {
+        return sizeWidth;
+    }
+
     /**
      * 像素个数
      */
@@ -77,6 +125,11 @@ public class RasterMetadata implements Serializable {
 
     private String unit;
 
+    /**
+     * extent of the data
+     *
+     * @return left(minx) + " " + buttom (miny) + " " + right(maxx) + " " + top(maxy)
+     */
     public String getExtent() {
         return Formatter.formatDoubleStr(minX, 4) + " " + Formatter.formatDoubleStr(minY, 4)
                 + " " + Formatter.formatDoubleStr(maxX, 4) + " " + Formatter.formatDoubleStr(maxY, 4);

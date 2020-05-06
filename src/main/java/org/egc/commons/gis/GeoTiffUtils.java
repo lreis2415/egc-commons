@@ -34,8 +34,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 使用geotools读取geotiff，获取元数据信息
@@ -93,8 +92,9 @@ public class GeoTiffUtils {
     }
 
     /**
-     * Read geotiff and gets metadata.
-     * Recommend to use {@link #getMetadataByGDAL(String)}
+     * Read geotiff and gets metadata. <br/>
+     * Recommend to use {@link #getMetadataByGDAL(String)} <br/>
+     * 暂不包含 UniqueValues 及 Quantile values
      *
      * @param tif the geotiff
      * @return the raster metadata
@@ -184,15 +184,16 @@ public class GeoTiffUtils {
     }
 
     /**
-     * 利用gdal获取栅格数据元数据
+     * 利用 gdal获取栅格数据元数据 <br/>
+     * 包含 UniqueValues 及 Quantile values
      *
-     * @param tif
-     * @return
+     * @param tif 栅格数据
+     * @return 元数据信息
      */
     public static RasterMetadata getMetadataByGDAL(String tif) {
         StringUtil.isNullOrEmptyPrecondition(tif, "Raster file must exists");
         gdal.AllRegister();
-        gdal.SetConfigOption("GDAL_DATA", "C:\\Program Files\\GDAL\\gdal-data" );
+        //gdal.SetConfigOption("GDAL_DATA", "C:\\Program Files\\GDAL\\gdal-data" );
         RasterMetadata metadata = new RasterMetadata();
         Dataset dataset = gdal.Open(tif, gdalconstConstants.GA_ReadOnly);
         Driver driver = dataset.GetDriver();
@@ -219,19 +220,22 @@ public class GeoTiffUtils {
         metadata.setUnit(sr.GetAttrValue("UNIT"));
 
         Band band = dataset.GetRasterBand(1);
-        Double[] nodataval = new Double[1];
-        band.GetNoDataValue(nodataval);
-        if (nodataval[0] != null) {
-            metadata.setNodata(nodataval[0]);
-        } else {
-            metadata.setNodata(-9999d);
+        Double[] nodataVal = new Double[1];
+        band.GetNoDataValue(nodataVal);
+        Double nodata = nodataVal[0];
+        if (nodata == null) {
+            nodata = -9999d;
         }
+        metadata.setNodata(nodata);
         double[] min = new double[1], max = new double[1], stddev = new double[1], mean = new double[1];
         band.GetStatistics(true, true, min, max, mean, stddev);
         metadata.setMinValue(min[0]);
         metadata.setMaxValue(max[0]);
         metadata.setMeanValue(mean[0]);
         metadata.setSdev(stddev[0]);
+
+        int xSize = dataset.GetRasterXSize();
+        int ySize = dataset.GetRasterYSize();
 
         double[] gt = dataset.GetGeoTransform();
        /*
@@ -243,20 +247,71 @@ public class GeoTiffUtils {
         adfGeoTransform[5] // n-s pixel resolution (negative value)
         */
         metadata.setMinX(gt[0]);
-        metadata.setMaxX(gt[0] + gt[1] * dataset.GetRasterXSize());
-        metadata.setCenterX(gt[0] + gt[1] * dataset.GetRasterXSize() / 2);
+        metadata.setMaxX(gt[0] + gt[1] * xSize);
+        metadata.setCenterX(gt[0] + gt[1] * xSize / 2);
         metadata.setMaxY(gt[3]);
-        metadata.setMinY(gt[3] + gt[5] * dataset.GetRasterYSize());
-        metadata.setCenterY(gt[3] + gt[5] * dataset.GetRasterYSize() / 2);
+        metadata.setMinY(gt[3] + gt[5] * ySize);
+        metadata.setCenterY(gt[3] + gt[5] * ySize / 2);
         //gt[5]
         metadata.setPixelSize(gt[1]);
-        metadata.setWidth(dataset.GetRasterXSize() * gt[1]);
-        metadata.setHeight(dataset.GetRasterYSize() * gt[5]);
-        metadata.setSizeHeight(dataset.GetRasterYSize());
-        metadata.setSizeWidth(dataset.GetRasterXSize());
 
+        metadata.setWidth(xSize * gt[1]);
+        metadata.setHeight(ySize * gt[5]);
+        metadata.setSizeHeight(ySize);
+        metadata.setSizeWidth(xSize);
+
+        float[] dataBuf = new float[xSize * ySize];
+        //TODO test
+        // 没有 band.ReadRaster(0, 0, xSize, ySize, dataBuf, xSize, ySize, 0, 0);
+        band.ReadRaster(0, 0, xSize, ySize, dataBuf);
+        metadata.setQuantileBreaks(getQuantile(dataBuf, nodata));
+        metadata.setQuantileBreaks(getUniqueValues(dataBuf, nodata));
         dataset.delete();
         gdal.GDALDestroyDriverManager();
         return metadata;
+    }
+
+    private static String getUniqueValues(float[] dataBuf, Double nodata) {
+        List<Float> uniqueValues = new ArrayList<Float>();
+        List<Float> dataBufList = new ArrayList<>();
+        for (float dataBufVal : dataBuf) {
+            dataBufList.add(dataBufVal);
+        }
+        Collections.sort(dataBufList);
+        int lastNodataIndex = dataBufList.lastIndexOf(nodata.floatValue());
+
+        uniqueValues.add(dataBufList.get(lastNodataIndex + 1));
+        String rasterUniqueValues = String.valueOf(dataBufList.get(lastNodataIndex + 1).intValue());
+        StringBuilder sb = new StringBuilder(rasterUniqueValues);
+
+        for (int i = lastNodataIndex + 2; i < dataBufList.size() - 1; i++) {
+            if (!dataBufList.get(i).equals(uniqueValues.get(uniqueValues.size() - 1))) {
+                uniqueValues.add(dataBufList.get(i));
+                sb.append(" ");
+                sb.append(dataBufList.get(i).intValue());
+            }
+        }
+        return sb.toString();
+    }
+
+    //分位数
+    private static String getQuantile(float[] dataBuf, Double nodata) {
+        int numQuantile = 15;
+        Double[] quantileBreaks = new Double[numQuantile - 1];
+        List<Float> dataBufList = new ArrayList<>();
+        for (float dataBufVal : dataBuf) {
+            dataBufList.add(dataBufVal);
+        }
+        Collections.sort(dataBufList);
+        int lastNoDataIndex = dataBufList.lastIndexOf(nodata.floatValue());
+        int lastDataIndex = dataBufList.size() - 1;
+        int numDataInQuantile = (int) ((lastDataIndex - lastNoDataIndex) / numQuantile + 0.5);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < numQuantile - 1; i++) {
+            quantileBreaks[i] = Double.valueOf(dataBufList.get(lastNoDataIndex + (i + 1) * numDataInQuantile));
+            sb.append(" ");
+            sb.append(quantileBreaks[i].toString());
+        }
+        return sb.toString().substring(1);
     }
 }

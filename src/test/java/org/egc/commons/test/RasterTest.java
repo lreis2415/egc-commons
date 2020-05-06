@@ -81,7 +81,8 @@ public class RasterTest {
     @Test
     public void testMetaGdal() throws IOException {
         String filename = tifPath();
-        String s = GeoTiffUtils.getMetadataByGDAL(filename).toString();
-        System.out.println(s);
+        RasterMetadata metadata = GeoTiffUtils.getMetadataByGDAL(filename);
+        System.out.println(metadata.getQuantileBreaks());
+        System.out.println(metadata.toString());
     }
 }

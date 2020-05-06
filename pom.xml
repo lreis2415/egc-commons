@@ -26,9 +26,12 @@
         <commons-io.version>2.5</commons-io.version>
         <commons-exec.version>1.3</commons-exec.version>
         <commons-csv.version>1.5</commons-csv.version>
+        <httpclient.version>4.5.2</httpclient.version>
+        <httpasyncclient.version>4.1.3</httpasyncclient.version>
         <joda.version>2.9.7</joda.version>
 <!--        <gdal.gisinternal.version>1.11.4</gdal.gisinternal.version>-->
-        <gdal.gisinternal.version>2.1.0</gdal.gisinternal.version>
+<!--        <gdal.gisinternal.version>2.1.0</gdal.gisinternal.version>-->
+        <gdal.gisinternal.version>2.4.4</gdal.gisinternal.version>
         <jjwt.version>0.9.0</jjwt.version>
         <spring.version>4.3.5.RELEASE</spring.version>
         <shiro.version>1.4.2</shiro.version>
@@ -218,11 +221,20 @@
             <artifactId>geoserver-manager</artifactId>
             <version>1.7.0</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.ini4j/ini4j -->
         <dependency>
             <groupId>org.ini4j</groupId>
             <artifactId>ini4j</artifactId>
             <version>0.5.4</version>
+        </dependency>
+       <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpasyncclient</artifactId>
+            <version>${httpasyncclient.version}</version>
         </dependency>
     </dependencies>
 

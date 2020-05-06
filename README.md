@@ -36,6 +36,14 @@ Reusable Java components for EGC
 - XML
 - Test
 
+## GDAL 版本
+ gdal 2.4.4 
+ > [gisinternals](http://www.gisinternals.com/) 上的 `gdal-204-1900-x64-core`
+ 
+ 运行 `RasterTest` 下的单元测试，测试 `gdal` 是否安装配置正确。
+ 能够输出版本信息说明 `gdal` 及 `gdal.jar` 安装配置成功。
+ 能够读取元数据说明安装的`gdal`版本与使用的`gdal.jar`的版本一致 
+
 ---
 
 ## More

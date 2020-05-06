@@ -1,6 +1,8 @@
 package org.egc.commons.gis;
 
 /**
+ * <pre/>
+ * see {@link RasterMetadata}
  * Created by lp on 2017/4/24.
  */
 @Deprecated

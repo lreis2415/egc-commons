@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * <pre/>
+ * see {@link GeoTiffUtils}
  * Created by lp on 2017/4/25.
  */
 @Deprecated

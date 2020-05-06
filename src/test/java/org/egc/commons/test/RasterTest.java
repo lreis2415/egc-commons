@@ -1,33 +1,37 @@
 package org.egc.commons.test;
 
 import org.egc.commons.gis.*;
+import org.gdal.gdal.gdal;
+import org.junit.Assert;
 import org.junit.Test;
 import org.osgeo.proj4j.ProjCoordinate;
+import org.springframework.core.io.ClassPathResource;
+
+import java.io.File;
+import java.io.IOException;
 
 
 /**
  * Created by lp on 2017/4/25.
  */
 public class RasterTest {
-    String path = "D:/DataBase/xuancheng/geo.tif";
+
+    String tif = "d8FlowDirection.tif";
     String rasterTableName = " public.t_rasters";
     String dateBaseInfo = " -d db_cyberSolim -U postgres";
     String postGISPath = "D:\\webExe\\raster2pgsql.exe";
     String passWord = "123";
-    RasterInfo rasterInfo = new RasterInfo();
-    RasterFile2PostGIS rasterFile2PostGIS = new RasterFile2PostGIS();
-    String tif = "H:\\dem_TX.tif";
-    String tif2 = "D:\\data\\WebSites\\egcDataFiles\\upload\\20181006\\raster\\bdbb2fce7d81d3d70d284e37d92bb08b.tif";
-    @Test
-    public void rasterInfoTest() {
-        GeoInfoExtraction geoInfoExtraction = new GeoInfoExtraction();
-        rasterInfo = geoInfoExtraction.readMetaData(path);
-        System.out.println("");
+
+    public String tifPath() throws IOException {
+        File file = new ClassPathResource(tif).getFile();
+        return file.getAbsolutePath();
     }
 
     @Test
-    public void rasterFile2PostGIS() {
-        rasterFile2PostGIS.file2PostGIS(32650, "D:/DataBase/xuancheng/slope.tif", rasterTableName, dateBaseInfo, postGISPath, passWord);
+    public void rasterFile2PostGIS() throws IOException {
+        String filename = tifPath();
+        RasterFile2PostGIS rasterFile2PostGIS = new RasterFile2PostGIS();
+        rasterFile2PostGIS.file2PostGIS(32650, filename, rasterTableName, dateBaseInfo, postGISPath, passWord);
         //String a = "raster2pgsql -s 32650  -I -a -M  D:\\SampleBase\\dem.tif  -a  public.t_rasters | psql  dbname=db_cyberSolim user=postgres password=123";
     }
 
@@ -52,18 +56,32 @@ public class RasterTest {
     }
 
     @Test
-    public void testGetRasterInfo() {
+    public void gdalVersion() {
+        System.out.println(gdal.VersionInfo());
+        Assert.assertEquals("2040400", gdal.VersionInfo());
+    }
+
+    @Test
+    public void testGetRasterInfo() throws IOException {
+        String filename = tifPath();
         GeoInfoExtraction geoInfoExtraction = new GeoInfoExtraction();
-        RasterInfo rasterInfo = geoInfoExtraction.readMetaData(tif);
+        RasterInfo rasterInfo = geoInfoExtraction.readMetaData(filename);
         System.out.println(rasterInfo.getPixelSize());
         System.out.println(rasterInfo.getSrid());
     }
 
+    //geotools
+    @Test
+    public void testMeta() throws IOException {
+        String filename = tifPath();
+        String s = GeoTiffUtils.getMetadata(filename).toString();
+        System.out.println(s);
+    }
 
     @Test
-    public void testMeta(){
-//        String s= GeoTiffUtils.getMetadata(tif2).toString();
-        String s= GeoTiffUtils.getMetadata(tif).toString();
+    public void testMetaGdal() throws IOException {
+        String filename = tifPath();
+        String s = GeoTiffUtils.getMetadataByGDAL(filename).toString();
         System.out.println(s);
     }
 }

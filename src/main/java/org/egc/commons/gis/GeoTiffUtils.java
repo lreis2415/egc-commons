@@ -95,6 +95,7 @@ public class GeoTiffUtils {
     /**
      * Read geotiff and gets metadata.
      * Recommend to use {@link #getMetadataByGDAL(String)}
+     *
      * @param tif the geotiff
      * @return the raster metadata
      */
@@ -111,6 +112,7 @@ public class GeoTiffUtils {
      * slower than gdal
      * </pre>
      * TODO geogcs,projcs,isProjected
+     *
      * @param coverage the coverage
      * @return the raster metadata
      */
@@ -132,6 +134,7 @@ public class GeoTiffUtils {
         metadata.setUnit(crs.getCoordinateSystem().getAxis(0).getUnit().toString());
         try {
             Integer epsg = CRS.lookupEpsgCode(crs, true);
+            metadata.setEpsg(epsg);
             metadata.setSrid(epsg);
             CRSFactory csFactory = new CRSFactory();
             if (epsg != null) {
@@ -168,7 +171,7 @@ public class GeoTiffUtils {
         CoverageClassStats.Results results = null;
         try {
             results = rasterProcess.execute(coverage, set, band_i, 1,
-                                            ClassificationMethod.QUANTILE, nodata, null);
+                    ClassificationMethod.QUANTILE, nodata, null);
         } catch (IOException e) {
             log.error("Process raster file statistics failed", e);
             throw new BusinessException(e, "Process raster file statistics failed");
@@ -189,6 +192,7 @@ public class GeoTiffUtils {
     public static RasterMetadata getMetadataByGDAL(String tif) {
         StringUtil.isNullOrEmptyPrecondition(tif, "Raster file must exists");
         gdal.AllRegister();
+        gdal.SetConfigOption("GDAL_DATA", "C:\\Program Files\\GDAL\\gdal-data" );
         RasterMetadata metadata = new RasterMetadata();
         Dataset dataset = gdal.Open(tif, gdalconstConstants.GA_ReadOnly);
         Driver driver = dataset.GetDriver();
@@ -197,8 +201,8 @@ public class GeoTiffUtils {
         metadata.setCrsProj4(sr.ExportToProj4());
         metadata.setCrsWkt(sr.ExportToWkt());
         String authorityCode = sr.GetAuthorityCode(null);
-        String epsg = sr.GetAttrValue("Authority",1);
-        metadata.setEpsg(epsg);
+        String epsg = sr.GetAttrValue("Authority", 1);
+        metadata.setEpsg(Integer.parseInt(epsg));
         if (authorityCode != null) {
             Integer srid = Integer.parseInt(authorityCode);
             metadata.setSrid(srid);
@@ -212,7 +216,6 @@ public class GeoTiffUtils {
             metadata.setProjected(true);
         }
 
-//        metadata.setUnit(sr.GetLinearUnitsName());
         metadata.setUnit(sr.GetAttrValue("UNIT"));
 
         Band band = dataset.GetRasterBand(1);

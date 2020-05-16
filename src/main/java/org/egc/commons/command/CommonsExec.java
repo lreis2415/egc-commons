@@ -77,6 +77,7 @@ public class CommonsExec {
         if (exitValue != null) {
             executor.setExitValue(exitValue);
         }
+        log.debug("execute cmd: {}",cmd);
         int exit = executor.execute(cmd);
         return exit;
     }
@@ -155,6 +156,7 @@ public class CommonsExec {
         if (exitValue != null) {
             executor.setExitValue(exitValue);
         }
+        log.debug("execute cmd: {}", cmd.toString());
         if (envKeyValues == null || envKeyValues.size() == 0) {
             exitValue = executor.execute(cmd);
         } else {

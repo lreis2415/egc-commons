@@ -5,6 +5,7 @@ package org.egc.commons.util;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +16,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.nio.MappedByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.AccessController;
@@ -56,8 +58,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * @param coverlay     如果目标文件已存在，是否覆盖
      * @return 如果复制成功 ，则返回true，否则返回false
      */
-    public static boolean copyFileCover(String srcFileName, String descFileName, boolean coverlay)
-    {
+    public static boolean copyFileCover(String srcFileName, String descFileName, boolean coverlay) {
         File srcFile = new File(srcFileName);
         // 判断源文件是否存在
         if (!srcFile.exists()) {
@@ -112,7 +113,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
                 outs.write(buf, 0, readByte);
             }
             log.debug("复制单个文件 " + srcFileName + " 到" + descFileName
-                              + "成功!");
+                    + "成功!");
             return true;
         } catch (Exception e) {
             log.debug("复制文件失败：" + e.getMessage());
@@ -142,10 +143,12 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * @param srcDirName  源目录名
      * @param descDirName 目标目录名
      * @return 如果复制成功返回true ，否则返回false
+     * @deprecated use {@link org.apache.commons.io.FileUtils#copyDirectory(File, File)}
      */
+    @Deprecated
     public static boolean copyDirectory(String srcDirName, String descDirName) {
         return FileUtil.copyDirectoryCover(srcDirName, descDirName,
-                                           false);
+                false);
     }
 
     /**
@@ -156,8 +159,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * @param coverlay    如果目标目录存在，是否覆盖
      * @return 如果复制成功返回true ，否则返回false
      */
-    public static boolean copyDirectoryCover(String srcDirName, String descDirName, boolean coverlay)
-    {
+    public static boolean copyDirectoryCover(String srcDirName, String descDirName, boolean coverlay) {
         File srcDir = new File(srcDirName);
         // 判断源目录是否存在
         if (!srcDir.exists()) {
@@ -205,7 +207,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
             // 如果是一个单个文件，则直接复制
             if (files[i].isFile()) {
                 flag = FileUtil.copyFile(files[i].getAbsolutePath(),
-                                         descDirName + files[i].getName());
+                        descDirName + files[i].getName());
                 // 如果拷贝文件失败，则退出循环
                 if (!flag) {
                     break;
@@ -214,7 +216,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
             // 如果是子目录，则继续复制目录
             if (files[i].isDirectory()) {
                 flag = FileUtil.copyDirectory(files[i]
-                                                      .getAbsolutePath(), descDirName + files[i].getName());
+                        .getAbsolutePath(), descDirName + files[i].getName());
                 // 如果拷贝目录失败，则退出循环
                 if (!flag) {
                     break;
@@ -304,7 +306,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
             // 删除子目录
             else if (files[i].isDirectory()) {
                 flag = FileUtil.deleteDirectory(files[i]
-                                                        .getAbsolutePath());
+                        .getAbsolutePath());
                 // 如果删除子目录失败，则退出循环
                 if (!flag) {
                     break;
@@ -401,7 +403,9 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * @param fileName 要写入的文件
      * @param content  the content
      * @param append   the append
+     * @deprecated use {@link FileUtils#write(File, CharSequence, Charset, boolean)}
      */
+    @Deprecated
     public static void writeToFile(String fileName, String content, boolean append) {
         try {
             FileUtil.write(new File(fileName), content, "utf-8", append);
@@ -418,7 +422,9 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * @param content  the content
      * @param encoding the encoding
      * @param append   the append
+     * @deprecated use {@link FileUtils#write(File, CharSequence, String, boolean)}
      */
+    @Deprecated
     public static void writeToFile(String fileName, String content, String encoding, boolean append) {
         try {
             FileUtil.write(new File(fileName), content, encoding, append);
@@ -435,8 +441,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * @param fileName     根目录下的待压缩的文件名或文件夹名，其中*或""表示跟目录下的全部文件
      * @param descFileName 目标zip文件
      */
-    public static void zipFiles(String srcDirName, String fileName, String descFileName)
-    {
+    public static void zipFiles(String srcDirName, String fileName, String descFileName) {
         // 判断目录是否存在
         if (srcDirName == null) {
             log.debug("文件压缩失败，目录 " + srcDirName + " 不存在!");
@@ -479,8 +484,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * @param fileDir 文件信息
      * @param zouts   输出流
      */
-    public static void zipDirectoryToZipFile(String dirPath, File fileDir, ZipOutputStream zouts)
-    {
+    public static void zipDirectoryToZipFile(String dirPath, File fileDir, ZipOutputStream zouts) {
         if (fileDir.isDirectory()) {
             File[] files = fileDir.listFiles();
             // 空的文件夹
@@ -504,7 +508,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
                 } else {
                     // 如果是目录，则递归调用
                     FileUtil.zipDirectoryToZipFile(dirPath, files[i],
-                                                   zouts);
+                            zouts);
                 }
             }
 
@@ -519,8 +523,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * @param file    文件
      * @param zouts   输出流
      */
-    public static void zipFilesToZipFile(String dirPath, File file, ZipOutputStream zouts)
-    {
+    public static void zipFilesToZipFile(String dirPath, File file, ZipOutputStream zouts) {
         FileInputStream fin = null;
         ZipEntry entry = null;
         // 创建复制缓冲区
@@ -551,18 +554,19 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
 
     /**
      * https://stackoverflow.com/questions/9324933/what-is-a-good-java-library-to-zip-unzip-files
-     * @param file zip 文件
+     *
+     * @param file      zip 文件
      * @param outputDir
      * @throws IOException
      */
-    public static String unzip(String file,String outputDir) throws IOException {
+    public static String unzip(String file, String outputDir) throws IOException {
         if (!FilenameUtils.getExtension(file).equalsIgnoreCase("zip")) {
             log.warn(file + " is not a zipped file");
             return null;
         }
         ZipFile zipFile = new ZipFile(file);
         if (StringUtils.isBlank(outputDir)) {
-            outputDir = FilenameUtils.getFullPath(file)+File.separator+FilenameUtils.getBaseName(file);
+            outputDir = FilenameUtils.getFullPath(file) + File.separator + FilenameUtils.getBaseName(file);
         }
         try {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
@@ -614,7 +618,9 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      *
      * @param path the path
      * @return string
+     * @deprecated use {@link FilenameUtils#normalize(String)}
      */
+    @Deprecated
     public static String path(String path) {
         String p = StringUtils.replace(path, "\\", "/");
         p = StringUtils.join(StringUtils.split(p, "/"), "/");
@@ -652,6 +658,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * @param filename the filename
      * @return file extension
      */
+    @Deprecated
     public static String getFileExtension(String filename) {
         Preconditions.checkNotNull(filename, "filename must not be null");
         return filename.substring(filename.lastIndexOf(".") + 1);
@@ -663,6 +670,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * @param file the file
      * @return file extension
      */
+    @Deprecated
     public static String getFileExtension(File file) {
         Preconditions.checkNotNull(file, "file must not be null");
         return getFileExtension(file.getName());

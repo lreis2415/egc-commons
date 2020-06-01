@@ -28,8 +28,8 @@ public abstract class AbstractRunCommand implements RunCommand {
     /**
      * 检查是否对CommandLine进行了有效的初始化
      *
-     * @param exec
-     * @return
+     * @param exec executable
+     * @return cmd
      */
     private CommandLine checkInitCmd(String exec) {
         CommandLine cmd = initCmd();
@@ -42,16 +42,25 @@ public abstract class AbstractRunCommand implements RunCommand {
     }
 
     @Override
-    public ExecResult run(@NotBlank String exec, Map<String, String> fileParams,
-                          LinkedHashMultimap<String, Object> params) {
+    public ExecResult run(@NotBlank String exec, Map<String, String> fileParams, LinkedHashMultimap<String, Object> params) {
+        return run(exec, fileParams, params, null);
+    }
+
+    @Override
+    public ExecResult run(@NotBlank String exec, Map<String, String> fileParams, LinkedHashMultimap<String, Object> params, List<String> envKeyValues) {
         CommandLine cmd = checkInitCmd(exec);
         RunUtils.addParams(cmd, params);
-        Map files = new LinkedHashMap(fileParams.size());
+        Map<String, String> files = new LinkedHashMap<>(fileParams.size());
         RunUtils.addFileParams(cmd, files, fileParams, null);
         cmd.setSubstitutionMap(files);
         ExecResult result = null;
         try {
             cmd = handleEqualSign(cmd);
+            if (envKeyValues != null && envKeyValues.size() > 0) {
+                result = CommonsExec.execWithOutput(cmd, null, envKeyValues, null, null);
+            } else {
+                result = CommonsExec.execWithOutput(cmd);
+            }
             result = CommonsExec.execWithOutput(cmd);
             log.info(result.getOut());
             log.info(result.getError());
@@ -66,7 +75,7 @@ public abstract class AbstractRunCommand implements RunCommand {
     @Override
     public ExecResult run(@NotBlank String exec, Map<String, String> inputFiles, Map<String, String> outputFiles,
                           LinkedHashMultimap<String, Object> inParams, String outputDir) {
-        CommandLine cmd = checkInitCmd(exec);
+        /*CommandLine cmd = checkInitCmd(exec);
         RunUtils.addParams(cmd, inParams);
         Map files = new LinkedHashMap(inputFiles.size() + outputFiles.size());
         RunUtils.addFileParams(cmd, files, inputFiles, null);
@@ -76,6 +85,32 @@ public abstract class AbstractRunCommand implements RunCommand {
         try {
             cmd = handleEqualSign(cmd);
             result = CommonsExec.execWithOutput(cmd, outputDir);
+            log.info("Execution Info/Error: {}", result.getError());
+            result.setSuccess(true);
+        } catch (IOException e) {
+            log.error(e.getLocalizedMessage(), e);
+            result.setSuccess(false);
+        }*/
+        return run(exec, inputFiles, outputFiles, inParams, outputDir, null);
+    }
+
+    @Override
+    public ExecResult run(@NotBlank String exec, Map<String, String> inputFiles, Map<String, String> outputFiles,
+                          LinkedHashMultimap<String, Object> inParams, String outputDir, List<String> envKeyValues) {
+        CommandLine cmd = checkInitCmd(exec);
+        RunUtils.addParams(cmd, inParams);
+        Map<String, String> files = new LinkedHashMap<>(inputFiles.size() + outputFiles.size());
+        RunUtils.addFileParams(cmd, files, inputFiles, null);
+        RunUtils.addFileParams(cmd, files, outputFiles, outputDir);
+        cmd.setSubstitutionMap(files);
+        ExecResult result = null;
+        try {
+            cmd = handleEqualSign(cmd);
+            if (envKeyValues != null && envKeyValues.size() > 0) {
+                result = CommonsExec.execWithOutput(cmd, outputDir, envKeyValues, null, null);
+            } else {
+                result = CommonsExec.execWithOutput(cmd, outputDir);
+            }
             log.info("Execution Info/Error: {}", result.getError());
             result.setSuccess(true);
         } catch (IOException e) {
@@ -94,6 +129,7 @@ public abstract class AbstractRunCommand implements RunCommand {
      * --variant='JandR'
      * --line_thin}
      * <p> 不处理的话，= 后存在空格，执行报错
+     *
      * @param cmd CommandLine 对象
      * @return 处理后或无需处理的 CommandLine 对象
      */

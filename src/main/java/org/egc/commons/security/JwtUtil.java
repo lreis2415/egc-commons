@@ -216,11 +216,7 @@ public class JwtUtil {
     public static boolean verify(String token, Key secret, String iss) {
         try {
             parseJwt(token, secret, iss);
-        } catch (SignatureException e) {
-            return false;
-        } catch (MalformedJwtException e) {
-            return false;
-        } catch (ExpiredJwtException e) {
+        } catch (SignatureException | MalformedJwtException | ExpiredJwtException e) {
             return false;
         }
         return true;

@@ -49,6 +49,19 @@ public interface RunCommand {
     ExecResult run(@NotBlank String exec, Map<String, String> files, LinkedHashMultimap<String, Object> inputParams);
 
     /**
+     * Run Command.
+     * <p> 输入输出数据文件必须使用全路径
+     * <p> 若输出数据只给定了文件名，则使用默认目录（当前目录“.”）作为输出
+     *
+     * @param exec         the executable
+     * @param files        the  files
+     * @param inputParams  the input params
+     * @param envKeyValues the environmental variable list in format: <b>key=value</b>
+     * @return {@link ExecResult}
+     */
+    ExecResult run(@NotBlank String exec, Map<String, String> files, LinkedHashMultimap<String, Object> inputParams, List<String> envKeyValues);
+
+    /**
      * 执行命令
      * <p>可以为输出数据指定存放目录</p>
      * <p> <b>若 Input_* 和 Output_* 文件参数已包含路径， *Dir 参数可为 null</b></p>
@@ -65,6 +78,25 @@ public interface RunCommand {
      */
     ExecResult run(@NotBlank String exec, Map<String, String> inputFiles, Map<String, String> outputFiles,
                    LinkedHashMultimap<String, Object> params, String outputDir);
+
+    /**
+     * 执行命令
+     * <p>可以为输出数据指定存放目录</p>
+     * <p> <b>若 Input_* 和 Output_* 文件参数已包含路径， *Dir 参数可为 null</b></p>
+     *
+     * @param exec         可执行文件，如 PitRemove.若所在目录不在环境变量PATH中，需为全路径
+     * @param inputFiles   输入文件参数（含后缀）, Map的值指向一个文件，如 &lt; "-z", Input_Elevation_Grid &gt;， Input_Elevation_Grid 为文件
+     * @param outputFiles  输出文件参数（含后缀），如 &lt; "-z", Input_Elevation_Grid &gt;， Input_Elevation_Grid 为文件.
+     *                     若 map 的 value 为空（""或null），则使用第一个输入文件名结合 key 值为文件名
+     * @param params       非文件类型参数及命令行标记（flag），Map的值为布尔值或数值等.
+     *                     如 &lt; "-4way", Fill_Considering_only_4_way_neighbors &gt; Fill_Considering_only_4_way_neighbors 为布尔值.
+     *                     相同的键对应的值会合并
+     * @param outputDir    工作目录，所有输出文件默认存放目录
+     * @param envKeyValues the environmental variable list in format: <b>key=value</b>
+     * @return {@link ExecResult}
+     */
+    ExecResult run(@NotBlank String exec, Map<String, String> inputFiles, Map<String, String> outputFiles,
+                   LinkedHashMultimap<String, Object> params, String outputDir, List<String> envKeyValues);
 
     /**
      * 一些所有接口实现类都可使用的方法
@@ -153,7 +185,7 @@ public interface RunCommand {
                         if (k.startsWith("-")) {
                             k = k.replaceFirst("[-]{1,3}", "");
                         }
-                        if(k.endsWith("=")){
+                        if (k.endsWith("=")) {
                             k = k.replaceFirst("=", "");
                         }
                         String file = "${" + k + "file}";
@@ -176,6 +208,7 @@ public interface RunCommand {
         /**
          * 向命令行中添加非文件类型参数
          * <p>原命令中无需赋值的 flag，通过 Boolean 值来决定改 flag 是否加入命令行。如 "-v" (verbose)
+         *
          * @param cmd    {@link CommandLine}
          * @param params 参数 {@link java.util.Map}，如 "-z demfile"
          */

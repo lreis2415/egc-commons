@@ -10,14 +10,12 @@ import java.util.Map;
 /**
  * <pre>
  * 用于组织数据为一个JSON对象
- * 建议使用 {@link JsonResults}
+ * 与 {@link JsonResult} 基本是一样的，但是 T 相比 Object 可以避免类型转换错误
  * @author houzhiwei
- * @date 2016/11/4 21:52.
+ * @date 2020-5-18 15:25:37
  */
-public class JsonResult implements Serializable {
-    private static final long serialVersionUID = -6559362101721248596L;
-
-    private Object data;
+public class JsonResults<T> implements Serializable {
+    private T data;
     private String msg;
     /**
      * redirect URL
@@ -44,59 +42,48 @@ public class JsonResult implements Serializable {
 
     private HttpStatus status;
 
-    public JsonResult()
-    {
+    public JsonResults() {
         super();
     }
 
-    public JsonResult(String msg)
-    {
+    public JsonResults(String msg) {
         this.msg = msg;
     }
 
-    public JsonResult(String msg, HttpStatus status)
-    {
+    public JsonResults(String msg, HttpStatus status) {
         this.msg = msg;
         this.status = status;
     }
 
-    public JsonResult(Object data)
-    {
+    public JsonResults(T data) {
         this.data = data;
     }
 
-    public Object getData()
-    {
+    public T getData() {
         return data;
     }
 
-    public void setData(Object data)
-    {
+    public void setData(T data) {
         this.data = data;
     }
 
-    public String getMsg()
-    {
+    public String getMsg() {
         return msg;
     }
 
-    public void setMsg(String msg)
-    {
+    public void setMsg(String msg) {
         this.msg = msg;
     }
 
-    public String getUrl()
-    {
+    public String getUrl() {
         return url;
     }
 
-    public void setUrl(String url)
-    {
+    public void setUrl(String url) {
         this.url = url;
     }
 
-    public static FastJsonJsonView jsonView(Object data, String msg)
-    {
+    public static FastJsonJsonView jsonView(Object data, String msg) {
         FastJsonJsonView view = new FastJsonJsonView();
         Map<String, Object> attrs = Maps.newHashMap();
         attrs.put("data", data);

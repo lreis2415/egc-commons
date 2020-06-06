@@ -435,6 +435,38 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
     }
 
     /**
+     * Zip a list of file into one zip file.
+     *
+     * @param files         files to zip
+     * @param targetZipFile target zip file
+     * @throws IOException IO error exception can be thrown when copying ...
+     */
+    public static void zipFiles(final File[] files, final File targetZipFile) throws IOException {
+        try {
+            FileOutputStream fos = new FileOutputStream(targetZipFile);
+            ZipOutputStream zos = new ZipOutputStream(fos);
+            byte[] buffer = new byte[128];
+            for (File currentFile : files) {
+                if (!currentFile.isDirectory()) {
+                    ZipEntry entry = new ZipEntry(currentFile.getName());
+                    FileInputStream fis = new FileInputStream(currentFile);
+                    zos.putNextEntry(entry);
+                    int read = 0;
+                    while ((read = fis.read(buffer)) != -1) {
+                        zos.write(buffer, 0, read);
+                    }
+                    zos.closeEntry();
+                    fis.close();
+                }
+            }
+            zos.close();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            log.error("File not found : " + e);
+        }
+    }
+
+    /**
      * 压缩文件或目录
      *
      * @param srcDirName   压缩的根目录
@@ -556,8 +588,9 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
      * https://stackoverflow.com/questions/9324933/what-is-a-good-java-library-to-zip-unzip-files
      *
      * @param file      zip 文件
-     * @param outputDir
-     * @throws IOException
+     * @param outputDir the output dir
+     * @return the string
+     * @throws IOException the io exception
      */
     public static String unzip(String file, String outputDir) throws IOException {
         if (!FilenameUtils.getExtension(file).equalsIgnoreCase("zip")) {

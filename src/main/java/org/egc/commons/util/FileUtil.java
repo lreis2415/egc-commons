@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package org.egc.commons.util;
 
 import com.google.common.base.Preconditions;
@@ -34,7 +31,7 @@ import java.util.zip.ZipOutputStream;
  *
  * @author ThinkGem
  * @author houzhiwei
- * @version 2018
+ * @version 2018/2020
  */
 public class FileUtil extends org.apache.commons.io.FileUtils {
     private static Logger log = LoggerFactory.getLogger(FileUtil.class);

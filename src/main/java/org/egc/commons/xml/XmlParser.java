@@ -19,6 +19,7 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 
@@ -47,6 +48,7 @@ public class XmlParser {
 
     /**
      * map java object to xml file
+     *
      * @param clazz  java 映射类
      * @param object java 对象
      * @param path   生成的XML存放位置
@@ -63,20 +65,29 @@ public class XmlParser {
     /**
      * parse Xml 2 java object.
      *
-     * @param clazz the java class
-     * @param path  the path
+     * @param clazz   the java class
+     * @param xmlPath the path
      * @return the object
      * @throws Exception the exception
      */
-    public static Object xml2java(Class<?> clazz, String path) throws Exception {
-        if (StringUtils.isBlank(path) || !new File(path).exists()) {
+    public static Object xml2java(Class<?> clazz, String xmlPath) throws Exception {
+        if (StringUtils.isBlank(xmlPath) || !new File(xmlPath).exists()) {
             throw new FileNotFoundException();
         }
         JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         // 需对object 强制转换为相应的类
-        Object object = unmarshaller.unmarshal(new File(path));
-        return object;
+        return unmarshaller.unmarshal(new File(xmlPath));
+    }
+
+    public static Object xml2java(Class<?> clazz, InputStream is) throws Exception {
+        if (is == null) {
+            throw new FileNotFoundException();
+        }
+        JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        // 需对object 强制转换为相应的类
+        return unmarshaller.unmarshal(is);
     }
 
     /**
@@ -94,6 +105,18 @@ public class XmlParser {
         } catch (DocumentException ex) {
             logger.error("Read XML file [ " + filename + " ] failed!", ex);
             throw new BusinessException(ex, "Read XML file [ " + filename + " ] failed!");
+        }
+        return document;
+    }
+
+    public static Document readXmlFile(InputStream xmlStream) {
+        Document document = null;
+        try {
+            SAXReader saxReader = new SAXReader();
+            document = saxReader.read(xmlStream);
+        } catch (DocumentException ex) {
+            logger.error("Read XML file failed!", ex);
+            throw new BusinessException(ex, "Read XML file failed!");
         }
         return document;
     }
@@ -133,6 +156,12 @@ public class XmlParser {
 
     public static String xmlFile2String(String xmlFile) {
         Document document = readXmlFile(xmlFile);
+        Element root = document.getRootElement();
+        return document.asXML();
+    }
+
+    public static String xmlFile2String(InputStream xml) {
+        Document document = readXmlFile(xml);
         Element root = document.getRootElement();
         return document.asXML();
     }

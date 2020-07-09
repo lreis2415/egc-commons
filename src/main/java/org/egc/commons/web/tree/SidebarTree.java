@@ -14,7 +14,6 @@ import java.util.List;
  */
 public class SidebarTree implements Serializable {
 
-    private List<SidebarTreeNode> children;
     private SidebarTreeNode root;
 
     public SidebarTree(String rootTitle) {
@@ -33,8 +32,7 @@ public class SidebarTree implements Serializable {
     }
 
     public void setChildren(List<SidebarTreeNode> children) {
-        this.children = children;
-        root.setChildren(this.children);
+        root.setChildren(children);
     }
 
     /**

@@ -86,11 +86,11 @@ public class CoordinateTransformUtil {
     }
 
     /**
-     *
-     * @param sourceEPSG
-     * @param destinationEPSG
-     * @param x
-     * @param y
+     * 使用 GDAL 转换坐标
+     * @param sourceEPSG 源 epsg
+     * @param destinationEPSG 目标 epsg
+     * @param x x 坐标
+     * @param y y 坐标
      * @return [x,y]
      * @author lp
      */

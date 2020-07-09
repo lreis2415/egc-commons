@@ -36,7 +36,7 @@ public class XmlWriter {
             writer.close();
         } catch (IOException ex) {
             flag = false;
-            log.error("Write XML file [ " + filename + " ] failed!");
+            //log.error("Write XML file [ " + filename + " ] failed!");
             throw new BusinessException(ex, "Write XML file [ " + filename + " ] failed!");
         }
         return flag;

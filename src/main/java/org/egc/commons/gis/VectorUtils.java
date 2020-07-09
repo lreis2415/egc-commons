@@ -28,7 +28,7 @@ public class VectorUtils {
     /**
      * read shapefile and get metadata use OGR
      *
-     * @param shapefile
+     * @param shapefile shapefile file path
      * @return Metadata
      */
     public static VectorMetadata getShapefileMetadata(String shapefile) {
@@ -87,4 +87,39 @@ public class VectorUtils {
         return metadata;
     }
 
+    /**
+     * shapefile geometry to wkt string
+     *
+     * @param shapefile file path
+     * @return wkt string
+     */
+    public static String shp2Wkt(String shapefile) {
+        ogr.RegisterAll();
+        DataSource ds = ogr.Open(shapefile);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < ds.GetLayerCount(); i++) {
+            Layer layer = ds.GetLayer(i);
+            sb.append(layer.GetNextFeature().GetGeometryRef().ExportToWkt());
+        }
+        ds.delete();
+        return sb.toString();
+    }
+
+    /**
+     * shapefile geometry to geojson string
+     *
+     * @param shapefile file path
+     * @return geojson string
+     */
+    public static String shp2geojson(String shapefile) {
+        ogr.RegisterAll();
+        DataSource ds = ogr.Open(shapefile);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < ds.GetLayerCount(); i++) {
+            Layer layer = ds.GetLayer(i);
+            sb.append(layer.GetNextFeature().GetGeometryRef().ExportToJson());
+        }
+        ds.delete();
+        return sb.toString();
+    }
 }

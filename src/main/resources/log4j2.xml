@@ -24,7 +24,7 @@
         <Root level="error">
             <AppenderRef ref="Console"/>
         </Root>
-        <logger name="org.egc.commons" level="INFO"></logger>
+        <logger name="org.egc.commons" level="INFO"/>
     </Loggers>
 
 </Configuration>

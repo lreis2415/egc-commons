@@ -131,6 +131,7 @@ public class File2PostGIS {
 
         commandLine.addArgument(SHP_2_PGSQL);
         commandLine.addArgument("-s ${srid}", false);
+
         commandLine.addArgument("-a");
         // Use the PostgreSQL "dump" format for the output data.
         // Use this for very large data sets.
@@ -152,7 +153,7 @@ public class File2PostGIS {
         commandLine.addArgument("-U ${username}", false);
         commandLine.addArgument("-d ${db}", false);
 
-        Map map = new HashMap();
+        Map<String,Object> map = new HashMap<>();
         map.put("srid", srid);
         map.put("file", file);
         map.put("schema", pgInfo.getSchema());

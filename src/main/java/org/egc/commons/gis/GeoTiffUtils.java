@@ -5,10 +5,7 @@ import it.geosolutions.jaiext.range.NoDataContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.egc.commons.exception.BusinessException;
 import org.egc.commons.util.StringUtil;
-import org.gdal.gdal.Band;
-import org.gdal.gdal.Dataset;
-import org.gdal.gdal.Driver;
-import org.gdal.gdal.gdal;
+import org.gdal.gdal.*;
 import org.gdal.gdalconst.gdalconstConstants;
 import org.gdal.osr.SpatialReference;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -313,5 +310,48 @@ public class GeoTiffUtils {
             sb.append(quantileBreaks[i].toString());
         }
         return sb.toString().substring(1);
+    }
+
+
+    /**
+     * Reproject use epsg code.
+     *
+     * @param srcFile the src file
+     * @param dstFile the dst file
+     * @param dstEpsg the dst epsg
+     */
+    public static void reprojectUseEpsg(String srcFile, String dstFile, int dstEpsg) {
+        reproject(srcFile, dstFile, "EPSG:" + dstEpsg);
+    }
+
+    /**
+     * Reproject use PROJ.4 declarations.
+     *
+     * @param srcFile  the src file
+     * @param dstFile  the dst file
+     * @param dstProj4 the dst proj 4
+     */
+    public static void reprojectUseProj4(String srcFile, String dstFile, String dstProj4) {
+        reproject(srcFile, dstFile, dstProj4);
+    }
+
+    /**
+     * Reproject use gdal.Warp
+     *
+     * @param srcFile the src file
+     * @param dstFile the dst file
+     * @param dstSrs  the target spatial reference
+     */
+    public static void reproject(String srcFile, String dstFile, String dstSrs) {
+        gdal.AllRegister();
+        Dataset ds = gdal.Open(srcFile);
+        Vector<String> v = new Vector<>();
+        v.add("-t_srs");
+        v.add(dstSrs);
+        v.add("-overwrite");
+        WarpOptions options = new WarpOptions(v);
+        gdal.Warp(dstFile, new Dataset[]{ds}, options);
+        //关闭数据集
+        ds.delete();
     }
 }

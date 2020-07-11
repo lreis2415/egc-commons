@@ -3,13 +3,20 @@ package org.egc.commons.gis;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.gdal.ogr.*;
-import org.gdal.osr.CoordinateTransformation;
+import org.gdal.gdal.Dataset;
+import org.gdal.gdal.VectorTranslateOptions;
+import org.gdal.gdal.gdal;
+import org.gdal.gdalconst.gdalconst;
+import org.gdal.ogr.DataSource;
+import org.gdal.ogr.Driver;
+import org.gdal.ogr.Layer;
+import org.gdal.ogr.ogr;
 import org.gdal.osr.SpatialReference;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Vector;
 
 /**
  * Description:
@@ -66,10 +73,11 @@ public class VectorUtils {
         if (sr.IsProjected() == 1) {
             String projcs = sr.GetAttrValue("PROJCS");
             metadata.setCrs(projcs);
+            metadata.setUnit(sr.GetLinearUnitsName());
         } else {
             metadata.setCrs(geogcs);
+            metadata.setUnit(sr.GetAngularUnitsName());
         }
-        metadata.setUnit(sr.GetLinearUnitsName());
         metadata.setCrsProj4(sr.ExportToProj4());
         metadata.setCrsWkt(sr.ExportToWkt());
         SpatialReference a = new SpatialReference();
@@ -138,57 +146,16 @@ public class VectorUtils {
      * @param dstSRS  the target srs
      */
     public static void reproject(String srcFile, String dstFile, SpatialReference dstSRS) {
-        ogr.RegisterAll();
-        DataSource ds = ogr.Open(srcFile);
-        SpatialReference srcSRS = ds.GetLayer(0).GetSpatialRef();
-        CoordinateTransformation transformation = new CoordinateTransformation(srcSRS, dstSRS);
-        Driver driver = ogr.GetDriverByName(GDALDriversEnum.ESRI_Shapefile.getName());
-        File dst = new File(dstFile);
-        if (dst.exists()) {
-            boolean delete = dst.delete();
-            log.debug("Old file {} deleted: {}", dstFile, delete);
+        if (gdal.GetDriverCount() == 0) {
+            gdal.AllRegister();
         }
-        DataSource dstSrc = driver.CreateDataSource(dstFile);
-        for (int i = 0; i < ds.GetLayerCount(); i++) {
-            Layer inLyr = ds.GetLayer(i);
-            Layer outLyr = dstSrc.CreateLayer(inLyr.GetName(), dstSRS, inLyr.GetGeomType());
-            //add fields
-            FeatureDefn layerDefn = inLyr.GetLayerDefn();
-            for (int j = 0; j < layerDefn.GetFieldCount(); j++) {
-                outLyr.CreateField(layerDefn.GetFieldDefn(j));
-            }
-            // get the output inLyr's feature definition
-            FeatureDefn outLayerDefn = outLyr.GetLayerDefn();
-            Feature inFeature = inLyr.GetNextFeature();
-            while (inFeature != null) {
-                //get the input geometry
-                Geometry geom = inFeature.GetGeometryRef();
-                //reproject the geometry
-                geom.Transform(transformation);
-                //create a new feature
-                Feature outFeature = new Feature(outLayerDefn);
-                //set the geometry and attribute
-                outFeature.SetGeometry(geom);
-                for (int k = 0; k < outLayerDefn.GetFieldCount(); k++) {
-                    String type = inFeature.GetFieldDefnRef(k).GetTypeName();
-                    String name = outLayerDefn.GetFieldDefn(k).GetNameRef();
-                    if ("Integer".equals(type)) {
-                        outFeature.SetField(name, inFeature.GetFieldAsInteger(k));
-                    } else if ("Real".equals(type)) {
-                        outFeature.SetField(name, inFeature.GetFieldAsDouble(k));
-                    } else {
-                        outFeature.SetField(name, inFeature.GetFieldAsString(k));
-                    }
-                }
-                //add the feature to the shapefile
-                outLyr.CreateFeature(outFeature);
-                // destroy the features and get the next input feature
-                outFeature.delete();
-                inFeature.delete();
-                inFeature = inLyr.GetNextFeature();
-            }
-        }
-        ds.delete();
-        driver.delete();
+        Dataset ds = gdal.OpenEx(srcFile, gdalconst.OF_VECTOR | gdalconst.OF_VERBOSE_ERROR);
+        Vector<String> options = new Vector<>();
+        options.add("-f");
+        options.add("ESRI Shapefile");
+        options.add("-t_srs");
+        options.add(dstSRS.ExportToProj4());
+        options.add("-overwrite");
+        gdal.VectorTranslate(dstFile, ds, new VectorTranslateOptions(options));
     }
 }

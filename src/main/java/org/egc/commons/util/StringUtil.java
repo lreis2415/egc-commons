@@ -29,8 +29,7 @@ public class StringUtil {
      * @return string
      * @date 2016年2月1日下午5:38:54
      */
-    public static String removeFirstUnderline(String src)
-    {
+    public static String removeFirstUnderline(String src) {
         if (src.indexOf('_') == 0) {
             src = src.substring(1);
         }
@@ -38,12 +37,27 @@ public class StringUtil {
     }
 
     public static String[] stringSplit(String targetString, String splitString) {
-        String[] sourceStrArray = targetString.split(splitString);
-        return sourceStrArray;
+        return targetString.split(splitString);
     }
 
-    public static List findCharIndex(String src, String key) {
-        List indexList = new ArrayList();
+    public static String toHexString(byte[] byteArray) {
+        StringBuilder hexString = new StringBuilder("");
+        if (byteArray == null || byteArray.length <= 0) {
+            return null;
+        }
+        for (byte b : byteArray) {
+            int v = b & 0xFF;
+            String hv = Integer.toHexString(v);
+            if (hv.length() < 2) {
+                hexString.append(0);
+            }
+            hexString.append(hv);
+        }
+        return hexString.toString().toLowerCase();
+    }
+
+    public static List<Integer> findCharIndex(String src, String key) {
+        List<Integer> indexList = new ArrayList<>();
         int index = src.indexOf(key);
         indexList.add(index);
         while (index != -1) {
@@ -59,8 +73,8 @@ public class StringUtil {
     /**
      * 是否为有效的 URI（统一资源标识符）
      *
-     * @param uri
-     * @return
+     * @param uri uri
+     * @return boolean
      */
     public static boolean isUriValid(String uri) {
         Pattern pattern = RegexPatterns.WEB_URL;
@@ -70,7 +84,7 @@ public class StringUtil {
     /**
      * 驼峰命名法工具
      *
-     * @return toCamelCase("hello_world") == "helloWorld"
+     * @return toCamelCase(" hello_world ") == "helloWorld"
      * toCapitalizeCamelCase("hello_world") == "HelloWorld"
      * toUnderScoreCase("helloWorld") = "hello_world"
      */
@@ -102,7 +116,7 @@ public class StringUtil {
     /**
      * 驼峰命名法工具
      *
-     * @return toCamelCase("hello_world") == "helloWorld"
+     * @return toCamelCase(" hello_world ") == "helloWorld"
      * toCapitalizeCamelCase("hello_world") == "HelloWorld"
      * toUnderScoreCase("helloWorld") = "hello_world"
      */
@@ -117,7 +131,7 @@ public class StringUtil {
     /**
      * 驼峰命名法工具
      *
-     * @return toCamelCase("hello_world") == "helloWorld"
+     * @return toCamelCase(" hello_world ") == "helloWorld"
      * toCapitalizeCamelCase("hello_world") == "HelloWorld"
      * toUnderScoreCase("helloWorld") = "hello_world"
      */
@@ -157,14 +171,15 @@ public class StringUtil {
         Preconditions.checkNotNull(s, msg);
     }
 
+
+    static final Pattern p = Pattern.compile("\\s*|\t|\r|\n");
     /**
      * 去除字符串中的空格、回车、换行符、制表符等
      *
-     * @param str
-     * @return
+     * @param str the str
+     * @return string
      */
     public static String replaceSpecialStr(String str) {
-        Pattern p = Pattern.compile("\\s*|\t|\r|\n");
         String repl = "";
         if (str != null) {
             Matcher m = p.matcher(str);

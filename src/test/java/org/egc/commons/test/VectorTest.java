@@ -24,11 +24,12 @@ public class VectorTest {
     String shp = "H:\\gisdemo\\in\\in\\UserStreams.shp";
     //3857
     String shp2 = "H:/gisdemo/in/simplified-land-polygons-complete-3857/simplified_land_polygons.shp";
-
+    String shp3 =  "D:\\data\\WebSites\\egcDataFiles\\1\\49\\basin_4326.shp";
+    String shp4 =  "H:\\gisdemo\\out\\project\\basin_4326.shp";
 
     @Test
     public void test() {
-        VectorMetadata metadata = VectorUtils.getShapefileMetadata(shp2);
+        VectorMetadata metadata = VectorUtils.getShapefileMetadata(shp4);
         System.out.println(JSON.toJSONString(metadata, true));
     }
 

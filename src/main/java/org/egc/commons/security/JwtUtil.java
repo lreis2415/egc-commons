@@ -17,7 +17,7 @@ import java.util.*;
  * JsonWebToken (JWT) 生成与解析工具类
  *
  * @author houzhiwei
- * @link https ://stormpath.com/blog/jwt-java-create-verify
+ * @link https://stormpath.com/blog/jwt-java-create-verify
  * @date 2017 /6/16 9:35
  * @date 2017 /6/21
  */
@@ -44,8 +44,7 @@ public class JwtUtil {
      */
     public static Key generateKey() {
         // default SignatureAlgorithm.HS512
-        Key key = MacProvider.generateKey();
-        return key;
+        return MacProvider.generateKey();
     }
 
     /**
@@ -117,9 +116,10 @@ public class JwtUtil {
      * 若 refresh token 也过期，则需要重新登录
      * </pre>
      *
-     * @param info {@link JwtTokenInfo}
+     * @param info   {@link JwtTokenInfo}
      * @param config jwt configuration {@link JwtConfig}
-     * @return
+     * @param key    the key
+     * @return string
      */
     public static String createRefreshJwt( JwtTokenInfo info, JwtConfig config, Key key) {
         JwtBuilder jwtBuilder = basicJwtBuilder(info.getId(), info.getSubject(), config, key, true);
@@ -180,13 +180,11 @@ public class JwtUtil {
     /**
      * <pre/>
      * 获取Token中的payload而不验证其有效性<br/>
-     * 不需要提供 密钥
-     * see https://github.com/jwtk/jjwt/issues/315
-     * <p>
-     * Jwt parsedToken = Jwts.parser().parse(splitToken[0] + "." + splitToken[1] + ".");
-     * (Claims) jwt.getBody();
-     *
-     * @param token
+     * 不需要提供 密钥 <br/>
+     * see https://github.com/jwtk/jjwt/issues/315 <br/>
+     * <code> Jwt parsedToken = Jwts.parser().parse(splitToken[0] + "." + splitToken[1] + ".");
+     * (Claims) jwt.getBody(); </code>
+     * @param token the token
      * @return claims {@link Claims}
      */
     public static Claims getClaimsWithoutKey(String token) {
@@ -195,8 +193,7 @@ public class JwtUtil {
 
         DefaultJwtParser parser = new DefaultJwtParser();
         Jwt<?, ?> jwt = parser.parse(unsignedToken);
-        Claims claims = (Claims) jwt.getBody();
-        return claims;
+        return (Claims) jwt.getBody();
     }
 
 
@@ -223,16 +220,14 @@ public class JwtUtil {
     }
 
     public static int getUserIdFromToken(String token) {
-        int id = (Integer) getClaimsWithoutKey(token).get("userId");
-        return id;
+        return (int) (Integer) getClaimsWithoutKey(token).get("userId");
     }
 
     /**
      * 获得user id 与 subject（e-mail）
      *
-     * @param token
-     * @return {@link Map<String, String>}
-     * keySet = [id, sub]
+     * @param token the token
+     * @return {@link Map} keySet = [id, sub]
      */
     public static Map<String, String> getUserIdAndSubFromToken(String token) {
         Claims claims = getClaimsWithoutKey(token);
@@ -247,8 +242,8 @@ public class JwtUtil {
     /**
      * get token from Authorization string from request header
      *
-     * @param authHeader
-     * @return
+     * @param authHeader the auth header
+     * @return token from header
      */
     public static String getTokenFromHeader(String authHeader) {
         if (authHeader == null || !authHeader.startsWith(JwtConsts.TOKEN_PREFIX)) {
@@ -265,11 +260,11 @@ public class JwtUtil {
     /**
      * 生成具有基本信息的 JwtBuilder
      *
-     * @param id
-     * @param sub
+     * @param id the id
+     * @param sub Subject
      * @param config  jwt 配置信息
      * @param refresh 是否使用刷新时间
-     * @return
+     * @return JwtBuilder
      */
     private static JwtBuilder basicJwtBuilder(String id, String sub, JwtConfig config, Key key, boolean refresh) {
         long nowMillis = System.currentTimeMillis();

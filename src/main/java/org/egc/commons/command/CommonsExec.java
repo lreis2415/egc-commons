@@ -128,7 +128,7 @@ public class CommonsExec {
      * @param workspace    工作目录(数据输出目录)， blank 时使用当前目录（<code>new File(".")</code>）
      * @param exitValue    运行退出值，通常为 0, 可为 null
      * @param timeout      超时时间，默认 60000L ms
-     * @param envKeyValues the environmental variable list in format: <b>key=value</b>
+     * @param envKeyValues 系统环境变量 key-value对。the environmental variable list in format: <b>key=value</b>
      * @return {@link ExecResult}<br/>
      * 注意：有些程序在执行成功之后，部分信息会出现在 error 中，因此不能根据 error 是否有内容来判断是否执行失败
      * @throws IOException the io exception

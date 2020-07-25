@@ -1,5 +1,6 @@
 package org.egc.commons.test;
 
+import com.alibaba.fastjson.JSON;
 import org.egc.commons.gis.*;
 import org.gdal.gdal.gdal;
 import org.junit.Assert;
@@ -80,9 +81,10 @@ public class RasterTest {
 
     @Test
     public void testMetaGdal() throws IOException {
-        String filename = tifPath();
+        String filename = "D:\\data\\WebSites\\egcDataFiles\\1\\50\\ywzdem30m.tif";
+//        String filename = tifPath();
         RasterMetadata metadata = GeoTiffUtils.getMetadataByGDAL(filename);
         System.out.println(metadata.getQuantileBreaks());
-        System.out.println(metadata.toString());
+        System.out.println(JSON.toJSONString(metadata,true));
     }
 }

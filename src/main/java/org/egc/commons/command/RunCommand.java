@@ -178,6 +178,9 @@ public interface RunCommand {
          */
         public static void addFileParams(CommandLine cmd, Map<String, String> files, Map<String, String> fileParams,
                                          String dir) {
+            if (fileParams == null) {
+                return;
+            }
             fileParams.forEach((k, v) -> {
                 if (StringUtils.isNotBlank(v)) {
                     if (StringUtils.isNotBlank(k)) {

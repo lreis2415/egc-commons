@@ -73,11 +73,10 @@ public class VectorUtils {
         if (sr.IsProjected() == 1) {
             String projcs = sr.GetAttrValue("PROJCS");
             metadata.setCrs(projcs);
-            metadata.setUnit(sr.GetLinearUnitsName());
         } else {
             metadata.setCrs(geogcs);
-            metadata.setUnit(sr.GetAngularUnitsName());
         }
+        metadata.setUnit(sr.GetAttrValue("UNIT"));
         metadata.setCrsProj4(sr.ExportToProj4());
         metadata.setCrsWkt(sr.ExportToWkt());
         SpatialReference a = new SpatialReference();
@@ -90,6 +89,7 @@ public class VectorUtils {
 
         ds.delete();
         driver.delete();
+        gdal.GDALDestroyDriverManager();
         return metadata;
     }
 
@@ -129,6 +129,12 @@ public class VectorUtils {
         return sb.toString();
     }
 
+    /**
+     * Reproject to wgs 84.
+     *
+     * @param srcFile      the src file
+     * @param dstFile      the dst file
+     */
     public static void reprojectToWgs84(String srcFile, String dstFile) {
         SpatialReference srs = new SpatialReference();
         srs.ImportFromEPSG(4326);
@@ -141,9 +147,9 @@ public class VectorUtils {
      * https://pcjericks.github.io/py-gdalogr-cookbook/projection.html
      * </pre>
      *
-     * @param srcFile the src file
-     * @param dstFile the dst file
-     * @param dstSRS  the target srs
+     * @param srcFile      the src file
+     * @param dstFile      the dst file
+     * @param dstSRS       the target srs
      */
     public static void reproject(String srcFile, String dstFile, SpatialReference dstSRS) {
         if (gdal.GetDriverCount() == 0) {
@@ -157,5 +163,7 @@ public class VectorUtils {
         options.add(dstSRS.ExportToProj4());
         options.add("-overwrite");
         gdal.VectorTranslate(dstFile, ds, new VectorTranslateOptions(options));
+        ds.delete();
+        gdal.GDALDestroyDriverManager();
     }
 }

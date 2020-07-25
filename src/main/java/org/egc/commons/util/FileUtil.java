@@ -763,4 +763,20 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
         }
     }
 
+    public static void forceDeleteFile(File file) {
+        if (null != file) {
+            if (!file.exists()) {
+                return;
+            }
+            if (file.isFile()) {
+                boolean result = file.delete();
+                int tryCount = 0;
+                while (!result && tryCount++ < 10) {
+                    System.gc(); // 回收资源
+                    result = file.delete();
+                }
+            }
+        }
+    }
+
 }

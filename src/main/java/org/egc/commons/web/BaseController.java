@@ -7,10 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * TODO
  *
- * @Author houzhiwei
- * @Date 2016/11/3 22:39.
+ * @author houzhiwei
+ * @date 2016/11/3 22:39.
  */
 public abstract class BaseController {
 
@@ -34,9 +33,9 @@ public abstract class BaseController {
     protected String token;
 
     /**
-      @ModelAttribute
-      1)放置在方法的形参上：表示引用Model中的数据
-      2)放置在方法上面：表示请求该类的每个Action前都会首先执行它，也可以将一些准备数据的操作放置在该方法里面。
+     {@code @ModelAttribute } <br/>
+      1)放置在方法的形参上：表示引用Model中的数据<br/>
+      2)放置在方法上面：表示请求该类的每个Action前都会首先执行它，也可以将一些准备数据的操作放置在该方法里面。<br/>
       每次都需要重新获取,因为spring为单例
      */
     @ModelAttribute
@@ -52,7 +51,7 @@ public abstract class BaseController {
     /**
      * get json web token from request header
      *
-     * @return
+     * @return jwt token
      */
     private String getToken() {
         String jwt = this.request.getHeader(JwtConsts.HEADER_STRING);

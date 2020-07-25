@@ -195,11 +195,11 @@ public class GeoTiffUtils {
         Dataset dataset = gdal.Open(tif, gdalconstConstants.GA_ReadOnly);
         Driver driver = dataset.GetDriver();
         metadata.setFormat(driver.getShortName());
-        SpatialReference sr = new SpatialReference(dataset.GetProjectionRef());
+        SpatialReference sr = new SpatialReference(dataset.GetProjection());
         metadata.setCrsProj4(sr.ExportToProj4());
         metadata.setCrsWkt(sr.ExportToWkt());
         String authorityCode = sr.GetAuthorityCode(null);
-        String epsg = sr.GetAttrValue("Authority", 1);
+        String epsg = sr.GetAttrValue("AUTHORITY", 1);
         metadata.setEpsg(Integer.parseInt(epsg));
         if (authorityCode != null) {
             Integer srid = Integer.parseInt(authorityCode);
@@ -316,9 +316,9 @@ public class GeoTiffUtils {
     /**
      * Reproject use epsg code.
      *
-     * @param srcFile the src file
-     * @param dstFile the dst file
-     * @param dstEpsg the dst epsg
+     * @param srcFile      the src file
+     * @param dstFile      the dst file
+     * @param dstEpsg      the dst epsg
      */
     public static void reprojectUseEpsg(String srcFile, String dstFile, int dstEpsg) {
         reproject(srcFile, dstFile, "EPSG:" + dstEpsg);
@@ -327,20 +327,21 @@ public class GeoTiffUtils {
     /**
      * Reproject use PROJ.4 declarations.
      *
-     * @param srcFile  the src file
-     * @param dstFile  the dst file
-     * @param dstProj4 the dst proj 4
+     * @param srcFile      the src file
+     * @param dstFile      the dst file
+     * @param dstProj4     the dst proj4
      */
     public static void reprojectUseProj4(String srcFile, String dstFile, String dstProj4) {
         reproject(srcFile, dstFile, dstProj4);
     }
 
+
     /**
      * Reproject use gdal.Warp
      *
-     * @param srcFile the src file
-     * @param dstFile the dst file
-     * @param dstSrs  the target spatial reference
+     * @param srcFile      the src file
+     * @param dstFile      the dst file
+     * @param dstSrs       the target spatial reference
      */
     public static void reproject(String srcFile, String dstFile, String dstSrs) {
         gdal.AllRegister();
@@ -353,5 +354,6 @@ public class GeoTiffUtils {
         gdal.Warp(dstFile, new Dataset[]{ds}, options);
         //关闭数据集
         ds.delete();
+        gdal.GDALDestroyDriverManager();
     }
 }

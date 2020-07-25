@@ -9,28 +9,32 @@ import java.io.File;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Description:
- * <pre>
- *
- * </pre>
- *
- * @author houzhiwei
- * @date 2018/11/7 23:17
- */
+
 public class VectorTest {
 
     // no srid
     String shp = "H:\\gisdemo\\in\\in\\UserStreams.shp";
     //3857
     String shp2 = "H:/gisdemo/in/simplified-land-polygons-complete-3857/simplified_land_polygons.shp";
-    String shp3 =  "D:\\data\\WebSites\\egcDataFiles\\1\\49\\basin_4326.shp";
-    String shp4 =  "H:\\gisdemo\\out\\project\\basin_4326.shp";
+    String shp31 = "D:\\data\\WebSites\\egcDataFiles\\1\\49\\basin.shp";
+    String shp3 = "D:\\data\\WebSites\\egcDataFiles\\1\\49\\basin_4326.shp";
+    String shp4 = "H:\\gisdemo\\out\\project\\basin_4326.shp";
 
     @Test
     public void test() {
-        VectorMetadata metadata = VectorUtils.getShapefileMetadata(shp4);
+        VectorMetadata metadata = VectorUtils.getShapefileMetadata(shp3);
         System.out.println(JSON.toJSONString(metadata, true));
+    }
+
+    @Test
+    public void wkt() {
+        String wkt = VectorUtils.shp2Wkt("D:\\data\\WebSites\\egcDataFiles\\1\\49\\basin_polygon.shp");
+        System.out.println(wkt.startsWith("MULTIPOLYGON"));
+    }
+
+    @Test
+    public void project() {
+        VectorUtils.reprojectToWgs84(shp31, "D:\\data\\WebSites\\egcDataFiles\\1\\49\\basin_polygon.shp");
     }
 
     @Test
@@ -46,6 +50,6 @@ public class VectorTest {
     public void getName() {
         String filename = this.getClass().getClassLoader().getResource("shp.zip").getFile();
         String name = GeoServerManager.getShpNameFromZippedFile(new File(filename));
-        assertEquals("robReach",name);
+        assertEquals("robReach", name);
     }
 }

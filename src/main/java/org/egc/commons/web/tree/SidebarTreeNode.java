@@ -16,7 +16,7 @@ import java.util.List;
 public class SidebarTreeNode implements Serializable {
 
     private static final long serialVersionUID = -92087004981430101L;
-    private boolean checked=false;
+    private boolean checked = false;
 
     /**
      * Getter for property 'checked'.
@@ -54,13 +54,21 @@ public class SidebarTreeNode implements Serializable {
         this.checkable = checkable;
     }
 
-    private boolean checkable=false;
-    private String name; // 用于树节点提示
-    private String title; // 用于显示
+    private boolean checkable = false;
+    // 用于树节点提示
+    private String name;
+    // 用于显示
+    private String title;
+    /**
+     * 用于指示数据类型： Samples，Vector，Raster
+     */
+    private String type;
     private Integer id;
-    private Integer parentId; // 父节点id
+    // 父节点id
+    private Integer parentId;
     private List<SidebarTreeNode> children;
-    private String[] buttons;// 按钮数组，如 {”map“,"detail"}
+    // 按钮数组，如 {”map“,"detail"}
+    private String[] buttons;
 
     // Integer 可以为null
     public SidebarTreeNode(Integer parentId) {
@@ -119,6 +127,14 @@ public class SidebarTreeNode implements Serializable {
      */
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     /**

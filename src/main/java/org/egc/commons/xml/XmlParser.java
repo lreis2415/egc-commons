@@ -1,6 +1,7 @@
 package org.egc.commons.xml;
 
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.*;
 import org.dom4j.io.SAXReader;
@@ -71,6 +72,7 @@ public class XmlParser {
      * @throws Exception the exception
      */
     public static Object xml2java(Class<?> clazz, String xmlPath) throws Exception {
+        xmlPath = FilenameUtils.normalize(xmlPath);
         if (StringUtils.isBlank(xmlPath) || !new File(xmlPath).exists()) {
             throw new FileNotFoundException();
         }
@@ -97,6 +99,7 @@ public class XmlParser {
      * @return the document
      */
     public static Document readXmlFile(String filename) {
+        filename = FilenameUtils.normalize(filename);
         Document document = null;
         try {
             SAXReader saxReader = new SAXReader();

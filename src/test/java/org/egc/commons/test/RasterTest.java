@@ -85,6 +85,6 @@ public class RasterTest {
 //        String filename = tifPath();
         RasterMetadata metadata = GeoTiffUtils.getMetadataByGDAL(filename);
         System.out.println(metadata.getQuantileBreaks());
-        System.out.println(JSON.toJSONString(metadata,true));
+        System.out.println(JSON.toJSONString(metadata, true));
     }
 }

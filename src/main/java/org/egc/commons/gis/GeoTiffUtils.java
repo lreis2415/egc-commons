@@ -1,6 +1,13 @@
 package org.egc.commons.gis;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.math.Quantiles;
+import com.google.common.primitives.Floats;
 import it.geosolutions.jaiext.range.NoDataContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.egc.commons.exception.BusinessException;
@@ -32,6 +39,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 使用geotools读取geotiff，获取元数据信息
@@ -261,51 +269,44 @@ public class GeoTiffUtils {
         //TODO test
         // 没有 band.ReadRaster(0, 0, xSize, ySize, dataBuf, xSize, ySize, 0, 0);
         band.ReadRaster(0, 0, xSize, ySize, dataBuf);
-        metadata.setQuantileBreaks(getQuantile(dataBuf, nodata));
-        metadata.setQuantileBreaks(getUniqueValues(dataBuf, nodata));
+        metadata.setQuantileBreaks(getQuantile(dataBuf, nodata, 15));
+        metadata.setUniqueValues(getUniqueValues(dataBuf, nodata));
         dataset.delete();
         gdal.GDALDestroyDriverManager();
         return metadata;
     }
 
+    /*原来的计算方法参考ws_metadata_extract/RasterMetaDataExtractor.cs*/
+
     private static String getUniqueValues(float[] dataBuf, Double nodata) {
-        List<Float> uniqueValues = new ArrayList<Float>();
-        List<Float> dataBufList = new ArrayList<>();
-        for (float dataBufVal : dataBuf) {
-            dataBufList.add(dataBufVal);
-        }
+        List<Float> dataBufList = Floats.asList(dataBuf);
         Collections.sort(dataBufList);
-        int lastNodataIndex = dataBufList.lastIndexOf(nodata.floatValue());
-
-        uniqueValues.add(dataBufList.get(lastNodataIndex + 1));
-        String rasterUniqueValues = String.valueOf(dataBufList.get(lastNodataIndex + 1).intValue());
-        StringBuilder sb = new StringBuilder(rasterUniqueValues);
-
-        for (int i = lastNodataIndex + 2; i < dataBufList.size() - 1; i++) {
-            if (!dataBufList.get(i).equals(uniqueValues.get(uniqueValues.size() - 1))) {
-                uniqueValues.add(dataBufList.get(i));
-                sb.append(" ");
-                sb.append(dataBufList.get(i).intValue());
-            }
+        List<Float> uniqueList = dataBufList.stream().distinct().collect(Collectors.toList());
+        if (uniqueList.indexOf(nodata.floatValue()) > -1) {
+            uniqueList.remove(uniqueList.indexOf(nodata.floatValue()));
         }
-        return sb.toString();
+        return Joiner.on(" ").join(uniqueList);
     }
 
     //分位数
-    private static String getQuantile(float[] dataBuf, Double nodata) {
-        int numQuantile = 15;
+    private static String getQuantile(float[] dataBuf, Double nodata, int numQuantile) {
         Double[] quantileBreaks = new Double[numQuantile - 1];
-        List<Float> dataBufList = new ArrayList<>();
-        for (float dataBufVal : dataBuf) {
-            dataBufList.add(dataBufVal);
-        }
+        List<Float> dataBufList = Floats.asList(dataBuf);
         Collections.sort(dataBufList);
-        int lastNoDataIndex = dataBufList.lastIndexOf(nodata.floatValue());
-        int lastDataIndex = dataBufList.size() - 1;
-        int numDataInQuantile = (int) ((lastDataIndex - lastNoDataIndex) / numQuantile + 0.5);
+        //移除空值, 移除 nodata
+        List<Float> removedList = dataBufList.stream().filter(x -> {
+            if (x != null) {
+                //为 true 的会被保留
+                return !x.equals(nodata.floatValue());
+            }
+            return false;
+        }).collect(Collectors.toList());
+        int size = removedList.size();
+        //分位数位置  (n+1)*p, 0<p<1, 如  0.25，0.5,0.75
+        int numDataInQuantile = ((size + 1) / numQuantile);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < numQuantile - 1; i++) {
-            quantileBreaks[i] = Double.valueOf(dataBufList.get(lastNoDataIndex + (i + 1) * numDataInQuantile));
+            quantileBreaks[i] = (double) (removedList.get((i + 1) * numDataInQuantile));
             sb.append(" ");
             sb.append(quantileBreaks[i].toString());
         }
@@ -316,9 +317,9 @@ public class GeoTiffUtils {
     /**
      * Reproject use epsg code.
      *
-     * @param srcFile      the src file
-     * @param dstFile      the dst file
-     * @param dstEpsg      the dst epsg
+     * @param srcFile the src file
+     * @param dstFile the dst file
+     * @param dstEpsg the dst epsg
      */
     public static void reprojectUseEpsg(String srcFile, String dstFile, int dstEpsg) {
         reproject(srcFile, dstFile, "EPSG:" + dstEpsg);
@@ -327,9 +328,9 @@ public class GeoTiffUtils {
     /**
      * Reproject use PROJ.4 declarations.
      *
-     * @param srcFile      the src file
-     * @param dstFile      the dst file
-     * @param dstProj4     the dst proj4
+     * @param srcFile  the src file
+     * @param dstFile  the dst file
+     * @param dstProj4 the dst proj4
      */
     public static void reprojectUseProj4(String srcFile, String dstFile, String dstProj4) {
         reproject(srcFile, dstFile, dstProj4);
@@ -339,9 +340,9 @@ public class GeoTiffUtils {
     /**
      * Reproject use gdal.Warp
      *
-     * @param srcFile      the src file
-     * @param dstFile      the dst file
-     * @param dstSrs       the target spatial reference
+     * @param srcFile the src file
+     * @param dstFile the dst file
+     * @param dstSrs  the target spatial reference
      */
     public static void reproject(String srcFile, String dstFile, String dstSrs) {
         gdal.AllRegister();

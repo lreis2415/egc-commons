@@ -1,6 +1,7 @@
 package org.egc.commons.xml;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.dom4j.Document;
 import org.dom4j.io.OutputFormat;
@@ -14,6 +15,7 @@ import java.io.OutputStreamWriter;
 /**
  * TODO
  * https://dom4j.github.io/
+ *
  * @author houzhiwei
  * @date 2017/1/4 11:46
  */
@@ -27,6 +29,7 @@ public class XmlWriter {
      * @return true(success) or false(failure)
      */
     public boolean doc2XmlFile(Document doc, String filename) {
+        filename = FilenameUtils.normalize(filename);
         boolean flag = true;
         OutputFormat format = OutputFormat.createPrettyPrint();
         format.setEncoding(CharEncoding.UTF_8);

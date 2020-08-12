@@ -42,6 +42,7 @@ public class VectorUtils {
         Driver driver = ds.GetDriver();
 
         VectorMetadata metadata = new VectorMetadata();
+        metadata.setShapeEncoding(gdal.GetConfigOption("SHAPE_ENCODING"));
         metadata.setName(FilenameUtils.getName(shapefile));
         metadata.setFormat(driver.GetName());
         metadata.setLayerCount(ds.GetLayerCount());

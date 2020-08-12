@@ -19,6 +19,7 @@ public class VectorMetadata implements Serializable {
      */
     private int geomType;
     private String geometry;
+    private String shapeEncoding;
     private long featureCount;
     private int layerCount;
     /**

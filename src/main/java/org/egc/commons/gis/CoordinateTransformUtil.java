@@ -87,19 +87,43 @@ public class CoordinateTransformUtil {
 
     /**
      * 使用 GDAL 转换坐标
-     * @param sourceEPSG 源 epsg
+     *
+     * @param sourceEPSG      源 epsg
      * @param destinationEPSG 目标 epsg
-     * @param x x 坐标
-     * @param y y 坐标
-     * @return [x,y]
+     * @param x               x 坐标
+     * @param y               y 坐标
+     * @return [x, y]
      * @author lp
      */
-    public static double[] transformByGdal(int sourceEPSG, int destinationEPSG, double x, double y){
+    public static double[] transformByGdal(int sourceEPSG, int destinationEPSG, double x, double y) {
         SpatialReference source = new SpatialReference();
         source.ImportFromEPSG(sourceEPSG);
         SpatialReference destination = new SpatialReference();
         destination.ImportFromEPSG(destinationEPSG);
         CoordinateTransformation coordinateTransformation = new CoordinateTransformation(source, destination);
         return coordinateTransformation.TransformPoint(x, y);
+    }
+
+
+    /**
+     * Transform extent by gdal.
+     *
+     * @param fromEPSG      the source epsg
+     * @param toEPSG the destination epsg
+     * @param minX            the min x
+     * @param minY            the min y
+     * @param maxX            the max x
+     * @param maxY            the max y
+     * @return the double[]: minx,miny,maxx,maxy
+     */
+    public static double[] transformExtentByGdal(int fromEPSG, int toEPSG, double minX, double minY, double maxX, double maxY) {
+        SpatialReference source = new SpatialReference();
+        source.ImportFromEPSG(fromEPSG);
+        SpatialReference destination = new SpatialReference();
+        destination.ImportFromEPSG(toEPSG);
+        CoordinateTransformation coordinateTransformation = new CoordinateTransformation(source, destination);
+        double[] ll = coordinateTransformation.TransformPoint(minX, minY);
+        double[] ur = coordinateTransformation.TransformPoint(maxX, maxY);
+        return new double[]{ll[0], ll[1], ur[0], ur[1]};
     }
 }

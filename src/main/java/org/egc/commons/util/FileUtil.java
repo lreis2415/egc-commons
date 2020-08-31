@@ -20,7 +20,7 @@ import java.security.AccessController;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivilegedAction;
-import java.util.Enumeration;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -619,6 +619,47 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
             zipFile.close();
         }
         return outputDir;
+    }
+
+    public static Set<String> listFilesInZip(String zipFilePath, String ext) throws IOException {
+        ZipFile zipFile = new ZipFile(zipFilePath);
+        Set<String> filenames = new HashSet<>();
+        try {
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                if (!entry.isDirectory()) {
+                    String extension = FilenameUtils.getExtension(entry.getName());
+                    if (extension.equalsIgnoreCase(ext)) {
+                        filenames.add(entry.getName());
+                    }
+                } else {
+                    log.info(entry.getName()+" is a directory");
+                }
+            }
+        } finally {
+            zipFile.close();
+        }
+        return filenames;
+    }
+
+    public static Set<String> listZipFileNames(String zipFilePath, boolean ignoreExt) throws IOException {
+        ZipFile zipFile = new ZipFile(zipFilePath);
+        Set<String> filenames = new HashSet<>();
+        try {
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                if (ignoreExt) {
+                    filenames.add(FilenameUtils.getBaseName(entry.getName()));
+                } else {
+                    filenames.add(entry.getName());
+                }
+            }
+        } finally {
+            zipFile.close();
+        }
+        return filenames;
     }
 
     /**

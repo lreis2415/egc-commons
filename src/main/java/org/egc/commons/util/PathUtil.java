@@ -26,7 +26,6 @@ public class PathUtil {
      * new File("").getCanonicalPath();
      *
      * @return project root
-     * @throws IOException the io exception
      */
     public static String getProjectRoot()
     {
@@ -62,11 +61,12 @@ public class PathUtil {
      * file path in classes or test-classes (junit)
      *
      * @param file file name
-     * @return
+     * @return string
      */
     public static String classFilePath(String file) {
         file = fileNormalize(file);
         URL resource = Thread.currentThread().getContextClassLoader().getResource(file);
+        assert resource != null;
         return resource.getPath();
     }
 
@@ -79,6 +79,7 @@ public class PathUtil {
     public static String getClassPath()
     {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("");
+        assert resource != null;
         return resource.getPath();
     }
 
@@ -121,7 +122,7 @@ public class PathUtil {
      * System.getProperty("user.dir"))
      * {@link #getRelativePath()}
      *
-     * @return
+     * @return cwd
      */
     public static String getCWD()
     {
@@ -154,8 +155,8 @@ public class PathUtil {
      * path of file in target/classes <br/>
      * original locates in src/main/resources in maven project
      *
-     * @param filename
-     * @return
+     * @param filename the filename
+     * @return string
      */
     public static String resourcesFilePath(String filename) {
         ClassLoader classLoader = PathUtil.class.getClassLoader();
@@ -168,6 +169,24 @@ public class PathUtil {
         }
     }
 
+    /**
+     * Gets multiple level parent files.
+     * 获取往上一定级别的目录
+     * @param filepath the filepath
+     * @param levels   the levels, relative to the current directory
+     * @return the multi level parent files
+     */
+    public static File getMultiLevelParentFiles(String filepath, int levels) {
+        File parentFile = new File(filepath);
+        for (int i = 0; i < levels; i++) {
+            // if out of the range
+            if (parentFile.getParentFile()==null) {
+                return parentFile;
+            }
+            parentFile = parentFile.getParentFile();
+        }
+        return parentFile;
+    }
 
     private static String fileNormalize(String file) {
         if (StringUtils.isBlank(file)) {

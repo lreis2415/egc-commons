@@ -10,6 +10,7 @@ import com.google.common.math.Quantiles;
 import com.google.common.primitives.Floats;
 import it.geosolutions.jaiext.range.NoDataContainer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.egc.commons.exception.BusinessException;
 import org.egc.commons.util.StringUtil;
 import org.gdal.gdal.*;
@@ -208,8 +209,12 @@ public class GeoTiffUtils {
         metadata.setCrsWkt(sr.ExportToWkt());
         String authorityCode = sr.GetAuthorityCode(null);
         String epsg = sr.GetAttrValue("AUTHORITY", 1);
-        metadata.setEpsg(Integer.parseInt(epsg));
-        if (authorityCode != null) {
+        if (StringUtils.isNotBlank(epsg)) {
+            metadata.setEpsg(Integer.parseInt(epsg));
+        }else {
+            log.error("Cannot get valid EPSG code from [ {} ]!",tif);
+        }
+        if (StringUtils.isNotBlank(authorityCode)) {
             Integer srid = Integer.parseInt(authorityCode);
             metadata.setSrid(srid);
         }

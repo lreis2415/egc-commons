@@ -23,8 +23,7 @@ public class EncryptionUtil {
      * @param hashed the hashed
      * @return the encrypted
      */
-    public static EncryptedDTO getEncrypted(String salt, String hashed)
-    {
+    public static EncryptedDTO getEncrypted(String salt, String hashed) {
         return new EncryptedDTO(salt, hashed);
     }
 
@@ -35,8 +34,7 @@ public class EncryptionUtil {
      *
      * @return 盐/salt
      */
-    public static String generateSalt()
-    {
+    public static String generateSalt() {
         return new SecureRandomNumberGenerator().nextBytes().toHex();
     }
 
@@ -46,8 +44,7 @@ public class EncryptionUtil {
      * @param seed the seed
      * @return the string
      */
-    public static String generateSaltWithSeed(String seed)
-    {
+    public static String generateSaltWithSeed(String seed) {
         SecureRandomNumberGenerator generator = new SecureRandomNumberGenerator();
         generator.setSeed(seed.getBytes());
         return generator.nextBytes().toHex();
@@ -61,8 +58,7 @@ public class EncryptionUtil {
      * @param src 需要加密的源
      * @return 加密处理之后结果
      */
-    public static EncryptedDTO md5Encrypt(String src)
-    {
+    public static EncryptedDTO md5Encrypt(String src) {
         String salt = generateSaltWithSeed(src);
         //新的加密之后的密码
         String result = new Md5Hash(src, salt, 5).toHex();
@@ -78,8 +74,7 @@ public class EncryptionUtil {
      * @param saltSrc 和随机数一起组成加密盐值
      * @return 结果
      */
-    public static EncryptedDTO md5Encrypt(String src, String saltSrc)
-    {
+    public static EncryptedDTO md5Encrypt(String src, String saltSrc) {
         String salt = generateSaltWithSeed(saltSrc);
         String result = new Md5Hash(src, salt, 5).toHex();//新的加密之后的密码
 
@@ -94,8 +89,7 @@ public class EncryptionUtil {
      * @param email
      * @return
      */
-    public static String getMD5VerifyCode(String email)
-    {
+    public static String getMD5VerifyCode(String email) {
         String salt = generateSaltWithSeed(email);
         String code = new Md5Hash(email, salt, 5).toHex();
         return code;
@@ -110,8 +104,7 @@ public class EncryptionUtil {
      * @param src 需要加密的源
      * @return 加密处理之后的结果
      */
-    public static EncryptedDTO sha256Encrypt(String src)
-    {
+    public static EncryptedDTO sha256Encrypt(String src) {
         String salt = generateSaltWithSeed(src);
         //Note: credentialsMatcher.storedCredentialsHexEncoded = false  //base64 encoding, not hex
         String hashedBase64 = new Sha256Hash(src, salt, 1024).toBase64();
@@ -128,8 +121,7 @@ public class EncryptionUtil {
      * @param saltSrc 和随机数一起组成加密盐值
      * @return the encrypted
      */
-    public static EncryptedDTO sha256Encrypt(String src, String saltSrc)
-    {
+    public static EncryptedDTO sha256Encrypt(String src, String saltSrc) {
         String salt = generateSaltWithSeed(saltSrc);
         //Note: credentialsMatcher.storedCredentialsHexEncoded = false  //base64 encoding, not hex
         String hashedBase64 = new Sha256Hash(src, salt, 1024).toBase64();
@@ -156,8 +148,7 @@ public class EncryptionUtil {
      * @param iterations 迭代次数
      * @return 加密后结果（Hex）
      */
-    public static EncryptedDTO encrypt(String src, String saltSrc, String algorithm, int iterations)
-    {
+    public static EncryptedDTO encrypt(String src, String saltSrc, String algorithm, int iterations) {
         String salt = "";
         if (Strings.isNullOrEmpty(saltSrc))
             salt = generateSaltWithSeed(src);
@@ -183,8 +174,7 @@ public class EncryptionUtil {
      * @param pwd2check  用于比对的密码
      * @return
      */
-    public static boolean checkEncryption(String src, String salt, String algorithm, int iterations, String pwd2check)
-    {
+    public static boolean checkEncryption(String src, String salt, String algorithm, int iterations, String pwd2check) {
         boolean flag = false;
         HashService hashService = new DefaultHashService();
         HashRequest hashRequest = new HashRequest.Builder()
@@ -211,10 +201,11 @@ public class EncryptionUtil {
     /**
      * 使用shiro的md5hash 进行哈希；
      * 使用参数本身生成盐值，迭代5次
+     *
      * @param src 需要哈希的字符串
      * @return hex md5 hash
      */
-    public static String md5Hash(String src){
+    public static String md5Hash(String src) {
         String salt = generateSaltWithSeed(src);
         return new Md5Hash(src, salt, 5).toHex();
     }

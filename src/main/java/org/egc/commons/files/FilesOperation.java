@@ -59,8 +59,7 @@ public class FilesOperation {
         return delete;
     }
 
-    public static void deleteDiskFolder(File file)
-    {
+    public static void deleteDiskFolder(File file) {
         Boolean delete = true;
         if (file.exists()) {
             if (file.isFile()) {
@@ -79,6 +78,7 @@ public class FilesOperation {
     /**
      * 获取文件后缀。
      * 使用{@link org.egc.commons.util.FileUtil#getFileExtension(String)}
+     *
      * @param filename
      * @return 文件后缀
      */

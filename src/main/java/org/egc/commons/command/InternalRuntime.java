@@ -19,8 +19,8 @@ public class InternalRuntime {
      * Execute command line use Java {@link Runtime#exec(String)} API.
      *
      * @param sb the Command StringBuilder
-     * @return  0: success <br/>
-     *          1: failed
+     * @return 0: success <br/>
+     * 1: failed
      * @throws IOException          the io exception
      * @throws InterruptedException the interrupted exception
      */

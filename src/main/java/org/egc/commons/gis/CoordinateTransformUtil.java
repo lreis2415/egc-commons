@@ -1,5 +1,6 @@
 package org.egc.commons.gis;
 
+import org.egc.commons.exception.BusinessException;
 import org.gdal.osr.CoordinateTransformation;
 import org.gdal.osr.SpatialReference;
 import org.geotools.geometry.jts.JTS;
@@ -97,30 +98,37 @@ public class CoordinateTransformUtil {
      */
     public static double[] transformByGdal(int sourceEPSG, int destinationEPSG, double x, double y) {
         SpatialReference source = new SpatialReference();
-        source.ImportFromEPSG(sourceEPSG);
         SpatialReference destination = new SpatialReference();
-        destination.ImportFromEPSG(destinationEPSG);
+        try {
+            source.ImportFromEPSG(sourceEPSG);
+            destination.ImportFromEPSG(destinationEPSG);
+        } catch (RuntimeException e) {
+            throw new BusinessException(e, "Unsupported SRS", true);
+        }
         CoordinateTransformation coordinateTransformation = new CoordinateTransformation(source, destination);
         return coordinateTransformation.TransformPoint(x, y);
     }
 
-
     /**
      * Transform extent by gdal.
      *
-     * @param fromEPSG      the source epsg
-     * @param toEPSG the destination epsg
-     * @param minX            the min x
-     * @param minY            the min y
-     * @param maxX            the max x
-     * @param maxY            the max y
+     * @param fromEPSG the source epsg
+     * @param toEPSG   the destination epsg
+     * @param minX     the min x
+     * @param minY     the min y
+     * @param maxX     the max x
+     * @param maxY     the max y
      * @return the double[]: minx,miny,maxx,maxy
      */
     public static double[] transformExtentByGdal(int fromEPSG, int toEPSG, double minX, double minY, double maxX, double maxY) {
         SpatialReference source = new SpatialReference();
-        source.ImportFromEPSG(fromEPSG);
         SpatialReference destination = new SpatialReference();
-        destination.ImportFromEPSG(toEPSG);
+        try {
+            source.ImportFromEPSG(fromEPSG);
+            destination.ImportFromEPSG(toEPSG);
+        } catch (RuntimeException e) {
+            throw new BusinessException(e, "Unsupported SRS", true);
+        }
         CoordinateTransformation coordinateTransformation = new CoordinateTransformation(source, destination);
         double[] ll = coordinateTransformation.TransformPoint(minX, minY);
         double[] ur = coordinateTransformation.TransformPoint(maxX, maxY);

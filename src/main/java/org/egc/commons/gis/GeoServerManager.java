@@ -15,6 +15,9 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+/**
+ * @author houzhiwei
+ */
 @Slf4j
 public class GeoServerManager {
 
@@ -31,8 +34,7 @@ public class GeoServerManager {
         if (StringUtils.isBlank(storeName)) {
             storeName = RASTER_STORE;
         }
-        boolean b = manager.getPublisher().publishExternalGeoTIFF(workspace, storeName, geoTiff, geoTiff.getName(), srs, GSResourceEncoder.ProjectionPolicy.FORCE_DECLARED, styleName);
-        return b;
+        return manager.getPublisher().publishExternalGeoTIFF(workspace, storeName, geoTiff, geoTiff.getName(), srs, GSResourceEncoder.ProjectionPolicy.FORCE_DECLARED, styleName);
     }
 
     /**
@@ -42,11 +44,10 @@ public class GeoServerManager {
      * @param workspace user's workspace name
      * @param storeName store name
      * @param zipFile   zipped shapefile
-     * @param srs       "EPSG:4326" if null. the srs for this shapefile.
-     *                  It will be forced to use this one in GeoServer
+     * @param srs       "EPSG:4326" if null. the srs for this shapefile.                  It will be forced to use this one in GeoServer
      * @param styleName style intend to use for the shapefile. can be null
-     * @return
-     * @throws FileNotFoundException
+     * @return boolean
+     * @throws FileNotFoundException the file not found exception
      */
     public static boolean publishShapefile(@NotNull GeoServerRESTManager manager, String workspace, String storeName, @NotNull File zipFile, String srs, String styleName) throws FileNotFoundException {
         checkWorkspace(manager, workspace);
@@ -100,7 +101,6 @@ public class GeoServerManager {
                 }
             }
         } catch (IOException ex) {
-            log.error("Read zipped shapefile failed.");
             throw new BusinessException("Read zipped shapefile failed.");
         }
         return layerName;

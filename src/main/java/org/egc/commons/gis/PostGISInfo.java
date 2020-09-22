@@ -39,7 +39,7 @@ public class PostGISInfo {
     private String rasterTable;
     private String shapeTable;
     private String rasterGeomColumn;
-    private String shapeTableEncoding="UTF-8";
+    private String shapeTableEncoding = "UTF-8";
     /**
      * postgis executable files directory
      */

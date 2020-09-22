@@ -219,14 +219,14 @@ public class RegexPatterns {
      * Internationalized URLs, aka IRIs.
      */
     public static final Pattern WEB_URL = Pattern.compile("("
-                                                                  + "("
-                                                                  + "(?:" + PROTOCOL + "(?:" + USER_INFO + ")?" + ")?"
-                                                                  + "(?:" + DOMAIN_NAME_STR + ")"
-                                                                  + "(?:" + PORT_NUMBER + ")?"
-                                                                  + ")"
-                                                                  + "(" + PATH_AND_QUERY + ")?"
-                                                                  + WORD_BOUNDARY
-                                                                  + ")");
+            + "("
+            + "(?:" + PROTOCOL + "(?:" + USER_INFO + ")?" + ")?"
+            + "(?:" + DOMAIN_NAME_STR + ")"
+            + "(?:" + PORT_NUMBER + ")?"
+            + ")"
+            + "(" + PATH_AND_QUERY + ")?"
+            + WORD_BOUNDARY
+            + ")");
 
     /**
      * Regular expression that matches known TLDs and punycode TLDs
@@ -320,8 +320,8 @@ public class RegexPatterns {
      * @hide
      */
     public static final Pattern AUTOLINK_EMAIL_ADDRESS = Pattern.compile("(" + WORD_BOUNDARY +
-                                                                                 "(?:" + EMAIL_ADDRESS_LOCAL_PART + "@" + EMAIL_ADDRESS_DOMAIN + ")" +
-                                                                                 WORD_BOUNDARY + ")"
+            "(?:" + EMAIL_ADDRESS_LOCAL_PART + "@" + EMAIL_ADDRESS_DOMAIN + ")" +
+            WORD_BOUNDARY + ")"
     );
 
     public static final Pattern EMAIL_ADDRESS
@@ -351,9 +351,9 @@ public class RegexPatterns {
      */
     public static final Pattern PHONE
             = Pattern.compile(                      // sdd = space, dot, or dash
-                                                    "(\\+[0-9]+[\\- \\.]*)?"        // +<digits><sdd>*
-                                                            + "(\\([0-9]+\\)[\\- \\.]*)?"   // (<digits>)<sdd>*
-                                                            + "([0-9][0-9\\- \\.]+[0-9])"); // <digit><digit|sdd>+<digit>
+            "(\\+[0-9]+[\\- \\.]*)?"        // +<digits><sdd>*
+                    + "(\\([0-9]+\\)[\\- \\.]*)?"   // (<digits>)<sdd>*
+                    + "([0-9][0-9\\- \\.]+[0-9])"); // <digit><digit|sdd>+<digit>
 
     /**
      * Convenience method to take all of the non-null matching groups in a

@@ -96,7 +96,7 @@ public class JwtUtil {
     /**
      * create access json web token
      *
-     * @param info 用于生成token的信息 {@link JwtTokenInfo}
+     * @param info   用于生成token的信息 {@link JwtTokenInfo}
      * @param config jwt 配置信息（key等）
      * @return jwt string
      */
@@ -121,7 +121,7 @@ public class JwtUtil {
      * @param key    the key
      * @return string
      */
-    public static String createRefreshJwt( JwtTokenInfo info, JwtConfig config, Key key) {
+    public static String createRefreshJwt(JwtTokenInfo info, JwtConfig config, Key key) {
         JwtBuilder jwtBuilder = basicJwtBuilder(info.getId(), info.getSubject(), config, key, true);
         jwtBuilder.claim("roles", info.getRoles()).claim("userId", info.getUserId());
         return jwtBuilder.compact();
@@ -143,11 +143,10 @@ public class JwtUtil {
      * @throws ExpiredJwtException   the expired jwt exception
      */
     public static JwtTokenInfo parseUserJwt(String token, Key secret, String iss)
-            throws SignatureException, MalformedJwtException, ExpiredJwtException
-    {
+            throws SignatureException, MalformedJwtException, ExpiredJwtException {
         // make sure that we can trust jwt
         Claims claims = parseJwt(token, secret, iss);
-        JwtTokenInfo tokenInfo = new JwtTokenInfo(claims.getId(),claims.getSubject());
+        JwtTokenInfo tokenInfo = new JwtTokenInfo(claims.getId(), claims.getSubject());
         tokenInfo.setUserId((int) claims.get("userId"));
         tokenInfo.setIssuer(claims.getIssuer());
         tokenInfo.setIssued_at(claims.getIssuedAt());
@@ -168,8 +167,7 @@ public class JwtUtil {
      * @throws ExpiredJwtException   the expired jwt exception
      */
     public static Claims parseJwt(String token, Key secret, String iss)
-            throws SignatureException, MalformedJwtException, ExpiredJwtException
-    {
+            throws SignatureException, MalformedJwtException, ExpiredJwtException {
         // make sure that we can trust jwt
         // (DatatypeConverter.parseBase64Binary(keyStr))
         return Jwts.parser().setSigningKey(secret)
@@ -184,6 +182,7 @@ public class JwtUtil {
      * see https://github.com/jwtk/jjwt/issues/315 <br/>
      * <code> Jwt parsedToken = Jwts.parser().parse(splitToken[0] + "." + splitToken[1] + ".");
      * (Claims) jwt.getBody(); </code>
+     *
      * @param token the token
      * @return claims {@link Claims}
      */
@@ -260,8 +259,8 @@ public class JwtUtil {
     /**
      * 生成具有基本信息的 JwtBuilder
      *
-     * @param id the id
-     * @param sub Subject
+     * @param id      the id
+     * @param sub     Subject
      * @param config  jwt 配置信息
      * @param refresh 是否使用刷新时间
      * @return JwtBuilder

@@ -12,16 +12,14 @@ import java.io.StringWriter;
  * @author calvin
  * @version 2013 -01-15
  */
-public class ExceptionUtil
-{
+public class ExceptionUtil {
     /**
      * 将CheckedException转换为UncheckedException.
      *
      * @param e the e
      * @return the runtime exception
      */
-    public static RuntimeException unchecked(Exception e)
-    {
+    public static RuntimeException unchecked(Exception e) {
         if (e instanceof RuntimeException) {
             return (RuntimeException) e;
         } else {
@@ -35,8 +33,7 @@ public class ExceptionUtil
      * @param e the e
      * @return the stack trace as string
      */
-    public static String getStackTraceAsString(Throwable e)
-    {
+    public static String getStackTraceAsString(Throwable e) {
         if (e == null) {
             return "";
         }
@@ -52,8 +49,7 @@ public class ExceptionUtil
      * @param causeExceptionClasses the cause exception classes
      * @return the boolean
      */
-    public static boolean isCausedBy(Exception ex, Class<? extends Exception>... causeExceptionClasses)
-    {
+    public static boolean isCausedBy(Exception ex, Class<? extends Exception>... causeExceptionClasses) {
         Throwable cause = ex.getCause();
         while (cause != null) {
             for (Class<? extends Exception> causeClass : causeExceptionClasses) {
@@ -72,8 +68,7 @@ public class ExceptionUtil
      * @param request the request
      * @return throwable
      */
-    public static Throwable getThrowable(HttpServletRequest request)
-    {
+    public static Throwable getThrowable(HttpServletRequest request) {
         Throwable ex = null;
         if (request.getAttribute("exception") != null) {
             ex = (Throwable) request.getAttribute("exception");
@@ -90,8 +85,7 @@ public class ExceptionUtil
      * @param logger         the logger
      * @param friendlyErrMsg the friendly err msg
      */
-    public static void throwAndLoggingException(Throwable e, Logger logger, String friendlyErrMsg)
-    {
+    public static void throwAndLoggingException(Throwable e, Logger logger, String friendlyErrMsg) {
         e.printStackTrace();
         logger.info(getStackTraceAsString(e));
         throw new BusinessException(e, friendlyErrMsg);

@@ -173,6 +173,7 @@ public class StringUtil {
 
 
     static final Pattern p = Pattern.compile("\\s*|\t|\r|\n");
+
     /**
      * 去除字符串中的空格、回车、换行符、制表符等
      *

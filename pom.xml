@@ -53,7 +53,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
-            <version>1.7.30</version>
+            <version>${slf4j.version}</version>
         </dependency>
 
         <!--slf4j-->
@@ -264,6 +264,12 @@
                             <!-- tag for all places -->
                             <placement>a</placement>
                             <head>日期</head>
+                        </tag>
+                        <tag>
+                            <name>update</name>
+                            <!-- tag for all places -->
+                            <placement>a</placement>
+                            <head>更新日期</head>
                         </tag>
                     </tags>
                 </configuration>

@@ -53,7 +53,7 @@ public abstract class AbstractRunCommand implements RunCommand {
         Map<String, String> files = new LinkedHashMap<>(fileParams.size());
         RunUtils.addFileParams(cmd, files, fileParams, null);
         cmd.setSubstitutionMap(files);
-        ExecResult result = null;
+        ExecResult result = new ExecResult();
         try {
             cmd = handleEqualSign(cmd);
             if (envKeyValues != null && envKeyValues.size() > 0) {
@@ -103,7 +103,7 @@ public abstract class AbstractRunCommand implements RunCommand {
         RunUtils.addFileParams(cmd, files, inputFiles, null);
         RunUtils.addFileParams(cmd, files, outputFiles, outputDir);
         cmd.setSubstitutionMap(files);
-        ExecResult result = null;
+        ExecResult result = new ExecResult();
         try {
             cmd = handleEqualSign(cmd);
             if (envKeyValues != null && envKeyValues.size() > 0) {

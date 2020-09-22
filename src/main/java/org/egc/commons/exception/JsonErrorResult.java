@@ -35,49 +35,41 @@ public class JsonErrorResult implements Serializable {
     private HttpStatus status;
     private String cause;
 
-    public JsonErrorResult(String cause, String msg, HttpStatus status)
-    {
+    public JsonErrorResult(String cause, String msg, HttpStatus status) {
         this.cause = cause;
         this.status = status;
         this.msg = msg;
     }
 
-    public JsonErrorResult(String msg, HttpStatus status)
-    {
+    public JsonErrorResult(String msg, HttpStatus status) {
         this.msg = msg;
         this.status = status;
     }
 
-    public JsonErrorResult(JSONArray errors, HttpStatus status)
-    {
+    public JsonErrorResult(JSONArray errors, HttpStatus status) {
         this.msg = errors;
         this.status = status;
     }
 
-    public Object getMsg()
-    {
+    public Object getMsg() {
         return msg;
     }
 
-    public void setMsg(String msg)
-    {
+    public void setMsg(String msg) {
         this.msg = msg;
     }
 
 
-    public String getCause()
-    {
+    public String getCause() {
         return cause;
     }
 
-    public void setCause(String cause)
-    {
+    public void setCause(String cause) {
         this.cause = cause;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "JsonErrorResult{" +
                 "msg='" + msg + '\'' +
                 ", status=" + status +

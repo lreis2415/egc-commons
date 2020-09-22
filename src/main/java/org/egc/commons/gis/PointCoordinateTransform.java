@@ -1,4 +1,5 @@
 package org.egc.commons.gis;
+
 import org.gdal.osr.CoordinateTransformation;
 import org.gdal.osr.SpatialReference;
 
@@ -8,7 +9,7 @@ import org.gdal.osr.SpatialReference;
 @Deprecated
 public class PointCoordinateTransform {
 
-    public double[] coordinateTransform(int sourceEPSG, int destinationEPSG, double x, double y){
+    public double[] coordinateTransform(int sourceEPSG, int destinationEPSG, double x, double y) {
         SpatialReference source = new SpatialReference();
         source.ImportFromEPSG(sourceEPSG);
         SpatialReference destination = new SpatialReference();

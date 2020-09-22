@@ -13,10 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.servlet.http.HttpServletResponse;
@@ -40,8 +37,7 @@ import java.util.List;
  * @date 2018 /9/17 8:20
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
-@ControllerAdvice
-@ResponseBody
+@RestControllerAdvice
 public class ValidationExceptionHandler {
 
     /**
@@ -81,7 +77,7 @@ public class ValidationExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public JsonErrorResult argumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
 
-        logger.error("[ Argument Type Mismatch ] {}", e);
+        logger.error(" Argument Type Mismatch", e);
         return new JsonErrorResult("[ Argument Type Mismatch ]" + e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
@@ -94,7 +90,7 @@ public class ValidationExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public JsonErrorResult messageNotReadableException(HttpMessageNotReadableException e) {
-        logger.error("JSON parse error: {}", e);
+        logger.error("JSON parse error", e);
         return new JsonErrorResult("[ JSON Parse Error ] " + e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 

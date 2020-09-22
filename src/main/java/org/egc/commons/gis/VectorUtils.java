@@ -3,14 +3,12 @@ package org.egc.commons.gis;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.egc.commons.exception.BusinessException;
 import org.gdal.gdal.Dataset;
 import org.gdal.gdal.VectorTranslateOptions;
 import org.gdal.gdal.gdal;
 import org.gdal.gdalconst.gdalconst;
-import org.gdal.ogr.DataSource;
-import org.gdal.ogr.Driver;
-import org.gdal.ogr.Layer;
-import org.gdal.ogr.ogr;
+import org.gdal.ogr.*;
 import org.gdal.osr.SpatialReference;
 
 import java.io.File;
@@ -37,6 +35,11 @@ public class VectorUtils {
      * @return Metadata
      */
     public static VectorMetadata getShapefileMetadata(String shapefile) {
+        if (StringUtils.isBlank(shapefile)) {
+            throw new BusinessException("No shapefile to read!", false);
+        } else if (!new File(shapefile).exists()) {
+            throw new BusinessException("Shapefile [ " + shapefile + " ] not found!", false);
+        }
         ogr.RegisterAll();
         DataSource ds = ogr.Open(shapefile, false);
         Driver driver = ds.GetDriver();
@@ -50,7 +53,14 @@ public class VectorUtils {
         metadata.setGeomType(layer.GetGeomType());
         metadata.setFeatureCount(layer.GetFeatureCount());
         metadata.setGeometry(layer.GetNextFeature().GetGeometryRef().GetGeometryName());
-
+        //feature id 通常包含字母 “ID"
+        FeatureDefn layerDefn = layer.GetLayerDefn();
+        for (int i = 0; i < layerDefn.GetFieldCount(); i++) {
+            FieldDefn fieldDefn = layerDefn.GetFieldDefn(i);
+            if (fieldDefn.GetName().toUpperCase().endsWith("ID")) {
+                metadata.setFeatureIdField(fieldDefn.GetName());
+            }
+        }
         SpatialReference sr = layer.GetSpatialRef();
         // 若没有投影则设置为 wgs 84
         if (sr == null) {
@@ -133,8 +143,8 @@ public class VectorUtils {
     /**
      * Reproject to wgs 84.
      *
-     * @param srcFile      the src file
-     * @param dstFile      the dst file
+     * @param srcFile the src file
+     * @param dstFile the dst file
      */
     public static void reprojectToWgs84(String srcFile, String dstFile) {
         SpatialReference srs = new SpatialReference();
@@ -148,9 +158,9 @@ public class VectorUtils {
      * https://pcjericks.github.io/py-gdalogr-cookbook/projection.html
      * </pre>
      *
-     * @param srcFile      the src file
-     * @param dstFile      the dst file
-     * @param dstSRS       the target srs
+     * @param srcFile the src file
+     * @param dstFile the dst file
+     * @param dstSRS  the target srs
      */
     public static void reproject(String srcFile, String dstFile, SpatialReference dstSRS) {
         if (gdal.GetDriverCount() == 0) {

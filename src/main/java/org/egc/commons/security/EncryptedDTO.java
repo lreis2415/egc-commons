@@ -6,10 +6,8 @@ package org.egc.commons.security;
  * @author houzhiwei
  * @date 2016/12/24 15:35
  */
-public class EncryptedDTO
-{
-    public EncryptedDTO(String salt, String encrypted)
-    {
+public class EncryptedDTO {
+    public EncryptedDTO(String salt, String encrypted) {
         this.salt = salt;
         this.encrypted = encrypted;
     }
@@ -18,8 +16,7 @@ public class EncryptedDTO
 
     private String key;
 
-    public String getEncrypted()
-    {
+    public String getEncrypted() {
         return encrypted;
     }
 
@@ -30,8 +27,7 @@ public class EncryptedDTO
      *
      * @return the salt/key(in AES).
      */
-    public String getSalt()
-    {
+    public String getSalt() {
         return salt;
     }
 }

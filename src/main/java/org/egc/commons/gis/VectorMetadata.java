@@ -20,6 +20,10 @@ public class VectorMetadata implements Serializable {
     private int geomType;
     private String geometry;
     private String shapeEncoding;
+    /**
+     * required in WFS
+     */
+    private String featureIdField;
     private long featureCount;
     private int layerCount;
     /**

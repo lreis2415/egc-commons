@@ -2,6 +2,7 @@ package org.egc.commons.exception;
 
 import com.alibaba.fastjson.support.spring.FastJsonJsonView;
 import com.google.common.collect.Maps;
+import org.apache.shiro.authc.AuthenticationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
@@ -20,7 +21,9 @@ import java.util.Map;
  * 全局异常处理，返回json数据
  * 不需要捕获异常，抛出即可
  * 需要在spring中配置bean
- *  &lt;bean id="exceptionHandler" class="org.egc.commons.exception.JsonHandlerExceptionResolver"/&gt;
+ * {@code
+ *  <bean id="exceptionHandler" class="org.egc.commons.exception.JsonHandlerExceptionResolver"/>
+ * }
  * 参考 http://blog.csdn.net/chwshuang/article/details/48089203
  * </pre>
  *
@@ -33,8 +36,7 @@ public class JsonHandlerExceptionResolver implements HandlerExceptionResolver {
     private static final Logger logger = LoggerFactory.getLogger(JsonHandlerExceptionResolver.class);
 
     @Override
-    public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
-    {
+    public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         ModelAndView mv = new ModelAndView();
 //        使用jsonview，直接返回Json数据。也可以返回普通的modelandview，使用jsp页面视图
         FastJsonJsonView jsonView = new FastJsonJsonView();
@@ -47,9 +49,6 @@ public class JsonHandlerExceptionResolver implements HandlerExceptionResolver {
             HttpStatus status = ((BusinessException) ex).getHttpStatus();
             if (status != null) {
                 mv.setStatus(status);
-            }
-            if (((BusinessException) ex).isPrint()) {
-                logger.error("Exception Log: ", ex);
             }
         }
         return mv;

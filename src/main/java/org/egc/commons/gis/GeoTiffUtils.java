@@ -2,11 +2,6 @@ package org.egc.commons.gis;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.math.Quantiles;
 import com.google.common.primitives.Floats;
 import it.geosolutions.jaiext.range.NoDataContainer;
 import lombok.extern.slf4j.Slf4j;
@@ -208,15 +203,19 @@ public class GeoTiffUtils {
         metadata.setCrsProj4(sr.ExportToProj4());
         metadata.setCrsWkt(sr.ExportToWkt());
         String authorityCode = sr.GetAuthorityCode(null);
+        // 存在一种情况，authorityCode = null，
+        // epsg 存在，但是 epsg 是 GEOGCS 的编码，而不是 PROJCS对应的编码
         String epsg = sr.GetAttrValue("AUTHORITY", 1);
         if (StringUtils.isNotBlank(epsg)) {
             metadata.setEpsg(Integer.parseInt(epsg));
-        }else {
-            log.error("Cannot get valid EPSG code from [ {} ]!",tif);
+        } else {
+            log.error("Cannot get valid EPSG code from [ {} ]!", tif);
         }
         if (StringUtils.isNotBlank(authorityCode)) {
             Integer srid = Integer.parseInt(authorityCode);
             metadata.setSrid(srid);
+        } else {
+            log.warn("Authority Code of {} is null!", tif);
         }
         String projcs = sr.GetAttrValue("PROJCS");
         String geogcs = sr.GetAttrValue("GEOGCS");

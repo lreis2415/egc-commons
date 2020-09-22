@@ -16,12 +16,10 @@ import java.util.Properties;
  * @author houzhiwei
  * @date 2016/11/23
  */
-public class PropertiesUtil
-{
+public class PropertiesUtil {
     private static final Logger logger = LoggerFactory.getLogger(PropertiesUtil.class);
 
-    public static String getProperty(Properties properties, String key)
-    {
+    public static String getProperty(Properties properties, String key) {
         String property = properties.getProperty(key);
         return property;
     }
@@ -35,8 +33,7 @@ public class PropertiesUtil
      * @throws IOException
      * @throws FileNotFoundException
      */
-    public static String getPropertyFromConfig(String key, String filename)
-    {
+    public static String getPropertyFromConfig(String key, String filename) {
         String msg = "";
         String path = PathUtil.getClassPath() + "/config/";
         String fullFilename = FilenameUtils.normalize(path + filename + ".properties");
@@ -68,8 +65,7 @@ public class PropertiesUtil
      * @return Properties
      * @throws IOException
      */
-    public static Properties readPropertiesFromConfig(String filename)
-    {
+    public static Properties readPropertiesFromConfig(String filename) {
         Preconditions.checkNotNull(filename, "Error, filename can not be null!");
         Properties properties = new Properties();
         String path = "/config/";
@@ -86,8 +82,7 @@ public class PropertiesUtil
      * @return Properties 实例
      * @throws IOException
      */
-    public static Properties readProperties(String filepath)
-    {
+    public static Properties readProperties(String filepath) {
         Preconditions.checkNotNull(filepath, "Error, filename can not be null!");
         Properties properties = new Properties();
         try {

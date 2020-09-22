@@ -15,8 +15,7 @@ import java.security.Key;
  * @author houzhiwei
  * @date 2017/1/11 15:00
  */
-public abstract class BaseAesEncryption
-{
+public abstract class BaseAesEncryption {
     /**
      * AES encrypt password
      *
@@ -25,8 +24,7 @@ public abstract class BaseAesEncryption
      * @param keySize keySize 128/192/256
      * @return the encrypted Base64 encoded password string
      */
-    protected static String aesEncrypt(String pwd, Key key, int keySize)
-    {
+    protected static String aesEncrypt(String pwd, Key key, int keySize) {
         ByteSource pwdBs = ByteSource.Util.bytes(aesEncrypt2Bytes(pwd, key, keySize));
         return Base64.encodeToString(pwdBs.getBytes());
     }
@@ -39,8 +37,7 @@ public abstract class BaseAesEncryption
      * @param keySize the key size 128/192/256
      * @return the encrypted Hex encoded password string
      */
-    protected static String aesEncrypt2Hex(String pwd, Key key, int keySize)
-    {
+    protected static String aesEncrypt2Hex(String pwd, Key key, int keySize) {
         ByteSource pwdBs = ByteSource.Util.bytes(aesEncrypt2Bytes(pwd, key, keySize));
         return Hex.encodeToString(pwdBs.getBytes());
     }
@@ -53,16 +50,14 @@ public abstract class BaseAesEncryption
      * @param keySize keySize 128/192/256
      * @return the encrypted password in bytes
      */
-    private static byte[] aesEncrypt2Bytes(String pwd, Key key, int keySize)
-    {
+    private static byte[] aesEncrypt2Bytes(String pwd, Key key, int keySize) {
         AesCipherService aesService = new AesCipherService();
         aesService.setKeySize(keySize);
         //ByteSource.getBytes()
         return aesService.encrypt(pwd.getBytes(), key.getEncoded()).getBytes();
     }
 
-    private static byte[] aesEncrypt2Bytes(String pwd, Key key, int keySize, PaddingScheme scheme, boolean generateIV, OperationMode mode)
-    {
+    private static byte[] aesEncrypt2Bytes(String pwd, Key key, int keySize, PaddingScheme scheme, boolean generateIV, OperationMode mode) {
         AesCipherService aesService = new AesCipherService();
         aesService.setKeySize(keySize);
         aesService.setPaddingScheme(scheme);

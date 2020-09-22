@@ -21,19 +21,20 @@ public class GeoInfoExtraction {
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     RasterInfo rasterInfo = new RasterInfo();
+
     //读取栅格的空间坐标系编码srid、空间分辨率、no_data、包络面范围（上下左右）
-    public RasterInfo readMetaData(String rasterPath){
+    public RasterInfo readMetaData(String rasterPath) {
 
         gdal.AllRegister();
         Dataset dataset = gdal.Open(rasterPath, gdalconstConstants.GA_ReadOnly);
-        if (dataset == null){
+        if (dataset == null) {
             throw new RasterReadException("read raster error");
         }
         Driver driver = dataset.GetDriver();
         Integer iWidth = dataset.GetRasterXSize();
         Integer iHeight = dataset.GetRasterYSize();
 
-        String  spatialReference = dataset.GetProjectionRef();
+        String spatialReference = dataset.GetProjectionRef();
         SpatialReference spatialReference1 = new SpatialReference(spatialReference);
         System.out.println(spatialReference1.GetAuthorityCode(null));
         Integer srid = Integer.parseInt(spatialReference1.GetAuthorityCode(null));
@@ -42,7 +43,7 @@ public class GeoInfoExtraction {
         Double[] noDataval = new Double[2];
         band.GetNoDataValue(noDataval);
 
-        double dGeotransform[]  = dataset.GetGeoTransform();
+        double dGeotransform[] = dataset.GetGeoTransform();
         double left = dGeotransform[0];
         double top = dGeotransform[3];
         double right = left + dGeotransform[1] * iWidth + dGeotransform[2] * iHeight;
@@ -52,7 +53,7 @@ public class GeoInfoExtraction {
         rasterInfo.setTop(top);
         rasterInfo.setLeft(left);
         rasterInfo.setRight(right);
-        if (noDataval[0] != null){
+        if (noDataval[0] != null) {
             rasterInfo.setNoData(noDataval[0]);
         }
         rasterInfo.setSrid(srid);

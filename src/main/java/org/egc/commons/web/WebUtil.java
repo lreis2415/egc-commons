@@ -25,8 +25,7 @@ public class WebUtil {
      * @param request
      * @return
      */
-    public static boolean isAjax(HttpServletRequest request)
-    {
+    public static boolean isAjax(HttpServletRequest request) {
         boolean flag = false;
         String type = request.getHeader("X-Requested-With");
         if (type != null && type.equalsIgnoreCase("XMLHttpRequest"))
@@ -34,8 +33,7 @@ public class WebUtil {
         return flag;
     }
 
-    public static void writeJson(HttpServletResponse response, Object jsonObj)
-    {
+    public static void writeJson(HttpServletResponse response, Object jsonObj) {
         response.setContentType("application/json;charset=utf-8");
         try {
             PrintWriter writer = response.getWriter();
@@ -69,8 +67,7 @@ public class WebUtil {
      * @param request
      * @return ip
      */
-    public static String getClientIP(HttpServletRequest request) throws UnknownHostException
-    {
+    public static String getClientIP(HttpServletRequest request) throws UnknownHostException {
         for (String header : HEADERS_TO_TRY) {
             String ip = request.getHeader(header);
             //本地localhost访问
@@ -99,8 +96,7 @@ public class WebUtil {
      * @return InetAddress
      * @throws BusinessException(UnknownHostException)
      */
-    public static InetAddress getClientIPAddress(HttpServletRequest request)
-    {
+    public static InetAddress getClientIPAddress(HttpServletRequest request) {
         try {
             InetAddress address = InetAddress.getByName(getClientIP(request));
             // for 这部分没有用？
@@ -126,8 +122,7 @@ public class WebUtil {
         }
     }
 
-    public static String getIPFromInetAddress(InetAddress inetAddress)
-    {
+    public static String getIPFromInetAddress(InetAddress inetAddress) {
         return inetAddress.getHostAddress();
     }
 }

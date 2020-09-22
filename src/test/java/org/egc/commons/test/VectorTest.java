@@ -3,6 +3,7 @@ package org.egc.commons.test;
 import com.alibaba.fastjson.JSON;
 import org.egc.commons.command.ExecResult;
 import org.egc.commons.gis.*;
+import org.gdal.osr.SpatialReference;
 import org.junit.Test;
 
 import java.io.File;
@@ -13,16 +14,15 @@ import static org.junit.Assert.assertEquals;
 public class VectorTest {
 
     // no srid
-    String shp = "H:\\gisdemo\\in\\in\\UserStreams.shp";
+    String shp = "F:\\data\\SWAT global\\World_Data_Grids\\country.shp";
     //3857
     String shp2 = "H:/gisdemo/in/simplified-land-polygons-complete-3857/simplified_land_polygons.shp";
     String shp31 = "D:\\data\\WebSites\\egcDataFiles\\1\\49\\basin.shp";
     String shp3 = "D:\\data\\WebSites\\egcDataFiles\\1\\49\\basin_4326.shp";
-    String shp4 = "H:\\gisdemo\\out\\project\\basin_4326.shp";
 
     @Test
     public void test() {
-        VectorMetadata metadata = VectorUtils.getShapefileMetadata(shp3);
+        VectorMetadata metadata = VectorUtils.getShapefileMetadata(shp);
         System.out.println(JSON.toJSONString(metadata, true));
     }
 
@@ -44,6 +44,12 @@ public class VectorTest {
         ExecResult result = File2PostGIS.shp2PostGIS(3857, shp2, info);
         System.out.println(result.getOut());
         System.out.println(result.getError());
+    }
+
+    @Test
+    public void point() {
+        PointCoordinateTransform transform = new PointCoordinateTransform();
+        transform.coordinateTransform(0, 4326, 119.15, 30.97);
     }
 
     @Test

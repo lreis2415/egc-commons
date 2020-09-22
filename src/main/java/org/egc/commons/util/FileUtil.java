@@ -114,6 +114,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
             return true;
         } catch (Exception e) {
             log.debug("复制文件失败：" + e.getMessage());
+            log.debug("copy file failed " + e.getMessage());
             return false;
         } finally {
             // 关闭输入输出流，首先关闭输出流，然后再关闭输入流
@@ -166,6 +167,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
         // 判断源目录是否是目录
         else if (!srcDir.isDirectory()) {
             log.debug("复制目录失败，" + srcDirName + " 不是一个目录!");
+            log.debug("" + srcDirName + " is not a directory");
             return false;
         }
         // 如果目标文件夹名不以文件分隔符结尾，自动添加文件分隔符
@@ -240,6 +242,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
         File file = new File(fileName);
         if (!file.exists()) {
             log.debug(fileName + " 文件不存在!");
+            log.debug(fileName + " not exists!");
             return true;
         } else {
             if (file.isFile()) {
@@ -268,6 +271,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
             }
         } else {
             log.debug(fileName + " 文件不存在!");
+            log.debug(fileName + " not exists!");
             return true;
         }
     }
@@ -336,10 +340,12 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
         File file = new File(descFileName);
         if (file.exists()) {
             log.debug("文件 " + descFileName + " 已存在!");
+            log.debug("File " + descFileName + " already exists! ");
             return false;
         }
         if (descFileName.endsWith(File.separator)) {
             log.debug(descFileName + " 为目录，不能创建目录!");
+            log.debug(descFileName + " is directory, cannot create directory!");
             return false;
         }
         if (!file.getParentFile().exists()) {
@@ -362,6 +368,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
         } catch (Exception e) {
             e.printStackTrace();
             log.debug(descFileName + " 文件创建失败!");
+            log.debug( "cannot create file "+descFileName );
             return false;
         }
 
@@ -409,6 +416,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
             log.debug("文件 " + fileName + " 写入成功!");
         } catch (IOException e) {
             log.debug("文件 " + fileName + " 写入失败! " + e.getMessage());
+            log.debug("Write file " + fileName + " failed! " + e.getMessage());
         }
     }
 
@@ -428,6 +436,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
             log.debug("文件 " + fileName + " 写入成功!");
         } catch (IOException e) {
             log.debug("文件 " + fileName + " 写入失败! " + e.getMessage());
+            log.debug("Write file " + fileName + " failed! " + e.getMessage());
         }
     }
 
@@ -479,6 +488,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
         File fileDir = new File(srcDirName);
         if (!fileDir.exists() || !fileDir.isDirectory()) {
             log.debug("文件压缩失败，目录 " + srcDirName + " 不存在!");
+            log.debug("directory " + srcDirName + " not exists!");
             return;
         }
         String dirPath = fileDir.getAbsolutePath();
@@ -501,6 +511,7 @@ public class FileUtil extends org.apache.commons.io.FileUtils {
             log.debug(descFileName + " 文件压缩成功!");
         } catch (Exception e) {
             log.debug("文件压缩失败：" + e.getMessage());
+            log.debug("zip file failed " + e.getMessage());
             e.printStackTrace();
         }
 

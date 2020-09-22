@@ -14,8 +14,7 @@ import java.util.Date;
  * @author houzhiwei & lp
  * @date 2016/12/27 22:34
  */
-public class TimeUtil
-{
+public class TimeUtil {
     /**
      * Time-Distance in minutes.
      *
@@ -23,8 +22,7 @@ public class TimeUtil
      * @param end   the end
      * @return the minutes (int)
      */
-    public static int distanceInMinutes(Date start, Date end)
-    {
+    public static int distanceInMinutes(Date start, Date end) {
         if (start.after(end)) {
             Date temp = start;
             start = end;
@@ -35,8 +33,7 @@ public class TimeUtil
         return Minutes.minutesIn(interval).getMinutes();
     }
 
-    public static int distanceInDays(Date start, Date end)
-    {
+    public static int distanceInDays(Date start, Date end) {
         if (start.after(end)) {
             Date temp = start;
             start = end;
@@ -54,8 +51,7 @@ public class TimeUtil
      * @param end
      * @return
      */
-    private static Interval parserToInterval(Date start, Date end)
-    {
+    private static Interval parserToInterval(Date start, Date end) {
         return new Interval(start.getTime(), end.getTime());
     }
 

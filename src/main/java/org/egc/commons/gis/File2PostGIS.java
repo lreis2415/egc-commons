@@ -29,7 +29,8 @@ import java.util.Map;
 @Slf4j
 public class File2PostGIS {
 
-    private File2PostGIS() { }
+    private File2PostGIS() {
+    }
 
     private static final String PGPASSWORD = "PGPASSWORD";
     private static final String PSQL = "psql";
@@ -108,6 +109,7 @@ public class File2PostGIS {
     /**
      * TODO not fully implemented
      * http://www.bostongis.com/pgsql2shp_shp2pgsql_quickguide.bqg
+     *
      * @param srid
      * @param filePath
      * @param pgInfo
@@ -141,7 +143,7 @@ public class File2PostGIS {
         // shape file or files path (eg. *.shp)
         commandLine.addArgument("${file}");
 
-        if(!pgInfo.getShapeTableEncoding().equalsIgnoreCase("UTF-8")){
+        if (!pgInfo.getShapeTableEncoding().equalsIgnoreCase("UTF-8")) {
             commandLine.addArgument("-W");
             commandLine.addArgument(pgInfo.getShapeTableEncoding());
         }
@@ -153,7 +155,7 @@ public class File2PostGIS {
         commandLine.addArgument("-U ${username}", false);
         commandLine.addArgument("-d ${db}", false);
 
-        Map<String,Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         map.put("srid", srid);
         map.put("file", file);
         map.put("schema", pgInfo.getSchema());

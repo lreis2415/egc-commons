@@ -10,6 +10,7 @@ import org.apache.shiro.realm.Realm;
  * 参考 https://stackoverflow.com/questions/13446436/apache-shiro-exception-handling-with-multiple-realms
  * [must] one Realm per Token type.
  * 多个realm时，shiro 只会抛出一般化的 AuthenticationException，不会区分 UnknownAccountException 之类异常
+ *
  * @author houzhiwei
  * @date 2018/5/30 7:56
  */

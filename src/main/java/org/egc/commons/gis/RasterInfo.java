@@ -8,8 +8,8 @@ package org.egc.commons.gis;
 @Deprecated
 public class RasterInfo {
     private Integer srid;
-    private  double left;
-    private  double right;
+    private double left;
+    private double right;
     private double top;
     private double down;
     private double noData;

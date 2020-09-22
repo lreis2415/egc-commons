@@ -15,6 +15,7 @@ import java.util.Map;
 /**
  * <pre>
  * 使用 apache.commons.exec 执行命令行程序
+ * 默认超时时间为 60s | default timeout is 60s
  * </pre>
  * TODO 测试
  * 参考 http://wuhongyu.iteye.com/blog/461477
@@ -38,9 +39,8 @@ public class CommonsExec {
      * @param cmd use {@link CommandLine#addArgument(String)} or {@link CommandLine#parse(String)} to parse command string to CommandLine <p/>
      * @return 0 : success; 1: failed
      * @throws IOException the io exception
-     * @throws InterruptedException the interrupted exception
      */
-    public static int exec(CommandLine cmd) throws IOException, InterruptedException {
+    public static int exec(CommandLine cmd) throws IOException {
         return exec(cmd, null);
     }
 
@@ -50,9 +50,8 @@ public class CommonsExec {
      * @param commandLine the command line
      * @return 0 : success; 1: failed
      * @throws IOException          the io exception
-     * @throws InterruptedException the interrupted exception
      */
-    public static int exec(String commandLine) throws IOException, InterruptedException {
+    public static int exec(String commandLine) throws IOException {
         CommandLine cmd = CommandLine.parse(commandLine);
         return exec(cmd, null);
     }
@@ -67,9 +66,8 @@ public class CommonsExec {
      * @param exitValue the exit value to be considered as successful execution, can be null
      * @return 0 : success; 1: failed
      * @throws IOException          the io exception
-     * @throws InterruptedException the interrupted exception
      */
-    public static int exec(CommandLine cmd, Integer exitValue) throws IOException, InterruptedException {
+    public static int exec(CommandLine cmd, Integer exitValue) throws IOException {
         Executor executor = new DefaultExecutor();
         // 设置超时时间，毫秒
         ExecuteWatchdog watchdog = new ExecuteWatchdog(60000);
@@ -77,7 +75,7 @@ public class CommonsExec {
         if (exitValue != null) {
             executor.setExitValue(exitValue);
         }
-        log.debug("execute cmd: {}",cmd);
+        log.debug("execute cmd: {}", cmd);
         int exit = executor.execute(cmd);
         return exit;
     }
@@ -90,7 +88,7 @@ public class CommonsExec {
      * @throws IOException the io exception
      */
     public static ExecResult execWithOutput(CommandLine cmd) throws IOException {
-        return execWithOutput(cmd, null, null, null, null);
+        return execWithOutput(cmd, null, null, null, 0L);
     }
 
     /**
@@ -102,11 +100,11 @@ public class CommonsExec {
      * @throws IOException the io exception
      */
     public static ExecResult execWithOutput(CommandLine cmd, String workspace) throws IOException {
-        return execWithOutput(cmd, workspace, null, null, null);
+        return execWithOutput(cmd, workspace, null, null, 0L);
     }
 
     public static ExecResult execWithOutput(CommandLine cmd, Integer exitValue) throws IOException {
-        return execWithOutput(cmd, null, null, exitValue, null);
+        return execWithOutput(cmd, null, null, exitValue, 0L);
     }
 
     /**
@@ -118,36 +116,43 @@ public class CommonsExec {
      * @throws IOException the io exception
      */
     public static ExecResult execWithOutput(CommandLine cmd, List<String> envKeyValues) throws IOException {
-        return execWithOutput(cmd, null, envKeyValues, null, null);
+        return execWithOutput(cmd, null, envKeyValues, null, 0L);
     }
 
     /**
-     * Exec with output string.
+     * Exec with output string. <br/>
+     * 执行命令行并捕获输出信息<br/>
+     * 注意：有些程序在执行成功之后，部分信息会出现在 error 中，因此不能根据 error 是否有内容来判断是否执行失败
      *
      * @param cmd          命令行. 如果是字符串，则使用 {@link CommandLine#parse(String)} 转换
      * @param workspace    工作目录(数据输出目录)， blank 时使用当前目录（<code>new File(".")</code>）
+     * @param envKeyValues 系统环境变量 key-value对。<br/>
+     *                     the environmental variable list in format: <b>key=value<b/><br/>
      * @param exitValue    运行退出值，通常为 0, 可为 null
-     * @param timeout      超时时间，默认 60000L ms
-     * @param envKeyValues 系统环境变量 key-value对。the environmental variable list in format: <b>key=value</b>
-     * @return {@link ExecResult}<br/>
-     * 注意：有些程序在执行成功之后，部分信息会出现在 error 中，因此不能根据 error 是否有内容来判断是否执行失败
+     * @param timeout     超时时间。<b>若为null，则不设置超时时间；若为小于等于0，则为默认 60000L ms<b/> <br/>
+     *                    null means no timeout, timeout <=0 means use the default timeout(60000 ms).
+     * @return {@link ExecResult}
      * @throws IOException the io exception
      */
     public static ExecResult execWithOutput(CommandLine cmd, String workspace, List<String> envKeyValues,
-                                            Integer exitValue, Long timeout) throws IOException
-    {
+                                            Integer exitValue, Long timeout) throws IOException {
         Executor executor = new DefaultExecutor();
-        if (timeout == null) {
-            timeout = 60000L;
+        if (timeout != null) {
+            if (timeout <= 0) {
+                timeout = 60000L;
+            }
+            ExecuteWatchdog watchdog = new ExecuteWatchdog(timeout);
+            executor.setWatchdog(watchdog);
         }
-        ExecuteWatchdog watchdog = new ExecuteWatchdog(timeout);
-        executor.setWatchdog(watchdog);
+
         if (StringUtils.isNotBlank(workspace)) {
             File dir = new File(FilenameUtils.normalize(workspace));
-            if (!dir.exists()) {dir.mkdirs();}
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
             executor.setWorkingDirectory(dir);
         } else {
-            log.debug("Workspace not set or illegal [ " + workspace + " ]. Use current working directory.");
+            log.debug("Workspace not set or is illegal [ " + workspace + " ]. Use current working directory.");
         }
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();

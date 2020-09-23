@@ -7,10 +7,11 @@ import org.springframework.http.HttpStatus;
 import java.io.Serializable;
 
 /**
- * 业务异常处理类
+ * 业务异常处理类, 默认不在控制台输出堆栈跟踪信息！
  *
  * @author houzhiwei
  * @date 2016/12/8 14:43
+ * @update 2020/9/3 10:00
  * @link http ://blog.csdn.net/king87130/article/details/8011843
  */
 public class BusinessException extends RuntimeException implements Serializable {
@@ -23,23 +24,31 @@ public class BusinessException extends RuntimeException implements Serializable 
      * 是否打印异常信息
      * print exception or not
      */
+    @Deprecated
     private boolean print = false;
 
     private HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 
-    public BusinessException(String friendlyErrMsg)
-    {
-        super(createFriendlyErrMsg(friendlyErrMsg));
+    public BusinessException(String friendlyErrMsg) {
+        super(createFriendlyErrMsg(friendlyErrMsg), null, false, false);
+        logger.error(friendlyErrMsg);
     }
 
-    public BusinessException(String friendlyErrMsg, HttpStatus status)
-    {
-        super(createFriendlyErrMsg(friendlyErrMsg));
+    /**
+     * @param friendlyErrMsg  用户友好信息
+     * @param printStackTrace 是否在控制台打印详细异常信息
+     */
+    public BusinessException(String friendlyErrMsg, boolean printStackTrace) {
+        super(createFriendlyErrMsg(friendlyErrMsg), null, false, printStackTrace);
+        logger.error(friendlyErrMsg);
+    }
+
+    public BusinessException(String friendlyErrMsg, HttpStatus status) {
+        super(createFriendlyErrMsg(friendlyErrMsg), null, false, false);
         this.errorCode = status.value();
         this.httpStatus = status;
         logger.error(friendlyErrMsg);
     }
-
 
     /**
      * Instantiates a new Business exception.
@@ -48,43 +57,49 @@ public class BusinessException extends RuntimeException implements Serializable 
      * @param status         http status
      * @param print          print exception or not
      */
-    public BusinessException(String friendlyErrMsg, HttpStatus status, boolean print)
-    {
-        super(createFriendlyErrMsg(friendlyErrMsg));
+    public BusinessException(String friendlyErrMsg, HttpStatus status, boolean print) {
+        super(createFriendlyErrMsg(friendlyErrMsg), null, false, print);
         this.errorCode = status.value();
         this.httpStatus = status;
-        this.print = print;
         logger.error(friendlyErrMsg);
     }
 
-    public BusinessException(Throwable throwable)
-    {
-        super(throwable);
+    public BusinessException(Throwable throwable) {
+        super(null, throwable, false, false);
+        logger.error(throwable.getLocalizedMessage());
     }
 
-    public BusinessException(Throwable throwable, HttpStatus status)
-    {
-        super(throwable);
+    public BusinessException(Throwable throwable, boolean printStackTrace) {
+        super(null, throwable, false, printStackTrace);
+        logger.error(throwable.getLocalizedMessage());
+    }
+
+    public BusinessException(Throwable throwable, HttpStatus status) {
+        super(null, throwable, false, false);
         this.errorCode = status.value();
         this.httpStatus = status;
         logger.error(status.getReasonPhrase(), throwable);
     }
 
-    public BusinessException(Throwable throwable, String friendlyErrMsg)
-    {
-        super(friendlyErrMsg, throwable);
+    public BusinessException(Throwable throwable, String friendlyErrMsg) {
+        super(friendlyErrMsg, throwable, false, false);
+        logger.error(friendlyErrMsg);
     }
 
-    public BusinessException(Throwable throwable, String friendlyErrMsg, boolean print)
-    {
-        super(friendlyErrMsg, throwable);
-        this.print = print;
+    public BusinessException(Throwable throwable, String friendlyErrMsg, boolean printStackTrace) {
+        super(friendlyErrMsg, throwable, false, printStackTrace);
         logger.error(friendlyErrMsg, throwable);
     }
 
-    public BusinessException(Throwable throwable, String friendlyErrMsg, HttpStatus status)
-    {
-        super(friendlyErrMsg, throwable);
+    public BusinessException(Throwable throwable, String friendlyErrMsg, HttpStatus status) {
+        super(friendlyErrMsg, throwable, false, false);
+        this.errorCode = status.value();
+        this.httpStatus = status;
+        logger.error(friendlyErrMsg, throwable);
+    }
+
+    public BusinessException(Throwable throwable, String friendlyErrMsg, HttpStatus status, boolean printStackTrace) {
+        super(friendlyErrMsg, throwable, false, printStackTrace);
         this.errorCode = status.value();
         this.httpStatus = status;
         logger.error(friendlyErrMsg, throwable);
@@ -93,11 +108,10 @@ public class BusinessException extends RuntimeException implements Serializable 
     /**
      * 友好的错误提示
      *
-     * @param msgBody
-     * @return
+     * @param msgBody message
+     * @return friendly message
      */
-    private static String createFriendlyErrMsg(String msgBody)
-    {
+    private static String createFriendlyErrMsg(String msgBody) {
 //        String prefixStr = "Sorry, ";
 //        String suffixStr = ". <br/>Try again later or report the error to us!";
         StringBuffer friendlyErrMsg = new StringBuffer();
@@ -116,8 +130,7 @@ public class BusinessException extends RuntimeException implements Serializable 
      *
      * @return Value for property 'errorCode'.
      */
-    public int getErrorCode()
-    {
+    public int getErrorCode() {
         return errorCode;
     }
 
@@ -126,8 +139,7 @@ public class BusinessException extends RuntimeException implements Serializable 
      *
      * @param errorCode Value to set for property 'errorCode'.
      */
-    public void setErrorCode(int errorCode)
-    {
+    public void setErrorCode(int errorCode) {
         this.errorCode = errorCode;
     }
 
@@ -136,8 +148,7 @@ public class BusinessException extends RuntimeException implements Serializable 
      *
      * @return Value for property 'httpStatus'.
      */
-    public HttpStatus getHttpStatus()
-    {
+    public HttpStatus getHttpStatus() {
         return httpStatus;
     }
 
@@ -146,8 +157,7 @@ public class BusinessException extends RuntimeException implements Serializable 
      *
      * @param httpStatus Value to set for property 'httpStatus'.
      */
-    public void setHttpStatus(HttpStatus httpStatus)
-    {
+    public void setHttpStatus(HttpStatus httpStatus) {
         this.httpStatus = httpStatus;
     }
 

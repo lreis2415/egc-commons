@@ -4,16 +4,14 @@ package org.egc.commons.xml;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.*;
+import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.egc.commons.exception.BusinessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -21,6 +19,7 @@ import javax.xml.validation.Validator;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.net.URL;
 import java.util.*;
 
@@ -53,7 +52,7 @@ public class XmlParser {
      * @param clazz  java 映射类
      * @param object java 对象
      * @param path   生成的XML存放位置
-     * @throws JAXBException
+     * @throws JAXBException the jaxb exception
      */
     public static void java2xml(Class<?> clazz, Object object, String path) throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
@@ -80,6 +79,21 @@ public class XmlParser {
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         // 需对object 强制转换为相应的类
         return unmarshaller.unmarshal(new File(xmlPath));
+    }
+
+    /**
+     * Xml string 2 java object.
+     *
+     * @param clazz  the clazz
+     * @param xmlStr the xml str
+     * @return the object
+     * @throws Exception the exception
+     */
+    public static Object xmlStr2java(Class<?> clazz, String xmlStr) throws Exception {
+        JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        // 需对object 强制转换为相应的类
+        return unmarshaller.unmarshal(new StringReader(xmlStr));
     }
 
     public static Object xml2java(Class<?> clazz, InputStream is) throws Exception {

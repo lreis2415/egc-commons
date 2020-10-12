@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import com.google.common.primitives.Floats;
 import it.geosolutions.jaiext.range.NoDataContainer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.egc.commons.exception.BusinessException;
 import org.egc.commons.util.StringUtil;
@@ -53,7 +54,6 @@ public class GeoTiffUtils {
      *
      * @param tif the geotiff
      * @return the grid coverage 2 d
-     * @throws IOException the io exception
      */
     public static GridCoverage2D read(String tif) {
         String msg;
@@ -317,6 +317,15 @@ public class GeoTiffUtils {
         return sb.toString().substring(1);
     }
 
+    private static float area(float[] dataBuf, Double nodata, int wePixelResolution, int nsPixelResolution) {
+        int count = 0;
+        for (float d : dataBuf) {
+            if (d != nodata.floatValue()) {
+                count++;
+            }
+        }
+        return count * wePixelResolution * nsPixelResolution;
+    }
 
     /**
      * Reproject use epsg code.
@@ -340,6 +349,30 @@ public class GeoTiffUtils {
         reproject(srcFile, dstFile, dstProj4);
     }
 
+    public static String formatConvert(String srcFile, String dstFile, GDALDriversEnum format) throws IOException {
+        Dataset dataset = readUseGdal(srcFile);
+        String ext = format.getExtension();
+        String newName = outputName(srcFile, dstFile, ext);
+        log.info("Convert from {} to {}", srcFile, newName);
+        Driver driver = gdal.GetDriverByName(format.name());
+        if (driver == null) {
+            log.error("Output Format {} Not Supported", ext);
+            throw new IOException("Output Format " + ext + " Not Supported");
+        }
+        Vector<String> vector = new Vector<String>();
+        vector.add("-of");
+        vector.add(driver.getShortName());
+
+        //        vector.add("-outsize");
+        //        vector.add("128");
+        //        vector.add("128");
+
+        TranslateOptions options = new TranslateOptions(vector);
+        Dataset translate = gdal.Translate(newName, dataset, options);
+        dataset.delete();
+        gdal.GDALDestroyDriverManager();
+        return translate != null ? newName : null;
+    }
 
     /**
      * Reproject use gdal.Warp
@@ -349,8 +382,7 @@ public class GeoTiffUtils {
      * @param dstSrs  the target spatial reference
      */
     public static void reproject(String srcFile, String dstFile, String dstSrs) {
-        gdal.AllRegister();
-        Dataset ds = gdal.Open(srcFile);
+        Dataset ds = readUseGdal(srcFile);
         Vector<String> v = new Vector<>();
         v.add("-t_srs");
         v.add(dstSrs);
@@ -360,5 +392,28 @@ public class GeoTiffUtils {
         //关闭数据集
         ds.delete();
         gdal.GDALDestroyDriverManager();
+    }
+
+    private static Dataset readUseGdal(String file) {
+        gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES");
+        gdal.AllRegister();
+        // 默认 gdalconst.GA_ReadOnly
+        return gdal.Open(file);
+    }
+
+    private static String outputName(String srcFile, String dstFile, String ext) {
+        String newName;
+        String inPath = FilenameUtils.getFullPath(srcFile);
+        String outPath = FilenameUtils.getFullPath(dstFile);
+        if (StringUtils.isBlank(dstFile)) {
+            newName = inPath + File.separator + FilenameUtils.getBaseName(srcFile) + "." + ext;
+        } else {
+            if (StringUtils.isBlank(outPath)) {
+                newName = inPath + File.separator + FilenameUtils.getBaseName(dstFile) + "." + ext;
+            } else {
+                newName = outPath + File.separator + FilenameUtils.getBaseName(dstFile) + "." + ext;
+            }
+        }
+        return newName;
     }
 }

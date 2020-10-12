@@ -67,19 +67,17 @@ public class XmlParser {
      *
      * @param clazz   the java class
      * @param xmlPath the path
-     * @return the object
+     * @return the object  需强制转换为相应的类
      * @throws Exception the exception
      */
-    public static Object xml2java(Class<?> clazz, String xmlPath) throws Exception {
+    public static <T> T xml2java(Class<T> clazz, String xmlPath) throws Exception {
         xmlPath = FilenameUtils.normalize(xmlPath);
         if (StringUtils.isBlank(xmlPath) || !new File(xmlPath).exists()) {
             throw new FileNotFoundException();
         }
-        JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        // 需对object 强制转换为相应的类
-        return unmarshaller.unmarshal(new File(xmlPath));
+        return JAXB.unmarshal(new File(xmlPath), clazz);
     }
+
 
     /**
      * Xml string 2 java object.
@@ -89,11 +87,9 @@ public class XmlParser {
      * @return the object
      * @throws Exception the exception
      */
-    public static Object xmlStr2java(Class<?> clazz, String xmlStr) throws Exception {
-        JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+    public static <T> T xmlStr2java(Class<T> clazz, String xmlStr) throws Exception {
         // 需对object 强制转换为相应的类
-        return unmarshaller.unmarshal(new StringReader(xmlStr));
+        return JAXB.unmarshal(new StringReader(xmlStr), clazz);
     }
 
     public static Object xml2java(Class<?> clazz, InputStream is) throws Exception {
@@ -223,7 +219,7 @@ public class XmlParser {
         if (list.size() > 0) {
             for (Element element : list) {
                 attributes2Map(((Element) element).attributes(), map);
-                List mapList = new ArrayList();
+                List<Object> mapList = new ArrayList<>();
                 if (((Element) element).elements().size() > 0) {
                     Map<String, Object> m = el2Map((Element) element);
                     if (map.get(((Element) element).getName()) != null) {
@@ -234,7 +230,7 @@ public class XmlParser {
                             mapList.add(m);
                         }
                         if (obj.getClass().getName().equals("java.util.ArrayList")) {
-                            mapList = (List) obj;
+                            mapList = (List<Object>) obj;
                             mapList.add(m);
                         }
                         map.put(((Element) element).getName(), mapList);
@@ -245,12 +241,12 @@ public class XmlParser {
                     if (map.get(((Element) element).getName()) != null) {
                         Object obj = map.get(((Element) element).getName());
                         if (!obj.getClass().getName().equals("java.util.ArrayList")) {
-                            mapList = new ArrayList();
+                            mapList = new ArrayList<>();
                             mapList.add(obj);
                             mapList.add(((Element) element).getText());
                         }
                         if (obj.getClass().getName().equals("java.util.ArrayList")) {
-                            mapList = (List) obj;
+                            mapList = (List<Object>) obj;
                             mapList.add(((Element) element).getText());
                         }
                         map.put(((Element) element).getName(), mapList);

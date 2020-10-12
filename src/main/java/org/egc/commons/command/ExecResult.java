@@ -17,6 +17,8 @@ public class ExecResult {
     public ExecResult(String out) {
         this.out = out;
     }
+    public ExecResult() {
+    }
 
     private String out;
     /**

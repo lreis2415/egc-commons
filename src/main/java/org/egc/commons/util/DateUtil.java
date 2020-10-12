@@ -7,6 +7,8 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
 import java.text.ParseException;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 /**
@@ -54,6 +56,18 @@ public class DateUtil extends DateUtils {
      */
     public static String formatDateTime(Date date) {
         return formatDate(date, "yyyy-MM-dd HH:mm:ss");
+    }
+
+    /**
+     * "yyyy-MM-dd'T'HH:mm'Z'"
+     *
+     * @param date the date
+     * @return string
+     */
+    public static String formatDateTimeUTC(Date date) {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm'X'")
+                .withZone(ZoneOffset.UTC)
+                .format(date.toInstant());
     }
 
     /**
@@ -122,7 +136,7 @@ public class DateUtil extends DateUtils {
      * @return
      */
     public static long pastDays(Date date) {
-        long t = new Date().getTime() - date.getTime();
+        long t = System.currentTimeMillis() - date.getTime();
         return t / (24 * 60 * 60 * 1000);
     }
 
@@ -133,7 +147,7 @@ public class DateUtil extends DateUtils {
      * @return
      */
     public static long pastHour(Date date) {
-        long t = new Date().getTime() - date.getTime();
+        long t = System.currentTimeMillis() - date.getTime();
         return t / (60 * 60 * 1000);
     }
 
@@ -144,7 +158,7 @@ public class DateUtil extends DateUtils {
      * @return
      */
     public static long pastMinutes(Date date) {
-        long t = new Date().getTime() - date.getTime();
+        long t = System.currentTimeMillis() - date.getTime();
         return t / (60 * 1000);
     }
 
@@ -173,7 +187,7 @@ public class DateUtil extends DateUtils {
     public static double getDistanceOfTwoDate(Date before, Date after) {
         long beforeTime = before.getTime();
         long afterTime = after.getTime();
-        return (afterTime - beforeTime) / (1000 * 60 * 60 * 24);
+        return (afterTime - beforeTime) / (1000 * 60 * 60 * 24 * 1.0);
     }
 
 }

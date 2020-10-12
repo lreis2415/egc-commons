@@ -222,7 +222,9 @@ public interface RunCommand {
             for (Map.Entry entry : params.entries()) {
                 String k = (String) entry.getKey();
                 Object v = entry.getValue();
-                if (StringUtils.isBlank(k) || v == null) {
+//                if (StringUtils.isBlank(k) || v == null ) {
+                if (StringUtils.isBlank(k) || v == null
+                        || StringUtils.isBlank(String.valueOf(v)) || "null".equalsIgnoreCase(String.valueOf(v))) {
                     continue;
                 }
                 if (v instanceof Boolean && (Boolean) v) {

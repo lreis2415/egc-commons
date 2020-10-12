@@ -4,6 +4,7 @@ import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.conn.ssl.TrustStrategy;
@@ -71,7 +72,8 @@ public class HttpUtils {
             }
         };
         try {
-            sslContext.init(null, new TrustManager[]{trustManager}, null);
+            assert sslContext != null;
+            sslContext.init(null, new TrustManager[]{trustManager}, new java.security.SecureRandom());
         } catch (KeyManagementException e) {
             log.error("Initialize SSLContext failed!", e);
         }
@@ -104,12 +106,11 @@ public class HttpUtils {
      * @return the pooling conn mgr
      */
     public static PoolingHttpClientConnectionManager getPoolingConnMgr() {
-
         //create a socketfactory in order to use an http connection manager
         PlainConnectionSocketFactory plainSocketFactory = PlainConnectionSocketFactory.getSocketFactory();
         Registry<ConnectionSocketFactory> connSocketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
                 .register("http", plainSocketFactory)
-                .register("https", new SSLConnectionSocketFactory(getSSLContext()))
+                .register("https", new SSLConnectionSocketFactory(getSSLContext(),NoopHostnameVerifier.INSTANCE))
                 .build();
         PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(connSocketFactoryRegistry);
         connManager.setMaxTotal(80);

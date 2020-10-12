@@ -30,7 +30,7 @@ public class BusinessException extends RuntimeException implements Serializable 
     private HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 
     public BusinessException(String friendlyErrMsg) {
-        super(createFriendlyErrMsg(friendlyErrMsg), null, false, false);
+        super(createFriendlyErrMsg(friendlyErrMsg), null, false, true);
         logger.error(friendlyErrMsg);
     }
 
@@ -44,7 +44,7 @@ public class BusinessException extends RuntimeException implements Serializable 
     }
 
     public BusinessException(String friendlyErrMsg, HttpStatus status) {
-        super(createFriendlyErrMsg(friendlyErrMsg), null, false, false);
+        super(createFriendlyErrMsg(friendlyErrMsg), null, false, true);
         this.errorCode = status.value();
         this.httpStatus = status;
         logger.error(friendlyErrMsg);
@@ -65,7 +65,7 @@ public class BusinessException extends RuntimeException implements Serializable 
     }
 
     public BusinessException(Throwable throwable) {
-        super(null, throwable, false, false);
+        super(null, throwable, false, true);
         logger.error(throwable.getLocalizedMessage());
     }
 
@@ -75,14 +75,14 @@ public class BusinessException extends RuntimeException implements Serializable 
     }
 
     public BusinessException(Throwable throwable, HttpStatus status) {
-        super(null, throwable, false, false);
+        super(null, throwable, false, true);
         this.errorCode = status.value();
         this.httpStatus = status;
         logger.error(status.getReasonPhrase(), throwable);
     }
 
     public BusinessException(Throwable throwable, String friendlyErrMsg) {
-        super(friendlyErrMsg, throwable, false, false);
+        super(friendlyErrMsg, throwable, false, true);
         logger.error(friendlyErrMsg);
     }
 
@@ -92,7 +92,7 @@ public class BusinessException extends RuntimeException implements Serializable 
     }
 
     public BusinessException(Throwable throwable, String friendlyErrMsg, HttpStatus status) {
-        super(friendlyErrMsg, throwable, false, false);
+        super(friendlyErrMsg, throwable, false, true);
         this.errorCode = status.value();
         this.httpStatus = status;
         logger.error(friendlyErrMsg, throwable);

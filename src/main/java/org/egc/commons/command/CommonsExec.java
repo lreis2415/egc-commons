@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,7 @@ import java.util.Map;
 @Slf4j
 public class CommonsExec {
 
-    private static final String UTF8 = "UTF-8";
+    private static final String UTF8 = StandardCharsets.UTF_8.name();
     private static final String GBK = "GBK";
     private static final String ISO_8859_1 = "ISO-8859-1";
 
@@ -70,14 +71,13 @@ public class CommonsExec {
     public static int exec(CommandLine cmd, Integer exitValue) throws IOException {
         Executor executor = new DefaultExecutor();
         // 设置超时时间，毫秒
-        ExecuteWatchdog watchdog = new ExecuteWatchdog(60000);
+        ExecuteWatchdog watchdog = new ExecuteWatchdog(120000);
         executor.setWatchdog(watchdog);
         if (exitValue != null) {
             executor.setExitValue(exitValue);
         }
         log.debug("execute cmd: {}", cmd);
-        int exit = executor.execute(cmd);
-        return exit;
+        return executor.execute(cmd);
     }
 
     /**
@@ -129,8 +129,8 @@ public class CommonsExec {
      * @param envKeyValues 系统环境变量 key-value对。<br/>
      *                     the environmental variable list in format: <b>key=value<b/><br/>
      * @param exitValue    运行退出值，通常为 0, 可为 null
-     * @param timeout     超时时间。<b>若为null，则不设置超时时间；若为小于等于0，则为默认 60000L ms<b/> <br/>
-     *                    null means no timeout, timeout <=0 means use the default timeout(60000 ms).
+     * @param timeout     超时时间。<b>若为 null，则不设置超时时间；若为小于等于0，则为默认 120000L ms<b/> <br/>
+     *                    null means no timeout, timeout <=0 means use the default timeout(120000 ms).
      * @return {@link ExecResult}
      * @throws IOException the io exception
      */
@@ -139,7 +139,7 @@ public class CommonsExec {
         Executor executor = new DefaultExecutor();
         if (timeout != null) {
             if (timeout <= 0) {
-                timeout = 60000L;
+                timeout = 120000L;
             }
             ExecuteWatchdog watchdog = new ExecuteWatchdog(timeout);
             executor.setWatchdog(watchdog);

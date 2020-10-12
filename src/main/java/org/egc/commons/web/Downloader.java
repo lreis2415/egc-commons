@@ -125,7 +125,7 @@ public class Downloader {
         System.out.println(dispositionValue);
         int index = dispositionValue.indexOf("filename=");
         if (index > 0) {
-            filename = dispositionValue.substring(index + 10, dispositionValue.length() - 1);
+            filename = dispositionValue.substring(index + 9);
         }
         return filename;
     }
@@ -139,7 +139,7 @@ public class Downloader {
      * @return filename
      */
     private String getFilename(String fileUrl) {
-        return fileUrl.substring(fileUrl.lastIndexOf("/") + 1, fileUrl.length());
+        return fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
     }
     private String getSaveFilename(String saveDir, String fileUrl, String filename) {
         String urlFileName = getFilename(fileUrl);

@@ -39,7 +39,7 @@ public interface RunCommand {
     /**
      * Run Command.
      * <p> 输入输出数据文件必须使用全路径
-     * <p> 若输出数据只给定了文件名，则使用默认目录（当前目录“.”）作为输出
+     * <p> 若输出数据只给定了文件名，则使用临时文件目录（"java.io.tmpdir"）作为输出
      *
      * @param exec        the executable
      * @param files       the  files
@@ -51,7 +51,7 @@ public interface RunCommand {
     /**
      * Run Command.
      * <p> 输入输出数据文件必须使用全路径
-     * <p> 若输出数据只给定了文件名，则使用默认目录（当前目录“.”）作为输出
+     * <p> 若输出数据只给定了文件名，则使用临时文件目录（"java.io.tmpdir"）作为输出
      *
      * @param exec         the executable
      * @param files        the  files

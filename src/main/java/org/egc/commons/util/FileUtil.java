@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.lang.reflect.Method;
@@ -35,6 +36,11 @@ import java.util.zip.ZipOutputStream;
  */
 public class FileUtil extends org.apache.commons.io.FileUtils {
     private static Logger log = LoggerFactory.getLogger(FileUtil.class);
+
+    public static String getMimeType(File file){
+        MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();
+        return fileTypeMap.getContentType(file);
+    }
 
     /**
      * 复制单个文件，如果目标文件存在，则不覆盖

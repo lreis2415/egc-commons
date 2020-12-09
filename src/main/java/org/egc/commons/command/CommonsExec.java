@@ -3,6 +3,7 @@ package org.egc.commons.command;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.*;
 import org.apache.commons.exec.environment.EnvironmentUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.StringUtils;
@@ -10,8 +11,13 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+
+import static org.apache.commons.lang3.SystemUtils.JAVA_IO_TMPDIR;
 
 /**
  * <pre>
@@ -50,7 +56,7 @@ public class CommonsExec {
      *
      * @param commandLine the command line
      * @return 0 : success; 1: failed
-     * @throws IOException          the io exception
+     * @throws IOException the io exception
      */
     public static int exec(String commandLine) throws IOException {
         CommandLine cmd = CommandLine.parse(commandLine);
@@ -66,7 +72,7 @@ public class CommonsExec {
      * @param cmd       the CommandLine
      * @param exitValue the exit value to be considered as successful execution, can be null
      * @return 0 : success; 1: failed
-     * @throws IOException          the io exception
+     * @throws IOException the io exception
      */
     public static int exec(CommandLine cmd, Integer exitValue) throws IOException {
         Executor executor = new DefaultExecutor();
@@ -125,12 +131,12 @@ public class CommonsExec {
      * 注意：有些程序在执行成功之后，部分信息会出现在 error 中，因此不能根据 error 是否有内容来判断是否执行失败
      *
      * @param cmd          命令行. 如果是字符串，则使用 {@link CommandLine#parse(String)} 转换
-     * @param workspace    工作目录(数据输出目录)， blank 时使用当前目录（<code>new File(".")</code>）
+     * @param workspace    工作目录(数据输出目录)， blank 时使用临时文件目录（"java.io.tmpdir"），并在退出程序时删除临时文件
      * @param envKeyValues 系统环境变量 key-value对。<br/>
      *                     the environmental variable list in format: <b>key=value<b/><br/>
      * @param exitValue    运行退出值，通常为 0, 可为 null
-     * @param timeout     超时时间。<b>若为 null，则不设置超时时间；若为小于等于0，则为默认 120000L ms<b/> <br/>
-     *                    null means no timeout, timeout <=0 means use the default timeout(120000 ms).
+     * @param timeout      超时时间。<b>若为 null，则不设置超时时间；若为小于等于0，则为默认 120000L ms<b/> <br/>
+     *                     null means no timeout, timeout <=0 means use the default timeout(120000 ms).
      * @return {@link ExecResult}
      * @throws IOException the io exception
      */
@@ -152,7 +158,12 @@ public class CommonsExec {
             }
             executor.setWorkingDirectory(dir);
         } else {
-            log.debug("Workspace not set or is illegal [ " + workspace + " ]. Use current working directory.");
+            Path tmpDir = Paths.get(FileUtils.getTempDirectory().getAbsolutePath());
+            tmpDir.toFile().deleteOnExit();
+            File defaultWorkspace = Files.createTempDirectory(tmpDir, "egc_cmd_").toFile();
+            executor.setWorkingDirectory(defaultWorkspace);
+            log.warn("Workspace [ {} ] not set or is illegal. Use [ {} ].", workspace, defaultWorkspace);
+            log.warn("Files saved in temp dir will be deleted on exit!");
         }
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();

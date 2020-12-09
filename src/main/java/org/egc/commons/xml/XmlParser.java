@@ -12,14 +12,12 @@ import org.slf4j.LoggerFactory;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.*;
+import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.StringReader;
+import java.io.*;
 import java.net.URL;
 import java.util.*;
 
@@ -60,6 +58,40 @@ public class XmlParser {
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         //PrintStream out = System.out; //file改为out则输出到控制台
         marshaller.marshal(object, new File(path));
+    }
+
+    /**
+     * @param clazz  the clazz
+     * @param object the object
+     * @return string
+     * @throws JAXBException the jaxb exception
+     */
+    public static String java2XmlStr(Class<?> clazz, Object object) throws JAXBException {
+        JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        StringWriter writer = new StringWriter();
+        marshaller.marshal(object, writer);
+        return writer.toString();
+    }
+
+    /**
+     * Java POJO 2 xml string.
+     *
+     * @param <T>   the type parameter, for {@code JAXBElement<T>}
+     * @param clazz the clazz
+     * @param value the value
+     * @param qName the qname, e.g., {@code new QName("http://www.opengis.net/wcs/2.0", "GetCoverage");}
+     * @return the string
+     * @throws JAXBException the jaxb exception
+     */
+    public static <T> String java2XmlStr(Class<T> clazz, T value, QName qName) throws JAXBException {
+        StringWriter writer = new StringWriter();
+        JAXBContext context = JAXBContext.newInstance(clazz);
+        Marshaller m = context.createMarshaller();
+        JAXBElement<T> root = new JAXBElement<>(qName, clazz, value);
+        m.marshal(root, writer);
+        return writer.toString();
     }
 
     /**

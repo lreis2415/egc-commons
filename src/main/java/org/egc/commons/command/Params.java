@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Description:
@@ -30,13 +31,13 @@ public interface Params extends Serializable {
      * 为输出数据设置默认名称文件名
      * 必要时可以覆盖重新实现此方法
      *
-     * @param input           输入文件名
+     * @param inputFilename           输入文件名
      * @param outputParam     输出参数名
-     * @param fileType        the file type
-     * @param formatExtension the format extension
+     * @param fileType        the file type. 有些抓取的知识没有 formatExtension，而且都是字符串
+     * @param formatExtension the format extension.
      * @return string
      */
-    default String namingOutput(String input, String outputParam, String fileType, String formatExtension) {
+    default String namingOutput(String inputFilename, String outputParam, String fileType, String formatExtension) {
         String extension = "";
         if (StringUtils.isNotBlank(formatExtension)) {
             extension = formatExtension;
@@ -47,12 +48,12 @@ public interface Params extends Serializable {
             if (StringUtils.isNotBlank(fileType)) {
                 extension = formats.get(fileType);
                 if (StringUtils.isBlank(extension)) {
-                    extension = FilenameUtils.getExtension(input);
+                    extension = FilenameUtils.getExtension(inputFilename);
                 }
             }
         }
 
-        String baseName = FilenameUtils.getBaseName(input);
+        String baseName = FilenameUtils.getBaseName(inputFilename);
 
         StringBuilder stringBuilder = new StringBuilder();
         if (baseName.contains("_") && !baseName.startsWith("_")) {
@@ -65,11 +66,45 @@ public interface Params extends Serializable {
         stringBuilder.append(extension);
         outputParam = stringBuilder.toString();
 
-        //?
+        //避免重复
         if (new File(outputParam).exists()) {
             outputParam = FilenameUtils.getBaseName(outputParam) + "_" +
                     DateUtils.getFragmentInMilliseconds(new Date(), Calendar.MINUTE) + "." + extension;
         }
         return outputParam;
+    }
+
+
+    /**
+     * Naming output with uuid string. <br/>
+     * [uuid_outputParam.extension]
+     * @param inputFilename           the inputFilename
+     * @param outputParam     the output param
+     * @param fileType        the file type
+     * @param formatExtension the format extension
+     * @return the string
+     */
+    default String namingOutputWithUUID(String inputFilename, String outputParam, String fileType, String formatExtension) {
+        String extension = "";
+        if (StringUtils.isNotBlank(formatExtension)) {
+            extension = formatExtension;
+        } else {
+            Ini ini = IniUtils.getIniFromResource("formats", null);
+            Profile.Section formats = ini.get("formats");
+            // 抓取的知识没有 formatExtension，而且都是字符串
+            if (StringUtils.isNotBlank(fileType)) {
+                extension = formats.get(fileType);
+                if (StringUtils.isBlank(extension)) {
+                    extension = FilenameUtils.getExtension(inputFilename);
+                }
+            }
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(UUID.randomUUID().toString());
+        stringBuilder.append("_");
+        stringBuilder.append(outputParam.replaceFirst("[Oo]utput_", ""));
+        stringBuilder.append(".");
+        stringBuilder.append(extension);
+        return stringBuilder.toString();
     }
 }

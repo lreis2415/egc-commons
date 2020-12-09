@@ -8,6 +8,7 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 /**
  * TODO test
+ * spring-mvc.xml
  * @author houzhiwei
  * @date 2020/10/6 10:16
  */

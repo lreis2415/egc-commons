@@ -166,6 +166,17 @@ public class StringUtil {
         return sb.toString();
     }
 
+    public static String removeDoubleQuotes(String input) {
+        StringBuilder sb = new StringBuilder();
+        char[] tab = input.toCharArray();
+        for (char current : tab) {
+            if (current != '"') {
+                sb.append(current);
+            }
+        }
+        return sb.toString();
+    }
+
     public static void isNullOrEmptyPrecondition(String s, String msg) {
         s = Strings.emptyToNull(s);
         Preconditions.checkNotNull(s, msg);

@@ -28,6 +28,7 @@ import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValue;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.crs.ProjectedCRS;
 import org.osgeo.proj4j.CRSFactory;
 
 import java.awt.image.RenderedImage;
@@ -63,12 +64,9 @@ public class GeoTiffUtils {
             reader = new GeoTiffReader(new FileInputStream(rasterFile));
         } catch (DataSourceException e) {
             msg = "Error in GeoTIFF file!";
-            log.error(msg, e);
-            throw new BusinessException(e, msg + e.getLocalizedMessage());
+            throw new BusinessException(e, msg + e.getLocalizedMessage(),true);
         } catch (FileNotFoundException e) {
-            msg = "GeoTIFF file not found! ";
-            log.error(msg, e);
-            throw new BusinessException("GeoTIFF file not found! " + e.getLocalizedMessage());
+            throw new BusinessException("GeoTIFF file not found! " + e.getLocalizedMessage(),true);
         }
 
         ParameterValue<OverviewPolicy> policy = AbstractGridFormat.OVERVIEW_POLICY.createValue();
@@ -86,7 +84,6 @@ public class GeoTiffUtils {
             coverage = reader.read(new GeneralParameterValue[]{policy, gridSize, useJaiRead});
         } catch (IOException e) {
             msg = "Error while reading GeoTIFF file!";
-            log.error(msg, e);
             throw new BusinessException(msg + e.getLocalizedMessage());
         }
         return coverage;
@@ -133,6 +130,9 @@ public class GeoTiffUtils {
         metadata.setCrs(crs.getName().getCode());
         metadata.setCrsWkt(crs.toWKT());
         metadata.setUnit(crs.getCoordinateSystem().getAxis(0).getUnit().toString());
+        if (crs instanceof ProjectedCRS) {
+            metadata.setProjected(true);
+        }
         try {
             Integer epsg = CRS.lookupEpsgCode(crs, true);
             metadata.setEpsg(epsg);
@@ -144,7 +144,6 @@ public class GeoTiffUtils {
                 metadata.setCrsProj4(crsProj.getProjection().getPROJ4Description());
             }
         } catch (FactoryException e) {
-            log.error("Error occured while searching for the srid.", e);
             throw new BusinessException(e, "Error occured while searching for the CRS srid");
         }
 
@@ -174,7 +173,6 @@ public class GeoTiffUtils {
             results = rasterProcess.execute(coverage, set, band_i, 1,
                     ClassificationMethod.QUANTILE, nodata, null);
         } catch (IOException e) {
-            log.error("Process raster file statistics failed", e);
             throw new BusinessException(e, "Process raster file statistics failed");
         }
         metadata.setMinValue(results.value(0, Statistic.MIN));

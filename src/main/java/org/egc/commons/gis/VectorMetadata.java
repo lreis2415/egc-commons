@@ -39,6 +39,7 @@ public class VectorMetadata implements Serializable {
     private String format;
     private String semantic;
     private String unit;
+    private boolean isProjected = false;
 
     private double minX;
     private double maxX;

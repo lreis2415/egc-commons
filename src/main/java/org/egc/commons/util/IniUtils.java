@@ -2,9 +2,11 @@ package org.egc.commons.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.ini4j.Config;
 import org.ini4j.Ini;
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 /**
@@ -52,6 +54,12 @@ public class IniUtils {
             return null;
         }
         return ini;
+    }
+
+    public static void writeIni(Config config, String filepath) throws IOException {
+        Ini ini = new Ini();
+        ini.setConfig(config);
+        ini.store(new FileWriter(filepath));
     }
 
 }

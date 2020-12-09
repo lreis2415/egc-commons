@@ -84,6 +84,7 @@ public class VectorUtils {
         if (sr.IsProjected() == 1) {
             String projcs = sr.GetAttrValue("PROJCS");
             metadata.setCrs(projcs);
+            metadata.setProjected(true);
         } else {
             metadata.setCrs(geogcs);
         }

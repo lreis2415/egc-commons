@@ -25,13 +25,14 @@ public class CoordinateTransformUtil {
 
     /**
      * 坐标点转换
-     *
+     * use easy-gis/gis-proj module
      * @param sourceEPSG 源坐标EPSG码
      * @param targetEPSG 目标坐标EPSG码
      * @param x          源坐标 x
      * @param y          源坐标 y
      * @return 转换后坐标，通过{@link ProjCoordinate#x} 和 {@link ProjCoordinate#y} 获取值
      */
+    @Deprecated
     public static ProjCoordinate transformByProj4(int sourceEPSG, int targetEPSG, double x, double y) {
         CoordinateTransformFactory ctFactory = new CoordinateTransformFactory();
         CRSFactory csFactory = new CRSFactory();

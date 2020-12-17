@@ -46,6 +46,40 @@ Reusable Java components for EGC
 
 ---
 
+## 排除不需要或与项目依赖存在冲突的库
+可以根据需要排除某些依赖，例如
+```xml
+<dependency>
+    <groupId>org.egc</groupId>
+    <artifactId>commons</artifactId>
+    <version>${commons.version}</version>
+    <exclusions>
+        <exclusion>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-process-raster</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-geotiff</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.gdal</groupId>
+            <artifactId>gdal</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>it.geosolutions</groupId>
+            <artifactId>geoserver-manager</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+```
+注意，排除之后，依赖这些库的相关功能会无法使用
+
+
 ## More
 
 For more reusable Java components，please refer to [Apache Commons](https://commons.apache.org/) project and [Google Guava](https://github.com/google/guava) project first.

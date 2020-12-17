@@ -5,10 +5,12 @@ package org.egc.commons.util;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.egc.commons.exception.BusinessException;
 
 import java.text.ParseException;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -190,4 +192,30 @@ public class DateUtil extends DateUtils {
         return (afterTime - beforeTime) / (1000 * 60 * 60 * 24 * 1.0);
     }
 
+    /**
+     * Init date date.
+     *
+     * @param year  the year, 年
+     * @param month the month, 月
+     * @param day   the day, 日
+     * @return the date
+     */
+    public static Date initDate(int year, int month, int day) {
+        Calendar calendar = Calendar.getInstance();
+        if (month <= 0) {
+            throw new BusinessException("Month must larger than 0!");
+        }
+        // Calendar 的 month 从 0 开始
+        calendar.set(year, month - 1, day);
+        return calendar.getTime();
+    }
+
+    public static Date initDate(int year, int month, int day, int hour, int minute, int second) {
+        Calendar calendar = Calendar.getInstance();
+        if (month <= 0) {
+            throw new BusinessException("Month must larger than 0!");
+        }
+        calendar.set(year, month - 1, day, hour, minute, second);
+        return calendar.getTime();
+    }
 }

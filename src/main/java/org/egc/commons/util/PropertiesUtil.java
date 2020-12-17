@@ -5,6 +5,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.egc.commons.exception.BusinessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import java.io.*;
 import java.util.Properties;
@@ -20,9 +22,22 @@ public class PropertiesUtil {
     private static final Logger logger = LoggerFactory.getLogger(PropertiesUtil.class);
 
     public static String getProperty(Properties properties, String key) {
-        String property = properties.getProperty(key);
-        return property;
+        return properties.getProperty(key);
     }
+
+    /**
+     * Gets class path properties.
+     * based on Spring {@link ClassPathResource}
+     *
+     * @param filePath the properties file path, e.g., "config/db.properties"
+     * @return the properties
+     * @throws IOException the io exception
+     */
+    public static Properties getClassPathProperties(String filePath) throws IOException {
+        ClassPathResource resource = new ClassPathResource(filePath);
+        return PropertiesLoaderUtils.loadProperties(resource);
+    }
+
 
     /**
      * 从/config目录下获取属性
@@ -30,8 +45,6 @@ public class PropertiesUtil {
      * @param key      属性键 Property key
      * @param filename 属性文件名（不用后缀）/ filename without ".properties"
      * @return 属性值 Property value
-     * @throws IOException
-     * @throws FileNotFoundException
      */
     public static String getPropertyFromConfig(String key, String filename) {
         String msg = "";
@@ -62,8 +75,7 @@ public class PropertiesUtil {
      * 读取src/main/resources/config下面的properties文件
      *
      * @param filename 文件名(不用后缀)/ filename without ".properties"
-     * @return Properties
-     * @throws IOException
+     * @return Properties properties
      */
     public static Properties readPropertiesFromConfig(String filename) {
         Preconditions.checkNotNull(filename, "Error, filename can not be null!");
@@ -77,10 +89,8 @@ public class PropertiesUtil {
     /**
      * 读取properties文件
      *
-     * @param filepath 完整文件名。不以’/'开头时默认是从此类所在的包下取资源，
-     *                 以’/'开头则是从ClassPath根下获取 / full filename
+     * @param filepath 完整文件名。不以’/'开头时默认是从此类所在的包下取资源，                 以’/'开头则是从ClassPath根下获取 / full filename
      * @return Properties 实例
-     * @throws IOException
      */
     public static Properties readProperties(String filepath) {
         Preconditions.checkNotNull(filepath, "Error, filename can not be null!");

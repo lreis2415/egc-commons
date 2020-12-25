@@ -4,12 +4,14 @@ import com.google.common.collect.LinkedHashMultimap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +26,7 @@ import java.util.Map;
  *
  * @author houzhiwei
  * @date 2018 /10/25 19:05
+ * @date 2020/12/25
  */
 public interface RunCommand {
 
@@ -204,7 +207,7 @@ public interface RunCommand {
                         cmd.addArgument(v);
                     }
                 }
-                // if v is blank, not add flag to command line
+                // if v is blank, do not add the flag to command line
             });
         }
 
@@ -222,14 +225,17 @@ public interface RunCommand {
             for (Map.Entry entry : params.entries()) {
                 String k = (String) entry.getKey();
                 Object v = entry.getValue();
-//                if (StringUtils.isBlank(k) || v == null ) {
-                if (StringUtils.isBlank(k) || v == null
-                        || StringUtils.isBlank(String.valueOf(v)) || "null".equalsIgnoreCase(String.valueOf(v))) {
+                Class<?> vClass = v.getClass();
+                if (StringUtils.isBlank(k) || StringUtils.isBlank(String.valueOf(v)) || "null".equalsIgnoreCase(String.valueOf(v))) {
                     continue;
                 }
-                if (v instanceof Boolean && (Boolean) v) {
-                    cmd.addArgument(k);
-                } else if (v instanceof Integer && (Integer) v > -1) {
+                if (v instanceof Boolean) {
+                    if ((Boolean) v) {
+                        cmd.addArgument(k);
+                    }
+                }
+                //TODO 是否需要判断非负？
+                /*else if (v instanceof Integer && (Integer) v > -1) {
                     cmd.addArgument(k);
                     cmd.addArgument(String.valueOf(v));
                 } else if (v instanceof Long && (Long) v > -1L) {
@@ -238,13 +244,28 @@ public interface RunCommand {
                 } else if (v instanceof Double && (Double) v > -1d) {
                     cmd.addArgument(k);
                     cmd.addArgument(String.valueOf(v));
-                } else if (v instanceof List) {
+                }*/
+                else if (v instanceof List) {
                     cmd.addArgument(k);
-                    List<String> l = (List<String>) v;
+                    List<String> l = new ArrayList<>();
+                    for (Object o : (List<?>) v) {
+                        if (ClassUtils.isPrimitiveOrWrapper(o.getClass())) {
+                            l.add((String) o);
+                        } else {
+                            //非基本数据类型及其包装类
+                            String errorMsg = "Type " + o.getClass().getName() + " of value " + o + " is neither a primitive nor wrapper class";
+                            log.error(errorMsg);
+                            throw new RuntimeException(errorMsg);
+                        }
+                    }
                     cmd.addArgument(String.join(" ", l));
-                } else {
+                } else if (ClassUtils.isPrimitiveOrWrapper(vClass)) {
                     cmd.addArgument(k);
                     cmd.addArgument(String.valueOf(v));
+                } else {
+                    String errorMsg = "Type " + vClass.getName() + " of value " + v + " is neither a primitive nor wrapper class";
+                    log.error(errorMsg);
+                    throw new RuntimeException(errorMsg);
                 }
             }
         }

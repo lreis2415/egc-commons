@@ -3,6 +3,7 @@ package org.egc.commons.test;
 import com.google.common.collect.Lists;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.environment.EnvironmentUtils;
+import org.apache.commons.lang3.ClassUtils;
 import org.egc.commons.command.CommonsExec;
 import org.egc.commons.command.ExecResult;
 import org.egc.commons.gis.File2PostGIS;
@@ -91,9 +92,10 @@ public class CommonsExecTest {
         System.out.println(out.getError());
         System.out.println(out.getExitValue());
     }
+
     @Test
     public void testCmd() throws IOException {
-     String cmd = "D:\\Program Files\\Python35\\Lib\\site-packages\\whitebox\\WBT\\whitebox_tools --run=\"Sink\" --wd=\"H:\\gisdemo\\out\" --dem='H:/gisdemo/DEM.tif' --output='sink.tif' -v";
+        String cmd = "D:\\Program Files\\Python35\\Lib\\site-packages\\whitebox\\WBT\\whitebox_tools --run=\"Sink\" --wd=\"H:\\gisdemo\\out\" --dem='H:/gisdemo/DEM.tif' --output='sink.tif' -v";
         CommandLine commandLine = new CommandLine("D:\\Program Files\\Python35\\Lib\\site-packages\\whitebox\\WBT\\whitebox_tools");
         commandLine.addArgument("-r=");
         commandLine.addArgument("Sink");
@@ -108,7 +110,7 @@ public class CommonsExecTest {
 //        System.out.println(cmd2.toStrings());
         String cmdStr = String.join(" ", commandLine.toStrings());
         System.out.println(cmdStr);
-        String r = cmdStr.replaceAll("= ","=");
+        String r = cmdStr.replaceAll("= ", "=");
         System.out.println(r);
         ExecResult result = CommonsExec.execWithOutput(commandLine);
 //        ExecResult result = CommonsExec.execWithOutput(CommandLine.parse(r));
@@ -116,4 +118,5 @@ public class CommonsExecTest {
         System.out.println(result.getOut());
 
     }
+
 }

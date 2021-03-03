@@ -24,6 +24,16 @@ public class UtmUtilities {
     }
 
     /**
+     * Get min max longitude int [ ].
+     *
+     * @param zone the zone
+     * @return the int [ ], Western, Eastern boundary
+     */
+    public static int[] getMinMaxLongitude(int zone) {
+        return new int[]{6 * zone - 180 - 6, 6 * zone - 180};
+    }
+
+    /**
      * get Universal Transverse Mercator (UTM) Zone (6)
      *
      * @param longitude the longitude
@@ -31,6 +41,8 @@ public class UtmUtilities {
      * @link http://www.dmap.co.uk/utmworld.htm
      */
     public static int utmZone(double longitude) {
+        //(Math.floor((longitude + 180) / 6 ) % 60) + 1
+        //(Math.floor((longitude + 180) / 6 ) + 1
         return (int) Math.floor((longitude / 6) + 31);
     }
 
@@ -84,14 +96,14 @@ public class UtmUtilities {
      * Gets utm epsg.
      * https://gis.stackexchange.com/questions/365584/convert-utm-zone-into-epsg-code
      *
-     * @param centralLon the centralLon
-     * @param centralLat the centralLat
+     * @param longitude the longitude
+     * @param latitude  the latitude
      * @return the utm epsg
      */
-    public static int getUtmEpsg(double centralLon, double centralLat) {
+    public static int getUtmEpsg(double longitude, double latitude) {
         int epsgCode = 32600;
-        epsgCode += utmZone(centralLon);
-        if (centralLat < 0) {
+        epsgCode += utmZone(longitude);
+        if (latitude < 0) {
             epsgCode += 100;
         }
         return epsgCode;

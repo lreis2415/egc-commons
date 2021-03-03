@@ -178,4 +178,21 @@ public class VectorUtils {
         ds.delete();
         gdal.GDALDestroyDriverManager();
     }
+
+    public static Area calculateArea(String shapefile) {
+        ogr.RegisterAll();
+        DataSource ds = ogr.Open(shapefile, false);
+        SpatialReference sr = ds.GetLayer(0).GetSpatialRef();
+        String unit = sr.GetLinearUnitsName();
+        double area = 0;
+        for (int i = 0; i < ds.GetLayerCount(); i++) {
+            Layer layer = ds.GetLayer(i);
+            for (int j = 0; j < layer.GetFeatureCount(); j++) {
+                Feature feature = layer.GetNextFeature();
+                area += feature.GetGeometryRef().GetArea();
+            }
+        }
+        ds.delete();
+        return new Area(area, unit);
+    }
 }

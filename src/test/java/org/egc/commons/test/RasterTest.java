@@ -5,6 +5,9 @@ import org.egc.commons.gis.*;
 import org.gdal.gdal.gdal;
 import org.junit.Assert;
 import org.junit.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
 import org.osgeo.proj4j.ProjCoordinate;
 import org.springframework.core.io.ClassPathResource;
 
@@ -36,18 +39,6 @@ public class RasterTest {
         //String a = "raster2pgsql -s 32650  -I -a -M  D:\\SampleBase\\dem.tif  -a  public.t_rasters | psql  dbname=db_cyberSolim user=postgres password=123";
     }
 
-    @Test
-    public void coordTest() {
-        double x = 13244689.433917364;
-        double y = 3637696.4693184034;
-        double[] newCoord = CoordinateTransformUtil.transformByGdal(3857, 32650, x, y);
-        System.out.println(newCoord[0]);//688876.5583467542
-        System.out.println(newCoord[1]);//3435505.2951291953
-
-        ProjCoordinate coordinate = CoordinateTransformUtil.transformByProj4(3857, 32650, x, y);
-        System.out.println(coordinate.x);//688876.5583467542
-        System.out.println(coordinate.y);//3435505.2951291953
-    }
 
     @Test
     public void testSplit() {
@@ -87,4 +78,5 @@ public class RasterTest {
         System.out.println(metadata.getQuantileBreaks());
         System.out.println(JSON.toJSONString(metadata, true));
     }
+
 }

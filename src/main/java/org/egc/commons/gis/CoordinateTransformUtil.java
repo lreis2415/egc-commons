@@ -52,8 +52,8 @@ public class CoordinateTransformUtil {
      *
      * @param fromEPSG 源 epsg, 如 4326
      * @param toEPSG   目标 epsg
-     * @param x        x 坐标或<b>纬度/lat</b>
-     * @param y        y 坐标或<b>经度/lon</b>
+     * @param x        x 坐标 或 <b>纬度/lat</b>
+     * @param y        y 坐标 或 <b>经度/lon</b>
      * @return the coordinate
      * @throws TransformException the transform exception
      * @throws FactoryException   the factory exception
@@ -67,8 +67,8 @@ public class CoordinateTransformUtil {
      *
      * @param fromAuthority the source AuthorityCode, e.g. "EPSG:4326", "AUTO:42001"
      * @param toAuthority   the target AuthorityCode
-     * @param x             x 坐标或<b>纬度/lat</b>
-     * @param y             y 坐标或<b>经度/lon</b>
+     * @param x             x 坐标或 <b>纬度/lat</b>
+     * @param y             y 坐标或 <b>经度/lon</b>
      * @return the coordinate
      * @throws TransformException the transform exception
      * @throws FactoryException   the factory exception
@@ -112,7 +112,7 @@ public class CoordinateTransformUtil {
 
     /**
      * Transform extent by gdal.
-     *
+     * <b>Can only be used if the extent is within the same zone</b>
      * @param fromEPSG the source epsg
      * @param toEPSG   the destination epsg
      * @param minX     the min x

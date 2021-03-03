@@ -27,8 +27,7 @@ public class PathUtil {
      *
      * @return project root
      */
-    public static String getProjectRoot()
-    {
+    public static String getProjectRoot() {
         File file = new File("");
         try {
             return file.getCanonicalPath();
@@ -44,11 +43,10 @@ public class PathUtil {
      * @param clazz the clazz
      * @return class path
      */
-    public static String getClassPath(Class clazz)
-    {
+    public static <T> String getClassPath(T clazz) {
         String path = null;
         try {
-            path = clazz.getResource("").getPath();
+            path = clazz.getClass().getResource("").getPath();
         } catch (Exception e) {
             log.error(e.getMessage());
             path = getClassPath();
@@ -76,8 +74,7 @@ public class PathUtil {
      *
      * @return the class path
      */
-    public static String getClassPath()
-    {
+    public static String getClassPath() {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("");
         assert resource != null;
         return resource.getPath();
@@ -89,9 +86,8 @@ public class PathUtil {
      * @param clazz the clazz
      * @return the package path
      */
-    public static String getPackagePath(Class clazz)
-    {
-        return clazz.getResource("").getPath();
+    public static <T> String getPackagePath(T clazz) {
+        return clazz.getClass().getResource("").getPath();
     }
 
     /**
@@ -100,8 +96,7 @@ public class PathUtil {
      * @param request the request
      * @return the web inf root
      */
-    public static String getWebInfRoot(HttpServletRequest request)
-    {
+    public static String getWebInfRoot(HttpServletRequest request) {
         return request.getSession().getServletContext().getRealPath("/");
     }
 
@@ -111,8 +106,7 @@ public class PathUtil {
      *
      * @return the relative path
      */
-    public static String getRelativePath()
-    {
+    public static String getRelativePath() {
         return Paths.get(".").toAbsolutePath().normalize().toString();
     }
 
@@ -124,8 +118,7 @@ public class PathUtil {
      *
      * @return cwd
      */
-    public static String getCWD()
-    {
+    public static String getCWD() {
         return System.getProperty("user.dir");
     }
 
@@ -135,8 +128,7 @@ public class PathUtil {
      * @param request the request
      * @return the context path
      */
-    public static String getContextPath(HttpServletRequest request)
-    {
+    public static String getContextPath(HttpServletRequest request) {
         return request.getContextPath();
     }
 
@@ -146,20 +138,22 @@ public class PathUtil {
      *
      * @return the path string
      */
-    public static String resourcesPath() {
-        ClassLoader classLoader = PathUtil.class.getClassLoader();
+    public static <T> String resourcesPath(T clazz) {
+        ClassLoader classLoader = clazz.getClass().getClassLoader();
         return classLoader.getResource("").getFile();
     }
 
     /**
      * path of file in target/classes <br/>
-     * original locates in src/main/resources in maven project
+     * original locates in src/main/resources in maven project <br/>
      *
-     * @param filename the filename
-     * @return string
+     * @param <T>      type of the class where you call this function
+     * @param clazz    the clazz
+     * @param filename the filename, should not start with "/"!
+     * @return string string
      */
-    public static String resourcesFilePath(String filename) {
-        ClassLoader classLoader = PathUtil.class.getClassLoader();
+    public static <T> String resourcesFilePath(T clazz, String filename) {
+        ClassLoader classLoader = clazz.getClass().getClassLoader();
         filename = fileNormalize(filename);
         try {
             return Paths.get(classLoader.getResource(filename).toURI()).toString();
@@ -172,6 +166,7 @@ public class PathUtil {
     /**
      * Gets multiple level parent files.
      * 获取往上一定级别的目录
+     *
      * @param filepath the filepath
      * @param levels   the levels, relative to the current directory
      * @return the multi level parent files
@@ -180,7 +175,7 @@ public class PathUtil {
         File parentFile = new File(filepath);
         for (int i = 0; i < levels; i++) {
             // if out of the range
-            if (parentFile.getParentFile()==null) {
+            if (parentFile.getParentFile() == null) {
                 return parentFile;
             }
             parentFile = parentFile.getParentFile();

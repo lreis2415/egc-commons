@@ -315,6 +315,32 @@ public class GeoTiffUtils {
         return sb.toString().substring(1);
     }
 
+    public static Area getArea(Dataset dataset) {
+        SpatialReference sr = new SpatialReference(dataset.GetProjectionRef());
+        Band band = dataset.GetRasterBand(1);
+        Double[] nodataVal = new Double[1];
+        band.GetNoDataValue(nodataVal);
+        Double nodata = nodataVal[0];
+        if (nodata == null) {
+            nodata = -9999d;
+        }
+        int xSize = dataset.GetRasterXSize();
+        int ySize = dataset.GetRasterYSize();
+
+        float[] dataBuf = new float[xSize * ySize];
+        double[] gt = dataset.GetGeoTransform();
+        band.ReadRaster(0, 0, xSize, ySize, dataBuf);
+        double wePixelResolution = gt[1];
+        double nsPixelResolution = Math.abs(gt[5]);
+        int count = 0;
+        for (float d : dataBuf) {
+            if (d != nodata.floatValue()) {
+                count++;
+            }
+        }
+        return new Area(count * wePixelResolution * nsPixelResolution, sr.GetLinearUnitsName());
+    }
+
     private static float area(float[] dataBuf, Double nodata, int wePixelResolution, int nsPixelResolution) {
         int count = 0;
         for (float d : dataBuf) {

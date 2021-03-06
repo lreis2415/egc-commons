@@ -1,6 +1,7 @@
 package org.egc.commons.test;
 
 import com.google.common.collect.Lists;
+import com.google.common.primitives.Primitives;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.environment.EnvironmentUtils;
 import org.apache.commons.lang3.ClassUtils;
@@ -117,6 +118,17 @@ public class CommonsExecTest {
         System.out.println(result.getError());
         System.out.println(result.getOut());
 
+    }
+
+    @Test
+    public void datatype(){
+        String v = "degree";
+        Class<?> aClass = v.getClass();
+        boolean primitiveOrWrapper = ClassUtils.isPrimitiveOrWrapper(aClass);
+        System.out.println(primitiveOrWrapper);//false
+        System.out.println(ClassUtils.isPrimitiveOrWrapper(Float.class));
+        System.out.println( Primitives.isWrapperType(aClass));
+        System.out.println(aClass == String.class);
     }
 
 }

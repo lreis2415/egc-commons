@@ -262,8 +262,12 @@ public interface RunCommand {
                 } else if (ClassUtils.isPrimitiveOrWrapper(vClass)) {
                     cmd.addArgument(k);
                     cmd.addArgument(String.valueOf(v));
+                } else if (vClass == String.class) {
+                    //String 属于引用数据类型 (class, interface, array)
+                    cmd.addArgument(k);
+                    cmd.addArgument((String) v);
                 } else {
-                    String errorMsg = "Type " + vClass.getName() + " of value " + v + " is neither a primitive nor wrapper class";
+                    String errorMsg = "Type " + vClass.getName() + " of value " + v + " is neither a primitive nor wrapper class nor String";
                     log.error(errorMsg);
                     throw new RuntimeException(errorMsg);
                 }

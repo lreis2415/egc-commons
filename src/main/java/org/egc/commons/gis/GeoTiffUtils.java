@@ -64,9 +64,9 @@ public class GeoTiffUtils {
             reader = new GeoTiffReader(new FileInputStream(rasterFile));
         } catch (DataSourceException e) {
             msg = "Error in GeoTIFF file!";
-            throw new BusinessException(e, msg + e.getLocalizedMessage(),true);
+            throw new BusinessException(e, msg + e.getLocalizedMessage(), true);
         } catch (FileNotFoundException e) {
-            throw new BusinessException("GeoTIFF file not found! " + e.getLocalizedMessage(),true);
+            throw new BusinessException("GeoTIFF file not found! " + e.getLocalizedMessage(), true);
         }
 
         ParameterValue<OverviewPolicy> policy = AbstractGridFormat.OVERVIEW_POLICY.createValue();
@@ -194,7 +194,7 @@ public class GeoTiffUtils {
         gdal.AllRegister();
         //gdal.SetConfigOption("GDAL_DATA", "C:\\Program Files\\GDAL\\gdal-data" );
         RasterMetadata metadata = new RasterMetadata();
-        Dataset dataset = gdal.Open(tif, gdalconstConstants.GA_ReadOnly);
+        final Dataset dataset = gdal.Open(tif, gdalconstConstants.GA_ReadOnly);
         Driver driver = dataset.GetDriver();
         metadata.setFormat(driver.getShortName());
         SpatialReference sr = new SpatialReference(dataset.GetProjection());
@@ -273,7 +273,7 @@ public class GeoTiffUtils {
         band.ReadRaster(0, 0, xSize, ySize, dataBuf);
         metadata.setQuantileBreaks(getQuantile(dataBuf, nodata, 15));
         metadata.setUniqueValues(getUniqueValues(dataBuf, nodata));
-        dataset.delete();
+        closeDataSet(dataset);
         gdal.GDALDestroyDriverManager();
         return metadata;
     }
@@ -393,7 +393,7 @@ public class GeoTiffUtils {
 
         TranslateOptions options = new TranslateOptions(vector);
         Dataset translate = gdal.Translate(newName, dataset, options);
-        dataset.delete();
+        closeDataSet(dataset);
         gdal.GDALDestroyDriverManager();
         return translate != null ? newName : null;
     }
@@ -414,7 +414,7 @@ public class GeoTiffUtils {
         WarpOptions options = new WarpOptions(v);
         gdal.Warp(dstFile, new Dataset[]{ds}, options);
         //关闭数据集
-        ds.delete();
+        closeDataSet(ds);
         gdal.GDALDestroyDriverManager();
     }
 
@@ -439,5 +439,21 @@ public class GeoTiffUtils {
             }
         }
         return newName;
+    }
+
+    /**
+     * Closes the given {@link Dataset}.
+     *
+     * @param ds {@link Dataset} to close.
+     */
+    public static void closeDataSet(Dataset ds) {
+        if (ds == null) {
+            throw new NullPointerException("The provided dataset is null");
+        }
+        try {
+            ds.delete();
+        } catch (Exception e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
     }
 }

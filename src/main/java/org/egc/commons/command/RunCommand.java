@@ -225,26 +225,15 @@ public interface RunCommand {
             for (Map.Entry entry : params.entries()) {
                 String k = (String) entry.getKey();
                 Object v = entry.getValue();
-                Class<?> vClass = v.getClass();
-                if (StringUtils.isBlank(k) || StringUtils.isBlank(String.valueOf(v)) || "null".equalsIgnoreCase(String.valueOf(v))) {
+                if (k == null || v == null || StringUtils.isBlank(k) || StringUtils.isBlank(String.valueOf(v))) {
                     continue;
                 }
+                Class<?> vClass = v.getClass();
                 if (v instanceof Boolean) {
                     if ((Boolean) v) {
                         cmd.addArgument(k);
                     }
                 }
-                //TODO 是否需要判断非负？
-                /*else if (v instanceof Integer && (Integer) v > -1) {
-                    cmd.addArgument(k);
-                    cmd.addArgument(String.valueOf(v));
-                } else if (v instanceof Long && (Long) v > -1L) {
-                    cmd.addArgument(k);
-                    cmd.addArgument(String.valueOf(v));
-                } else if (v instanceof Double && (Double) v > -1d) {
-                    cmd.addArgument(k);
-                    cmd.addArgument(String.valueOf(v));
-                }*/
                 else if (v instanceof List) {
                     cmd.addArgument(k);
                     List<String> l = new ArrayList<>();

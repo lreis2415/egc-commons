@@ -183,13 +183,14 @@ public class GeoTiffUtils {
     }
 
     /**
-     * 利用 gdal获取栅格数据元数据 <br/>
-     * 包含 UniqueValues 及 Quantile values
+     * Gets metadata using GDAL.
      *
-     * @param tif 栅格数据
-     * @return 元数据信息
+     * @param tif          the tif
+     * @param uniqueValues  calculate unique values?
+     * @param quantile     calculate quantiles?
+     * @return the metadata by gdal
      */
-    public static RasterMetadata getMetadataByGDAL(String tif) {
+    public static RasterMetadata getMetadataByGDAL(String tif, boolean uniqueValues, boolean quantile) {
         StringUtil.isNullOrEmptyPrecondition(tif, "Raster file must exists");
         gdal.AllRegister();
         //gdal.SetConfigOption("GDAL_DATA", "C:\\Program Files\\GDAL\\gdal-data" );
@@ -268,14 +269,27 @@ public class GeoTiffUtils {
         metadata.setSizeWidth(xSize);
 
         float[] dataBuf = new float[xSize * ySize];
-        //TODO test
-        // 没有 band.ReadRaster(0, 0, xSize, ySize, dataBuf, xSize, ySize, 0, 0);
         band.ReadRaster(0, 0, xSize, ySize, dataBuf);
-        metadata.setQuantileBreaks(getQuantile(dataBuf, nodata, 15));
-        metadata.setUniqueValues(getUniqueValues(dataBuf, nodata));
+        if (quantile) {
+            metadata.setQuantileBreaks(getQuantile(dataBuf, nodata, 15));
+        }
+        if (uniqueValues) {
+            metadata.setUniqueValues(getUniqueValues(dataBuf, nodata));
+        }
         closeDataSet(dataset);
         gdal.GDALDestroyDriverManager();
         return metadata;
+    }
+
+    /**
+     * 利用 gdal获取栅格数据元数据 <br/>
+     * 包含 UniqueValues 及 Quantile values
+     *
+     * @param tif 栅格数据
+     * @return 元数据信息
+     */
+    public static RasterMetadata getMetadataByGDAL(String tif) {
+        return getMetadataByGDAL(tif, true, true);
     }
 
     /*原来的计算方法参考ws_metadata_extract/RasterMetaDataExtractor.cs*/
@@ -339,6 +353,15 @@ public class GeoTiffUtils {
             }
         }
         return new Area(count * wePixelResolution * nsPixelResolution, sr.GetLinearUnitsName());
+    }
+
+    public static Area getArea(String rasterFile) {
+        StringUtil.isNullOrEmptyPrecondition(rasterFile, "Raster file must exists");
+        gdal.AllRegister();
+        final Dataset dataset = gdal.Open(rasterFile, gdalconstConstants.GA_ReadOnly);
+        Area area = getArea(dataset);
+        closeDataSet(dataset);
+        return area;
     }
 
     private static float area(float[] dataBuf, Double nodata, int wePixelResolution, int nsPixelResolution) {

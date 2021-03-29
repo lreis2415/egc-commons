@@ -26,6 +26,7 @@ public class CoordinateTransformUtil {
     /**
      * 坐标点转换
      * use easy-gis/gis-proj module
+     *
      * @param sourceEPSG 源坐标EPSG码
      * @param targetEPSG 目标坐标EPSG码
      * @param x          源坐标 x
@@ -113,6 +114,7 @@ public class CoordinateTransformUtil {
     /**
      * Transform extent by gdal.
      * <b>Can only be used if the extent is within the same zone</b>
+     *
      * @param fromEPSG the source epsg
      * @param toEPSG   the destination epsg
      * @param minX     the min x
@@ -130,6 +132,13 @@ public class CoordinateTransformUtil {
         } catch (RuntimeException e) {
             throw new BusinessException(e, "Unsupported SRS", true);
         }
+        CoordinateTransformation coordinateTransformation = new CoordinateTransformation(source, destination);
+        double[] ll = coordinateTransformation.TransformPoint(minX, minY);
+        double[] ur = coordinateTransformation.TransformPoint(maxX, maxY);
+        return new double[]{ll[0], ll[1], ur[0], ur[1]};
+    }
+
+    public static double[] transformExtentByGdal(SpatialReference source, SpatialReference destination, double minX, double minY, double maxX, double maxY) {
         CoordinateTransformation coordinateTransformation = new CoordinateTransformation(source, destination);
         double[] ll = coordinateTransformation.TransformPoint(minX, minY);
         double[] ur = coordinateTransformation.TransformPoint(maxX, maxY);

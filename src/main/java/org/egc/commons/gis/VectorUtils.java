@@ -99,7 +99,7 @@ public class VectorUtils {
         metadata.setMinY(extent[2]);
         metadata.setMaxY(extent[3]);
 
-        ds.delete();
+        closeDataSource(ds);
         driver.delete();
         gdal.GDALDestroyDriverManager();
         return metadata;
@@ -192,7 +192,23 @@ public class VectorUtils {
                 area += feature.GetGeometryRef().GetArea();
             }
         }
-        ds.delete();
+        closeDataSource(ds);
         return new Area(area, unit);
+    }
+
+    /**
+     * Closes the given {@link DataSource}.
+     *
+     * @param ds {@link DataSource} to close.
+     */
+    public static void closeDataSource(DataSource ds) {
+        if (ds == null) {
+            throw new NullPointerException("The provided data source is null");
+        }
+        try {
+            ds.delete();
+        } catch (Exception e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
     }
 }

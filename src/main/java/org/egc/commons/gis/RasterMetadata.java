@@ -2,6 +2,7 @@ package org.egc.commons.gis;
 
 import lombok.Data;
 import org.egc.commons.util.Formatter;
+import org.gdal.osr.SpatialReference;
 
 import java.io.Serializable;
 
@@ -135,7 +136,24 @@ public class RasterMetadata implements Serializable {
                 + " " + Formatter.formatDoubleStr(maxX, 4) + " " + Formatter.formatDoubleStr(maxY, 4);
     }
 
+    /**
+     * extent of the data
+     *
+     * @return left(minx) + " " + buttom (miny) + " " + right(maxx) + " " + top(maxy)
+     */
+    public String getExtentWgs84() {
+        SpatialReference srs = new SpatialReference();
+        srs.ImportFromProj4(this.crsProj4);
+        SpatialReference t_srs = new SpatialReference();
+        t_srs.ImportFromEPSG(4326);
+        double[] extent = CoordinateTransformUtil.transformExtentByGdal(srs, t_srs, minX, minY, maxX, maxY);
+        this.extentWgs84 =  Formatter.formatDoubleStr(extent[0], 4) + " " + Formatter.formatDoubleStr(extent[1], 4)
+                + " " + Formatter.formatDoubleStr(extent[2], 4) + " " + Formatter.formatDoubleStr(extent[3], 4);
+        return this.extentWgs84;
+    }
+
     private String extent;
+    private String extentWgs84;
     private double[] upperLeft;
     private double[] upperRight;
     private double[] lowerLeft;

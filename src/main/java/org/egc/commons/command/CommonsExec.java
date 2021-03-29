@@ -17,8 +17,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang3.SystemUtils.JAVA_IO_TMPDIR;
-
 /**
  * <pre>
  * 使用 apache.commons.exec 执行命令行程序

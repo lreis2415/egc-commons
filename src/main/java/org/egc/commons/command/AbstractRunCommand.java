@@ -111,7 +111,7 @@ public abstract class AbstractRunCommand implements RunCommand {
             } else {
                 result = CommonsExec.execWithOutput(cmd, outputDir);
             }
-            log.info("Execution Info/Error: {}", result.getError());
+            log.info("Execution Info/Error is: {}", result.getError());
             result.setSuccess(true);
         } catch (IOException e) {
             log.error(e.getLocalizedMessage(), e);

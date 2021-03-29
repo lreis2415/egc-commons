@@ -65,6 +65,9 @@ public class PathUtil {
         file = fileNormalize(file);
         URL resource = Thread.currentThread().getContextClassLoader().getResource(file);
         assert resource != null;
+        if (resource.getPath().startsWith("/")) {
+             return resource.getPath().substring(1);
+        }
         return resource.getPath();
     }
 
@@ -188,8 +191,8 @@ public class PathUtil {
             log.warn("file is blank");
             return "";
         }
-        file = FilenameUtils.normalize(file);
-        if (file.startsWith(File.separator)) {
+        file = FilenameUtils.normalize(file,true);
+        if (file.startsWith("/")) {
             file = file.substring(1);
         }
         return file;

@@ -9,6 +9,19 @@ public class Area {
         return area;
     }
 
+
+    /**
+     * Gets area in km^2. <br/>
+     * <b>Works only when original area are in square Meters/Metres</b>
+     * @return the area in km^2
+     */
+    public double getAreaInKmSquare() {
+        if ("Meter".equalsIgnoreCase(this.getUnit()) || "Metre".equalsIgnoreCase(this.getUnit())) {
+            return area/(1000*1000);
+        }
+        return area;
+    }
+
     public void setArea(double area) {
         this.area = area;
     }

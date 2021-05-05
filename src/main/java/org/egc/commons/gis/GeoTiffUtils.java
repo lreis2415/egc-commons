@@ -186,11 +186,12 @@ public class GeoTiffUtils {
      * Gets metadata using GDAL.
      *
      * @param tif          the tif
-     * @param uniqueValues  calculate unique values?
+     * @param uniqueValues calculate unique values?
      * @param quantile     calculate quantiles?
      * @return the metadata by gdal
      */
     public static RasterMetadata getMetadataByGDAL(String tif, boolean uniqueValues, boolean quantile) {
+        long s = System.currentTimeMillis();
         StringUtil.isNullOrEmptyPrecondition(tif, "Raster file must exists");
         gdal.AllRegister();
         //gdal.SetConfigOption("GDAL_DATA", "C:\\Program Files\\GDAL\\gdal-data" );
@@ -268,16 +269,19 @@ public class GeoTiffUtils {
         metadata.setSizeHeight(ySize);
         metadata.setSizeWidth(xSize);
 
-        float[] dataBuf = new float[xSize * ySize];
-        band.ReadRaster(0, 0, xSize, ySize, dataBuf);
-        if (quantile) {
-            metadata.setQuantileBreaks(getQuantile(dataBuf, nodata, 15));
-        }
-        if (uniqueValues) {
-            metadata.setUniqueValues(getUniqueValues(dataBuf, nodata));
+        if (quantile || uniqueValues) {
+            float[] dataBuf = new float[xSize * ySize];
+            band.ReadRaster(0, 0, xSize, ySize, dataBuf);
+            if (quantile) {
+                metadata.setQuantileBreaks(getQuantile(dataBuf, nodata, 15));
+            }
+            if (uniqueValues) {
+                metadata.setUniqueValues(getUniqueValues(dataBuf, nodata));
+            }
         }
         closeDataSet(dataset);
         gdal.GDALDestroyDriverManager();
+        log.debug("time used {} ms", System.currentTimeMillis() - s);
         return metadata;
     }
 
@@ -296,8 +300,11 @@ public class GeoTiffUtils {
 
     private static String getUniqueValues(float[] dataBuf, Double nodata) {
         List<Float> dataBufList = Floats.asList(dataBuf);
+        //release
+        dataBuf = null;
         Collections.sort(dataBufList);
         List<Float> uniqueList = dataBufList.stream().distinct().collect(Collectors.toList());
+        dataBufList = null;
         if (uniqueList.indexOf(nodata.floatValue()) > -1) {
             uniqueList.remove(uniqueList.indexOf(nodata.floatValue()));
         }
@@ -308,7 +315,7 @@ public class GeoTiffUtils {
     private static String getQuantile(float[] dataBuf, Double nodata, int numQuantile) {
         Double[] quantileBreaks = new Double[numQuantile - 1];
         List<Float> dataBufList = Floats.asList(dataBuf);
-        Collections.sort(dataBufList);
+        dataBuf = null;
         //移除空值, 移除 nodata
         List<Float> removedList = dataBufList.stream().filter(x -> {
             if (x != null) {
@@ -316,7 +323,8 @@ public class GeoTiffUtils {
                 return !x.equals(nodata.floatValue());
             }
             return false;
-        }).collect(Collectors.toList());
+        }).sorted().collect(Collectors.toList());
+        dataBufList = null;
         int size = removedList.size();
         //分位数位置  (n+1)*p, 0<p<1, 如  0.25，0.5,0.75
         int numDataInQuantile = ((size + 1) / numQuantile);
@@ -326,6 +334,7 @@ public class GeoTiffUtils {
             sb.append(" ");
             sb.append(quantileBreaks[i].toString());
         }
+        removedList = null;
         return sb.toString().substring(1);
     }
 

@@ -1,7 +1,10 @@
 package org.egc.commons.gis;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.base.Strings;
+import com.google.common.collect.*;
 import com.google.common.primitives.Floats;
 import it.geosolutions.jaiext.range.NoDataContainer;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +14,9 @@ import org.egc.commons.exception.BusinessException;
 import org.egc.commons.util.StringUtil;
 import org.gdal.gdal.*;
 import org.gdal.gdalconst.gdalconstConstants;
+import org.gdal.ogr.ogr;
 import org.gdal.osr.SpatialReference;
+import org.gdal.osr.osr;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -49,6 +54,15 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class GeoTiffUtils {
+    static {
+        gdal.UseExceptions();
+        ogr.UseExceptions();
+        osr.UseExceptions();
+        gdal.AllRegister();
+        ogr.RegisterAll();
+        gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES");
+        //gdal.SetConfigOption("GDAL_DATA", "C:\\Program Files\\GDAL\\gdal-data" );
+    }
 
     /**
      * Read geotiff file.
@@ -193,11 +207,10 @@ public class GeoTiffUtils {
     public static RasterMetadata getMetadataByGDAL(String tif, boolean uniqueValues, boolean quantile) {
         long s = System.currentTimeMillis();
         StringUtil.isNullOrEmptyPrecondition(tif, "Raster file must exists");
-        gdal.AllRegister();
-        //gdal.SetConfigOption("GDAL_DATA", "C:\\Program Files\\GDAL\\gdal-data" );
+        //gdal.AllRegister();
         RasterMetadata metadata = new RasterMetadata();
         final Dataset dataset = gdal.Open(tif, gdalconstConstants.GA_ReadOnly);
-        Driver driver = dataset.GetDriver();
+        final Driver driver = dataset.GetDriver();
         metadata.setFormat(driver.getShortName());
         SpatialReference sr = new SpatialReference(dataset.GetProjection());
         metadata.setCrsProj4(sr.ExportToProj4());
@@ -228,7 +241,7 @@ public class GeoTiffUtils {
 
         metadata.setUnit(sr.GetAttrValue("UNIT"));
 
-        Band band = dataset.GetRasterBand(1);
+        final Band band = dataset.GetRasterBand(1);
         Double[] nodataVal = new Double[1];
         band.GetNoDataValue(nodataVal);
         Double nodata = nodataVal[0];
@@ -273,13 +286,14 @@ public class GeoTiffUtils {
             float[] dataBuf = new float[xSize * ySize];
             band.ReadRaster(0, 0, xSize, ySize, dataBuf);
             if (quantile) {
-                metadata.setQuantileBreaks(getQuantile(dataBuf, nodata, 15));
+                metadata.setQuantileBreaks(getQuantileByGuava(dataBuf, nodata, 15));
             }
             if (uniqueValues) {
                 metadata.setUniqueValues(getUniqueValues(dataBuf, nodata));
             }
         }
         closeDataSet(dataset);
+        driver.delete();
         gdal.GDALDestroyDriverManager();
         log.debug("time used {} ms", System.currentTimeMillis() - s);
         return metadata;
@@ -299,20 +313,61 @@ public class GeoTiffUtils {
     /*原来的计算方法参考ws_metadata_extract/RasterMetaDataExtractor.cs*/
 
     private static String getUniqueValues(float[] dataBuf, Double nodata) {
+        Arrays.sort(dataBuf);
         List<Float> dataBufList = Floats.asList(dataBuf);
         //release
         dataBuf = null;
-        Collections.sort(dataBufList);
+        //Collections.sort(dataBufList);
         List<Float> uniqueList = dataBufList.stream().distinct().collect(Collectors.toList());
-        dataBufList = null;
         if (uniqueList.indexOf(nodata.floatValue()) > -1) {
             uniqueList.remove(uniqueList.indexOf(nodata.floatValue()));
         }
         return Joiner.on(" ").join(uniqueList);
     }
 
-    //分位数
+    /**
+     * 分位数 use guava
+     * 比之前的稍微快一点
+     *
+     * @param dataBuf     dataBuf
+     * @param nodata      nodata
+     * @param numQuantile num of quantiles
+     * @return quantile
+     */
+    private static String getQuantileByGuava(float[] dataBuf, Double nodata, int numQuantile) {
+        long start = System.currentTimeMillis();
+        Double[] quantileBreaks = new Double[numQuantile - 1];
+        List<Float> dataBufList = Floats.asList(dataBuf);
+        //dataBuf = null;
+        //移除空值, 移除 nodata
+        Collection<Float> removedList = Collections2.filter(dataBufList, input -> !Objects.equals(nodata.floatValue(), input));
+
+        Ordering<Float> floatOrdering = Ordering.natural();
+        List<Float> sortedRemovedList = floatOrdering.sortedCopy(removedList);
+        int size = sortedRemovedList.size();
+        //分位数位置  (n+1)*p, 0<p<1, 如  0.25，0.5,0.75
+        int numDataInQuantile = ((size + 1) / numQuantile);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < numQuantile - 1; i++) {
+            quantileBreaks[i] = (double) (sortedRemovedList.get((i + 1) * numDataInQuantile));
+            sb.append(" ");
+            sb.append(quantileBreaks[i].toString());
+        }
+        log.debug("getQuantileByGuava time used {}", System.currentTimeMillis() - start);
+        return sb.toString().substring(1);
+    }
+
+    /**
+     * 分位数
+     *
+     * @param dataBuf     dataBuf
+     * @param nodata      nodata
+     * @param numQuantile num of quantiles
+     * @return quantile
+     * @deprecated use {@link #getQuantileByGuava(float[], Double, int)}
+     */
     private static String getQuantile(float[] dataBuf, Double nodata, int numQuantile) {
+        long start = System.currentTimeMillis();
         Double[] quantileBreaks = new Double[numQuantile - 1];
         List<Float> dataBufList = Floats.asList(dataBuf);
         dataBuf = null;
@@ -334,7 +389,7 @@ public class GeoTiffUtils {
             sb.append(" ");
             sb.append(quantileBreaks[i].toString());
         }
-        removedList = null;
+        log.debug("getQuantile time used {}", System.currentTimeMillis() - start);
         return sb.toString().substring(1);
     }
 
@@ -366,14 +421,15 @@ public class GeoTiffUtils {
 
     public static Area getArea(String rasterFile) {
         StringUtil.isNullOrEmptyPrecondition(rasterFile, "Raster file must exists");
-        gdal.AllRegister();
+        //gdal.AllRegister();
         final Dataset dataset = gdal.Open(rasterFile, gdalconstConstants.GA_ReadOnly);
         Area area = getArea(dataset);
         closeDataSet(dataset);
         return area;
     }
 
-    private static float area(float[] dataBuf, Double nodata, int wePixelResolution, int nsPixelResolution) {
+    private static float area(float[] dataBuf, Double nodata,
+                              int wePixelResolution, int nsPixelResolution) {
         int count = 0;
         for (float d : dataBuf) {
             if (d != nodata.floatValue()) {
@@ -438,7 +494,7 @@ public class GeoTiffUtils {
      * @param dstSrs  the target spatial reference
      */
     public static void reproject(String srcFile, String dstFile, String dstSrs) {
-        Dataset ds = readUseGdal(srcFile);
+        final Dataset ds = readUseGdal(srcFile);
         Vector<String> v = new Vector<>();
         v.add("-t_srs");
         v.add(dstSrs);
@@ -451,8 +507,7 @@ public class GeoTiffUtils {
     }
 
     private static Dataset readUseGdal(String file) {
-        gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES");
-        gdal.AllRegister();
+        //gdal.AllRegister();
         // 默认 gdalconst.GA_ReadOnly
         return gdal.Open(file);
     }
@@ -486,6 +541,7 @@ public class GeoTiffUtils {
             ds.delete();
         } catch (Exception e) {
             log.error(e.getLocalizedMessage(), e);
+            throw new BusinessException(e.getLocalizedMessage());
         }
     }
 }

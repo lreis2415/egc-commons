@@ -72,7 +72,10 @@ public class CsvReader {
         try {
             InputStream encodingCheck= new java.io.FileInputStream(csvPath);
             byte[] b = new byte[3];
-            encodingCheck.read(b);
+            int byteLength=encodingCheck.read(b);
+            if(byteLength<3){
+                throw new BusinessException("CSV file empty or could not be read!");
+            }
             encodingCheck.close();
             String charset = "UTF-8";
             if (b[0] != -17 || b[1] != -69 || b[2] != -65) {

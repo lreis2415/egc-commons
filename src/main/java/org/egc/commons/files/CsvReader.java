@@ -4,11 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.egc.commons.exception.BusinessException;
+import org.egc.commons.gis.CoordinateTransformUtil;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -70,8 +70,17 @@ public class CsvReader {
         String[] knownHeaders = {ID, X, Y, DEPTH_UP, DEPTH_DOWN, SRID};
         List<CsvSampleInfo> csvSampleInfos = new ArrayList<>();
         try {
-            Reader in = new FileReader(csvPath);
+            InputStream encodingCheck= new java.io.FileInputStream(csvPath);
+            byte[] b = new byte[3];
+            encodingCheck.read(b);
+            encodingCheck.close();
+            String charset = "UTF-8";
+            if (b[0] != -17 || b[1] != -69 || b[2] != -65) {
+                charset="GB2312";
+            }
+            Reader in = new InputStreamReader(new FileInputStream(csvPath), charset);
             Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(in);
+            boolean isXYDigit = true;
             for (CSVRecord record : records) {
                 boolean flag = true;
                 for (String head : headers) {
@@ -81,7 +90,7 @@ public class CsvReader {
                         csvSampleInfo.setSemanticName(head);
                         String semanticValue = record.get(head);
                         if (semanticValue != null) {
-                            csvSampleInfo.setSemanticValue(Double.parseDouble(semanticValue));
+                            csvSampleInfo.setSemanticValue(semanticValue);
                         }
                         csvSampleInfos.add(csvSampleInfo);
                     }
@@ -97,7 +106,6 @@ public class CsvReader {
         return csvSampleInfos;
 
     }
-
     public double getMax(List<Double> arrayData) {
         double max = -9999999999999999.0;
         for (int i = 0; i < arrayData.size(); i++) {
@@ -127,13 +135,13 @@ public class CsvReader {
         if (headers.contains(X)) {
             String x = record.get(X);
             if (x != null) {
-                csvSampleInfo.setX(Double.parseDouble(record.get(X)));
+                csvSampleInfo.setX(getConvertedCoord(x));
             }
         }
         if (headers.contains(Y)) {
             String y = record.get(Y);
             if (y != null) {
-                csvSampleInfo.setY(Double.parseDouble(y));
+                csvSampleInfo.setY(getConvertedCoord(y));
             }
         }
         if (headers.contains(DEPTH_UP)) {
@@ -155,6 +163,22 @@ public class CsvReader {
             }
         }
         return csvSampleInfo;
+    }
+    public double getConvertedCoord(String x) {
+        double result=0.0;
+        if (x.contains("°")) {
+            String[] dms = x.split("[°'′\"″]");
+            if (dms.length >= 3) {
+                int dir = 1;
+                if (dms.length==4 && (dms[3].equals("W") || dms[3].equals("S"))) {
+                    dir = -1;
+                }
+                result= dir * (Double.parseDouble(dms[0]) + Double.parseDouble(dms[1]) / 60 + Double.parseDouble(dms[2]) / (60 * 60));
+            }
+        }else{
+            result= Double.parseDouble(x);
+        }
+        return result;
     }
 
 }

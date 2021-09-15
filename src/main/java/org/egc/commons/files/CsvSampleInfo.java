@@ -11,5 +11,5 @@ public class CsvSampleInfo {
     private double depthUp;
     private double depthDown;
     private String semanticName;
-    private double semanticValue;
+    private String semanticValue;
 }

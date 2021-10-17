@@ -480,7 +480,6 @@ public class GeoTiffUtils {
         TranslateOptions options = new TranslateOptions(vector);
         Dataset translate = gdal.Translate(newName, dataset, options);
         closeDataSet(dataset);
-        gdal.GDALDestroyDriverManager();
         return translate != null ? newName : null;
     }
 
@@ -501,7 +500,8 @@ public class GeoTiffUtils {
         gdal.Warp(dstFile, new Dataset[]{ds}, options);
         //关闭数据集
         closeDataSet(ds);
-        gdal.GDALDestroyDriverManager();
+        //不要写下面这句，gdal只会在本类初始化时register一次，关闭后就无法再使用了
+//        gdal.GDALDestroyDriverManager();
     }
 
     private static Dataset readUseGdal(String file) {

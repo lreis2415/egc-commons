@@ -65,25 +65,18 @@ public class CsvReader {
         return samples;
     }
 
-    public List<CsvSampleInfo> readCsvSamples(String csvPath) {
+    /**
+     * 如果csv表不是UTF-8编码，则会抛出IllegalArgumentException，调用此方法时请务必考虑这一点。
+     * @param csvPath csv文件的路径
+     * @return 样点
+     */
+    public List<CsvSampleInfo> readCsvSamples(String csvPath){
         List<String> headers = csvHeaderRead(csvPath);
         String[] knownHeaders = {ID, X, Y, DEPTH_UP, DEPTH_DOWN, SRID};
         List<CsvSampleInfo> csvSampleInfos = new ArrayList<>();
         try {
-            InputStream encodingCheck= new java.io.FileInputStream(csvPath);
-            byte[] b = new byte[3];
-            int byteLength=encodingCheck.read(b);
-            if(byteLength<3){
-                throw new BusinessException("CSV file empty or could not be read!");
-            }
-            encodingCheck.close();
-            String charset = "UTF-8";
-            if (b[0] != -17 || b[1] != -69 || b[2] != -65) {
-                charset="GB2312";
-            }
-            Reader in = new InputStreamReader(new FileInputStream(csvPath), charset);
+            Reader in = new InputStreamReader(new FileInputStream(csvPath), "UTF-8");
             Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(in);
-            boolean isXYDigit = true;
             for (CSVRecord record : records) {
                 boolean flag = true;
                 for (String head : headers) {

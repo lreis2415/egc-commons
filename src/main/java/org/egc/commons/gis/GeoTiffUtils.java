@@ -207,7 +207,7 @@ public class GeoTiffUtils {
     public static RasterMetadata getMetadataByGDAL(String tif, boolean uniqueValues, boolean quantile) {
         long s = System.currentTimeMillis();
         StringUtil.isNullOrEmptyPrecondition(tif, "Raster file must exists");
-        //gdal.AllRegister();
+//        gdal.AllRegister();
         RasterMetadata metadata = new RasterMetadata();
         final Dataset dataset = gdal.Open(tif, gdalconstConstants.GA_ReadOnly);
         final Driver driver = dataset.GetDriver();
@@ -293,8 +293,6 @@ public class GeoTiffUtils {
             }
         }
         closeDataSet(dataset);
-        driver.delete();
-        gdal.GDALDestroyDriverManager();
         log.debug("time used {} ms", System.currentTimeMillis() - s);
         return metadata;
     }

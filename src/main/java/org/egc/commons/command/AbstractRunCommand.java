@@ -57,7 +57,7 @@ public abstract class AbstractRunCommand implements RunCommand {
         try {
             cmd = handleEqualSign(cmd);
             if (envKeyValues != null && envKeyValues.size() > 0) {
-                result = CommonsExec.execWithOutput(cmd, null, envKeyValues, null, null);
+                result = CommonsExec.execWithOutput(cmd, null, envKeyValues, null, 7200000L);
             } else {
                 result = CommonsExec.execWithOutput(cmd);
             }
@@ -107,7 +107,7 @@ public abstract class AbstractRunCommand implements RunCommand {
         try {
             cmd = handleEqualSign(cmd);
             if (envKeyValues != null && envKeyValues.size() > 0) {
-                result = CommonsExec.execWithOutput(cmd, outputDir, envKeyValues, null, null);
+                result = CommonsExec.execWithOutput(cmd, outputDir, envKeyValues, null, 7200000L);
             } else {
                 result = CommonsExec.execWithOutput(cmd, outputDir);
             }

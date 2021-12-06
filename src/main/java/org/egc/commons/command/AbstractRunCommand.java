@@ -59,7 +59,7 @@ public abstract class AbstractRunCommand implements RunCommand {
             if (envKeyValues != null && envKeyValues.size() > 0) {
                 result = CommonsExec.execWithOutput(cmd, null, envKeyValues, null, 7200000L);
             } else {
-                result = CommonsExec.execWithOutput(cmd);
+                result = CommonsExec.execWithOutput(cmd,7200000L);
             }
             result = CommonsExec.execWithOutput(cmd);
             log.info(result.getOut());
@@ -109,7 +109,7 @@ public abstract class AbstractRunCommand implements RunCommand {
             if (envKeyValues != null && envKeyValues.size() > 0) {
                 result = CommonsExec.execWithOutput(cmd, outputDir, envKeyValues, null, 7200000L);
             } else {
-                result = CommonsExec.execWithOutput(cmd, outputDir);
+                result = CommonsExec.execWithOutput(cmd, outputDir, 7200000L);
             }
             log.info("Execution Info/Error is: {}", result.getError());
             result.setSuccess(true);

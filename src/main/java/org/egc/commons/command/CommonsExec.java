@@ -94,7 +94,9 @@ public class CommonsExec {
     public static ExecResult execWithOutput(CommandLine cmd) throws IOException {
         return execWithOutput(cmd, null, null, null, 0L);
     }
-
+    public static ExecResult execWithOutput(CommandLine cmd, long timeout) throws IOException {
+        return execWithOutput(cmd, null, null, null, timeout);
+    }
     /**
      * Execute command line and return output string
      *
@@ -106,7 +108,9 @@ public class CommonsExec {
     public static ExecResult execWithOutput(CommandLine cmd, String workspace) throws IOException {
         return execWithOutput(cmd, workspace, null, null, 0L);
     }
-
+    public static ExecResult execWithOutput(CommandLine cmd, String workspace, long timeout) throws IOException {
+        return execWithOutput(cmd, workspace, null, null, timeout);
+    }
     public static ExecResult execWithOutput(CommandLine cmd, Integer exitValue) throws IOException {
         return execWithOutput(cmd, null, null, exitValue, 0L);
     }

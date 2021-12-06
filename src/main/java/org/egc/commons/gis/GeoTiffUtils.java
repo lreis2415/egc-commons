@@ -283,12 +283,12 @@ public class GeoTiffUtils {
         metadata.setSizeWidth(xSize);
 
         if (quantile || uniqueValues) {
-            float[] dataBuf = new float[xSize * ySize];
-            band.ReadRaster(0, 0, xSize, ySize, dataBuf);
             if (quantile) {
-                metadata.setQuantileBreaks(getQuantileByGuava(dataBuf, nodata, 15));
+                metadata.setQuantileBreaks(getApproximateQuantileByHistogram(tif,15,metadata.getMaxValue(), metadata.getMinValue()));
             }
             if (uniqueValues) {
+                float[] dataBuf = new float[xSize * ySize];
+                band.ReadRaster(0, 0, xSize, ySize, dataBuf);
                 metadata.setUniqueValues(getUniqueValues(dataBuf, nodata));
             }
         }
@@ -321,6 +321,46 @@ public class GeoTiffUtils {
             uniqueList.remove(uniqueList.indexOf(nodata.floatValue()));
         }
         return Joiner.on(" ").join(uniqueList);
+    }
+
+    /**
+     * 获取GDAl计算的直方图
+     *
+     */
+    private static long[] getHistogramByGDAL(String path) {
+        Dataset ds = gdal.Open(path);
+        Vector<String> ops = new Vector<>(1);
+        ops.add("-hist");
+        String result = gdal.GDALInfo(ds,new InfoOptions(ops));
+        int i1 = result.indexOf("256 buckets from");
+        int i2 = result.indexOf(":",i1);
+        int i3 = result.indexOf("\n",i2+2);
+        String bucketsStr = result.substring(i2+2,i3);
+        long[] buckets = new long[256];
+        String[] bucketList = bucketsStr.trim().split("[\\s\\n]");
+        for (int i = 0; i < 256; i++) {
+            buckets[i]=Long.parseLong(bucketList[i]);
+        }
+        return buckets;
+    }
+    /**
+     * 用直方图快速估算分位数。得到的只是大致的结果。
+     *
+     * @return quantile
+     */
+    private static String getApproximateQuantileByHistogram(String path, int numQuantile, double max, double min) {
+        long start = System.currentTimeMillis();
+
+        long[] buckets=getHistogramByGDAL(path);
+        Histogram h = new Histogram(numQuantile,min,max,buckets);
+        double[] quantiles=h.getApproximateQuantiles();
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < numQuantile; i++) {
+            sb.append(" ");
+            sb.append(quantiles[i]);
+        }
+        return sb.substring(1);
     }
 
     /**

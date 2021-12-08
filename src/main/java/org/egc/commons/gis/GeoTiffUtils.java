@@ -341,6 +341,7 @@ public class GeoTiffUtils {
         for (int i = 0; i < 256; i++) {
             buckets[i]=Long.parseLong(bucketList[i]);
         }
+        ds.delete();
         return buckets;
     }
     /**

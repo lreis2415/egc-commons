@@ -35,6 +35,7 @@ public class CsvReader {
             for (int i = 0; i < record.size(); i++) {
                 fields.add(record.get(i));
             }
+            in.close();
         } catch (IOException e) {
             throw new BusinessException(e, "CSV file not found or invalid");
         }
@@ -96,6 +97,7 @@ public class CsvReader {
                     csvSampleInfos.add(csvSampleInfo);
                 }
             }
+            in.close();
         } catch (IOException e) {
             throw new BusinessException(e, "CSV file not found or invalid");
         }

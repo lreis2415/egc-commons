@@ -32,7 +32,7 @@
         <joda.version>2.9.7</joda.version>
         <gdal.gisinternal.version>2.4.4</gdal.gisinternal.version>
         <jjwt.version>0.9.0</jjwt.version>
-        <spring.version>4.3.5.RELEASE</spring.version>
+        <spring.version>5.2.20.RELEASE</spring.version>
         <shiro.version>1.6.0</shiro.version>
         <fastjson.version>1.2.68</fastjson.version>
         <mybatis.version>3.4.0</mybatis.version>
